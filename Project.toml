@@ -1,0 +1,13 @@
+name = "Elasticity"
+uuid = "8b390c8a-e41e-419b-b3a5-595c9a4d2b26"
+authors = ["Qi Zhang <singularitti@outlook.com>"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
