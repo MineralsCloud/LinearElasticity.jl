@@ -68,5 +68,17 @@ for T in (:TensorStress, :TensorStrain)
         $T(xx, xy, xz, yy, yz, zz) = $T((xx, xy, xz, yy, yz, zz))
     end)
 end
+for T in (:EngineeringStress, :EngineeringStrain)
+    eval(quote
+        $T(v::AbstractVector) = $T(Tuple(v))
+        $T(xx, xy, xz, yy, yz, zz) = $T((xx, xy, xz, yy, yz, zz))
+    end)
+end
+for T in (:EngineeringStiffness, :EngineeringCompliance)
+    eval(quote
+        $T(m::AbstractMatrix) = $T(SymmetricTensor{2,6}(m))
+        $T(v::Union{AbstractVector,NTuple{21}}) = $T(SymmetricTensor{2,6}(v))
+    end)
+end
 
 end
