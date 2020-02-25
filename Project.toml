@@ -1,4 +1,4 @@
-name = "Elasticity"
+name = "LinearElasticity"
 uuid = "8b390c8a-e41e-419b-b3a5-595c9a4d2b26"
 authors = ["Qi Zhang <singularitti@outlook.com>"]
 version = "0.1.0"
