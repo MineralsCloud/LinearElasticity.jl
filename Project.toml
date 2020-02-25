@@ -5,6 +5,7 @@ version = "0.1.0"
 
 [deps]
 Crystallography = "3bff3928-7a76-11e9-2089-d112443085a5"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Tensors = "48a634ad-e948-5137-8d70-aa71f2a747f4"
 
 [compat]
