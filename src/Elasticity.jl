@@ -112,6 +112,12 @@ function Base.convert(::Type{EngineeringStrain{T}}, e::TensorStrain{T}) where {T
         2 * e[1, 2],
     ))
 end # function Base.convert
+function Base.convert(::Type{EngineeringStiffness{T}}, c::TensorStiffness{T}) where {T}
+    
+end # function Base.convert
+function Base.convert(::Type{TensorStiffness{T}}, c::EngineeringStiffness{T}) where {T}
+
+end # function Base.convert
 
 for T in (:TensorStress, :TensorStrain)
     eval(quote
@@ -132,5 +138,7 @@ for T in (:EngineeringStiffness, :EngineeringCompliance)
         $T(v::Union{AbstractVector,NTuple{21}}) = $T(SymmetricTensor{2,6}(v))
     end)
 end
+
+include("StabilityConditions.jl")
 
 end
