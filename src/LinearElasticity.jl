@@ -121,6 +121,15 @@ function Base.convert(::Type{TensorStiffness{T}}, c::EngineeringStiffness{T}) wh
     d, dim = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6])), 3
     return TensorStiffness([c[d[(i, j)], d[(k, l)]] for i in 1:dim, j in 1:dim, k in 1:dim, l in 1:dim])
 end # function Base.convert
+function Base.convert(::Type{EngineeringCompliance{T}}, c::TensorCompliance{T}) where {T}  # FIXME Rules are wrong
+    p, dim = pairs(VOIGT_INDICES), 6
+    # From https://github.com/KristofferC/Tensors.jl/blob/bff451c/src/utilities.jl#L5-L14
+    return EngineeringStiffness([c[p[i]..., p[j]...] for i in 1:dim, j in 1:dim])
+end # function Base.convert
+function Base.convert(::Type{TensorCompliance{T}}, c::EngineeringCompliance{T}) where {T}  # FIXME Rules are wrong
+    d, dim = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6])), 3
+    return TensorStiffness([c[d[(i, j)], d[(k, l)]] for i in 1:dim, j in 1:dim, k in 1:dim, l in 1:dim])
+end # function Base.convert
 
 for T in (:TensorStress, :TensorStrain)
     # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
