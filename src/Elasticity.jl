@@ -133,4 +133,6 @@ for T in (:EngineeringStiffness, :EngineeringCompliance)
     end)
 end
 
+include("StabilityConditions.jl")
+
 end
