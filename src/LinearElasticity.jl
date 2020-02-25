@@ -1,4 +1,4 @@
-module LinearElasticity 
+module LinearElasticity
 
 using LinearAlgebra: tr, det
 
@@ -113,10 +113,12 @@ function Base.convert(::Type{EngineeringStrain{T}}, e::TensorStrain{T}) where {T
     ))
 end # function Base.convert
 function Base.convert(::Type{EngineeringStiffness{T}}, c::TensorStiffness{T}) where {T}
-    
+    p = pairs(VOIGT_INDICES)
+    return EngineeringStiffness(SymmetricTensor{2,6}((i, j) -> (println([p[i]..., p[j]...]); c[p[i]..., p[j]...])))
 end # function Base.convert
 function Base.convert(::Type{TensorStiffness{T}}, c::EngineeringStiffness{T}) where {T}
-
+    d = Dict(zip(VOIGT_INDICES, 1:6))
+    return TensorStiffness(SymmetricTensor{4,3}((i, j, k, l) -> c[d[(i, j)], d[(k, l)]]))
 end # function Base.convert
 
 for T in (:TensorStress, :TensorStrain)
@@ -138,6 +140,8 @@ for T in (:EngineeringStiffness, :EngineeringCompliance)
         $T(v::Union{AbstractVector,NTuple{21}}) = $T(SymmetricTensor{2,6}(v))
     end)
 end
+
+const VOIGT_INDICES = ((1, 1), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1))
 
 include("StabilityConditions.jl")
 
