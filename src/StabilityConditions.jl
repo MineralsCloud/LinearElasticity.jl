@@ -5,7 +5,7 @@ using LinearAlgebra: diag
 using Crystallography:
     CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
 
-using Elasticity: EngineeringStiffness, EngineeringCompliance
+using LinearElasticity: EngineeringStiffness, EngineeringCompliance
 
 export isstable
 

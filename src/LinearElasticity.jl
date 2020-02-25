@@ -1,4 +1,4 @@
-module Elasticity
+module LinearElasticity 
 
 using LinearAlgebra: tr, det
 

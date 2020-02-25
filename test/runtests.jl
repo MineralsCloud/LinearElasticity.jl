@@ -1,6 +1,6 @@
-using Elasticity
+using LinearElasticity
 using Test
 
-@testset "Elasticity.jl" begin
+@testset "LinearElasticity.jl" begin
     # Write your tests here.
 end
