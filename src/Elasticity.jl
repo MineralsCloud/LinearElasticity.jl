@@ -61,6 +61,26 @@ Base.inv(s::TensorCompliance) = TensorStiffness(inv(s))
 Base.inv(c::EngineeringStiffness) = EngineeringCompliance(inv(c))
 Base.inv(s::EngineeringCompliance) = EngineeringStiffness(inv(s))
 
+function Base.convert(::Type{<:TensorStress}, s::EngineeringStress)
+    return TensorStress((s[1], s[6], s[5], s[2], s[4], s[3]))
+end # function Base.convert
+function Base.convert(::Type{<:EngineeringStress}, s::TensorStress)
+    return EngineeringStress(s[1, 1], s[2, 2], s[3, 3], s[2, 3], s[1, 3], s[1, 2])
+end # function Base.convert
+function Base.convert(::Type{<:TensorStrain}, e::EngineeringStrain)
+    return TensorStrain(e[1], e[6] / 2, e[5] / 2, e[2], e[4] / 2, e[3])
+end # function Base.convert
+function Base.convert(::Type{<:EngineeringStrain}, e::TensorStrain)
+    return EngineeringStrain(
+        e[1, 1],
+        e[2, 2],
+        e[3, 3],
+        2 * e[2, 3],
+        2 * e[1, 3],
+        2 * e[1, 2],
+    )
+end # function Base.convert
+
 for T in (:TensorStress, :TensorStrain)
     eval(quote
         $T(m::AbstractMatrix) = $T(SymmetricTensor{2,3}(m))
