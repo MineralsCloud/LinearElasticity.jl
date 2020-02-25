@@ -1,6 +1,6 @@
 module Elasticity
 
-using Tensors: SymmetricTensor
+using Tensors: SymmetricTensor, eigvals, eigvecs
 
 export TensorStress,
     TensorStrain,
@@ -10,6 +10,7 @@ export TensorStress,
     EngineeringStrain,
     EngineeringCompliance,
     EngineeringStiffness
+export principal_values, principal_axes
 
 struct TensorStress{T} <: AbstractMatrix{T}
     data::SymmetricTensor{2,3,T}
@@ -47,6 +48,9 @@ const Stress = Union{TensorStress,EngineeringStress}
 const Strain = Union{TensorStrain,EngineeringStrain}
 const Stiffness = Union{TensorStiffness,EngineeringStiffness}
 const Compliance = Union{TensorCompliance,EngineeringCompliance}
+
+principal_values(x::Union{Stress,Strain}) = eigvals(x)
+principal_axes(x::Union{Stress,Strain}) = eigvecs(x)
 
 Base.size(::Union{TensorStress,TensorStrain}) = (3, 3)
 Base.size(::Union{TensorStiffness,TensorCompliance}) = (3, 3, 3, 3)
