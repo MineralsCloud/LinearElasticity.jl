@@ -1,12 +1,12 @@
 ```@meta
-CurrentModule = Elasticity
+CurrentModule = LinearElasticity
 ```
 
-# Elasticity
+# LinearElasticity
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [Elasticity]
+Modules = [LinearElasticity]
 ```
