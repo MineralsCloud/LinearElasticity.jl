@@ -1,8 +1,8 @@
 module LinearElasticity
 
-using LinearAlgebra: tr, det
+using LinearAlgebra: tr, det, eigvals, eigvecs
 
-using Tensors: SymmetricTensor, eigvals, eigvecs
+using StaticArrays: SHermitianCompact, SArray, SMatrix, SVector
 
 export TensorStress,
     TensorStrain,
@@ -15,35 +15,35 @@ export TensorStress,
 export principal_values, principal_axes, principal_invariants, main_invariants
 
 struct TensorStress{T} <: AbstractMatrix{T}
-    data::SymmetricTensor{2,3,T}
+    data::SHermitianCompact{3,T}
 end
 
 struct TensorStrain{T} <: AbstractMatrix{T}
-    data::SymmetricTensor{2,3,T}
+    data::SHermitianCompact{3,T}
 end
 
 struct TensorStiffness{T} <: AbstractArray{T,4}
-    data::SymmetricTensor{4,3,T}
+    data::SArray{Tuple{3,3,3,3},T}
 end
 
 struct TensorCompliance{T} <: AbstractArray{T,4}
-    data::SymmetricTensor{4,3,T}
+    data::SArray{Tuple{3,3,3,3},T}
 end
 
 struct EngineeringStress{T} <: AbstractVector{T}
-    data::NTuple{6,T}
+    data::SVector{6,T}
 end
 
 struct EngineeringStrain{T} <: AbstractVector{T}
-    data::NTuple{6,T}
+    data::SVector{6,T}
 end
 
 struct EngineeringStiffness{T} <: AbstractMatrix{T}
-    data::SymmetricTensor{2,6,T}
+    data::SHermitianCompact{6,T}
 end
 
 struct EngineeringCompliance{T} <: AbstractMatrix{T}
-    data::SymmetricTensor{2,6,T}
+    data::SHermitianCompact{6,T}
 end
 
 const Stress = Union{TensorStress,EngineeringStress}
@@ -94,23 +94,23 @@ Base.inv(c::EngineeringStiffness) = EngineeringCompliance(inv(c))
 Base.inv(s::EngineeringCompliance) = EngineeringStiffness(inv(s))
 
 function Base.convert(::Type{TensorStress{T}}, s::EngineeringStress{T}) where {T}
-    return TensorStress((s[1], s[6], s[5], s[2], s[4], s[3]))
+    return TensorStress([s[1], s[6], s[5], s[2], s[4], s[3]])
 end # function Base.convert
 function Base.convert(::Type{EngineeringStress{T}}, s::TensorStress{T}) where {T}
-    return EngineeringStress((s[1, 1], s[2, 2], s[3, 3], s[2, 3], s[1, 3], s[1, 2]))
+    return EngineeringStress([s[1, 1], s[2, 2], s[3, 3], s[2, 3], s[1, 3], s[1, 2]])
 end # function Base.convert
 function Base.convert(::Type{TensorStrain{T}}, e::EngineeringStrain{T}) where {T}
-    return TensorStrain((e[1], e[6] / 2, e[5] / 2, e[2], e[4] / 2, e[3]))
+    return TensorStrain([e[1], e[6] / 2, e[5] / 2, e[2], e[4] / 2, e[3]])
 end # function Base.convert
 function Base.convert(::Type{EngineeringStrain{T}}, e::TensorStrain{T}) where {T}
-    return EngineeringStrain((
+    return EngineeringStrain([
         e[1, 1],
         e[2, 2],
         e[3, 3],
         2 * e[2, 3],
         2 * e[1, 3],
         2 * e[1, 2],
-    ))
+    ])
 end # function Base.convert
 function Base.convert(::Type{EngineeringStiffness{T}}, c::TensorStiffness{T}) where {T}
     p = pairs(VOIGT_INDICES)
@@ -122,22 +122,24 @@ function Base.convert(::Type{TensorStiffness{T}}, c::EngineeringStiffness{T}) wh
 end # function Base.convert
 
 for T in (:TensorStress, :TensorStrain)
+    # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
     eval(quote
-        $T(m::AbstractMatrix) = $T(SymmetricTensor{2,3}(m))
-        $T(v::Union{AbstractVector,NTuple{6}}) = $T(SymmetricTensor{2,3}(v))
-        $T(xx, xy, xz, yy, yz, zz) = $T((xx, xy, xz, yy, yz, zz))
+        $T(m::AbstractMatrix) = $T(SHermitianCompact{3}(m))
+        $T(v::AbstractVector) = $T(SHermitianCompact(SVector{6}(v)))
+        $T(t::NTuple{9}) = $T(SHermitianCompact{3}(t))
     end)
 end
 for T in (:EngineeringStress, :EngineeringStrain)
+    # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
     eval(quote
-        $T(v::AbstractVector) = $T(Tuple(v))
-        $T(xx, xy, xz, yy, yz, zz) = $T((xx, xy, xz, yy, yz, zz))
+        $T(v::AbstractVector) = $T(SVector{6}(v))
     end)
 end
 for T in (:EngineeringStiffness, :EngineeringCompliance)
     eval(quote
-        $T(m::AbstractMatrix) = $T(SymmetricTensor{2,6}(m))
-        $T(v::Union{AbstractVector,NTuple{21}}) = $T(SymmetricTensor{2,6}(v))
+        $T(m::AbstractMatrix) = $T(SHermitianCompact{6}(m))
+        $T(v::AbstractVector) = $T(SHermitianCompact(SVector{21}(v)))
+        $T(t::NTuple{36}) = $T(SHermitianCompact{6}(t))
     end)
 end
 
