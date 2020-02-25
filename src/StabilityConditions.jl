@@ -2,7 +2,8 @@ module StabilityConditions
 
 using LinearAlgebra: diag
 
-using Crystallography: CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
+using Crystallography:
+    CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
 
 using Elasticity: EngineeringStiffness, EngineeringCompliance
 
@@ -32,12 +33,12 @@ function isstable(::Tetragonal, c::EngineeringStiffness)
     if c16 == 0  # Tetragonal (I) class
         return all([c11 > abs(c12), 2 * c13^2 < c33 * (c11 + c12), c44 > 0, c66 > 0])
     end
-    return [  # Tetragonal (II) class
+    return all([  # Tetragonal (II) class
         c11 > abs(c12),
         2 * c13^2 < c33 * (c11 + c12),
         c44 > 0,
         2 * c16^2 < c66 * (c11 - c12),
-    ]
+    ])
 end # function isstable
 function isstable(::Trigonal, c::EngineeringStiffness)
     c11, c12, c13, c14, c15, c33, c44, c66 =
