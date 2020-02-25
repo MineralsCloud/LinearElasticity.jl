@@ -118,7 +118,7 @@ function Base.convert(::Type{EngineeringStiffness{T}}, c::TensorStiffness{T}) wh
     return EngineeringStiffness([c[p[i]..., p[j]...] for i in 1:dim, j in 1:dim])
 end # function Base.convert
 function Base.convert(::Type{TensorStiffness{T}}, c::EngineeringStiffness{T}) where {T}
-    d, dim = Dict(zip(VOIGT_INDICES, 1:6)), 3
+    d, dim = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6])), 3
     return TensorStiffness([c[d[(i, j)], d[(k, l)]] for i in 1:dim, j in 1:dim, k in 1:dim, l in 1:dim])
 end # function Base.convert
 
@@ -143,8 +143,13 @@ for T in (:EngineeringStiffness, :EngineeringCompliance)
         $T(t::NTuple{36}) = $T(SHermitianCompact{6}(t))
     end)
 end
+for T in (:TensorStiffness, :TensorCompliance)
+    eval(quote
+        $T(a::AbstractArray) = $T(SArray{Tuple{3,3,3,3}}(a))
+    end)
+end
 
-const VOIGT_INDICES = ((1, 1), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1))
+const VOIGT_INDICES = ((1, 1), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1), (2, 3), (1, 3), (1, 2))
 
 include("StabilityConditions.jl")
 
