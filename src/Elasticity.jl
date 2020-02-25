@@ -1,5 +1,7 @@
 module Elasticity
 
+using LinearAlgebra: tr, det
+
 using Tensors: SymmetricTensor, eigvals, eigvecs
 
 export TensorStress,
@@ -10,7 +12,7 @@ export TensorStress,
     EngineeringStrain,
     EngineeringCompliance,
     EngineeringStiffness
-export principal_values, principal_axes
+export principal_values, principal_axes, principal_invariants, main_invariants
 
 struct TensorStress{T} <: AbstractMatrix{T}
     data::SymmetricTensor{2,3,T}
@@ -51,6 +53,22 @@ const Compliance = Union{TensorCompliance,EngineeringCompliance}
 
 principal_values(x::Union{Stress,Strain}) = eigvals(x)
 principal_axes(x::Union{Stress,Strain}) = eigvecs(x)
+principal_invariants(x::Union{Stress,Strain}, n::Int) = principal_invariants(x, Val(n))
+principal_invariants(x::Union{Stress,Strain}, ::Val{1}) = tr(x)
+function principal_invariants(x::Union{Stress,Strain}, ::Val{2})
+    λ1, λ2, λ3 = principal_values(x)
+    return λ1 * λ2 + λ1 * λ3 + λ2 * λ3
+end # function principal_invariants
+principal_invariants(x::Union{Stress,Strain}, ::Val{3}) = det(x)
+
+main_invariants(x::Union{Stress,Strain}, n::Int) = main_invariants(x, Val(n))
+main_invariants(x::Union{Stress,Strain}, ::Val{1}) = principal_invariants(x, 1)
+main_invariants(x::Union{Stress,Strain}, ::Val{2}) =
+    principal_invariants(x, 1)^2 - 2 * principal_invariants(x, 2)
+main_invariants(x::Union{Stress,Strain}, ::Val{3}) =
+    principal_invariants(x, 1)^3 +
+    3 *
+    (principal_invariants(x, 3) - principal_invariants(x, 1) * principal_invariants(x, 2))
 
 Base.size(::Union{TensorStress,TensorStrain}) = (3, 3)
 Base.size(::Union{TensorStiffness,TensorCompliance}) = (3, 3, 3, 3)
