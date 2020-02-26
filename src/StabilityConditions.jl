@@ -76,7 +76,8 @@ function isstable(::Monoclinic, c::EngineeringStiffness)
     c11, c22, c33, c44, c55, c66 = diag(c)
     c12, c13, c15, c23, c25, c35, c46 =
         c[1, 2], c[1, 3], c[1, 5], c[2, 3], c[2, 5], c[3, 5], c[4, 6]
-    g = c11 * c22 * c33 - c11 * c23 * c23 - c22 * c13 * c13 - c33 * c12 * c12 +
+    g =
+        c11 * c22 * c33 - c11 * c23 * c23 - c22 * c13 * c13 - c33 * c12 * c12 +
         2 * c12 * c13 * c23
     return all([
         all([c11, c22, c33, c44, c55, c66] .> 0),
