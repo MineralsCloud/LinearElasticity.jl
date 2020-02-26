@@ -1,7 +1,7 @@
 module Moduli
 
 export BulkModulus,
-    YoungModulus, Lame1stParameter, ShearModulus, PoissonRatio, LongitudinalModulus
+    YoungModulus, Lame1stParameter, ShearModulus, PoissonRatio, LongitudinalModulus, unpack
 
 abstract type ElasticModulus{T} end
 struct BulkModulus{T} <: ElasticModulus{T}
@@ -49,6 +49,10 @@ YoungModulus(ν::PoissonRatio, M::LongitudinalModulus) = YoungModulus(M.v * (1 +
 # These are helper functions and should not be exported!
 _auxiliaryR(E::YoungModulus, λ::Lame1stParameter) = sqrt(E.v^2 + 9 * λ.v^2 + 2E.v * λ.v)
 _auxiliaryS(E::YoungModulus, M::LongitudinalModulus) = sqrt(E.v^2 + 9 * M.v^2 - 10E.v * M.v)
+
+unpack(x::ElasticModulus) = getfield(x, :v)
+unpack(x::ElasticModulus...) = unpack.(x)
+unpack(x::AbstractArray{<:ElasticModulus}) = unpack.(x)
 
 for T in (
     :BulkModulus,
