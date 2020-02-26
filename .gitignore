@@ -479,7 +479,7 @@ tmtags
 ### https://raw.github.com/github/gitignore/219b1250ba77b79f7aca17884f4122da1cb72de3/Global/VisualStudioCode.gitignore
 
 .vscode/*
-!.vscode/settings.json
+.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
