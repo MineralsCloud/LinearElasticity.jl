@@ -24,23 +24,22 @@ struct LongitudinalModulus{T} <: ElasticModulus{T}
 end
 
 # These are helper functions and should not be exported!
-_auxiliaryR(E::YoungModulus, λ::Lame1stParameter) = sqrt(E^2 + 9 * λ^2 + 2E * λ)
-_auxiliaryS(E::YoungModulus, M::LongitudinalModulus) = sqrt(E^2 + 9 * M^2 - 10E * M)
+_auxiliaryR(E::YoungModulus, λ::Lame1stParameter) = sqrt(E.v^2 + 9 * λ.v^2 + 2E.v * λ.v)
+_auxiliaryS(E::YoungModulus, M::LongitudinalModulus) = sqrt(E.v^2 + 9 * M.v^2 - 10E.v * M.v)
 
-BulkModulus(E::YoungModulus, λ::Lame1stParameter{}) =
-    BulkModulus((E + 3λ + _auxiliaryR(E, λ)) / 6)
-BulkModulus(E::YoungModulus, G::ShearModulus) = BulkModulus(E * G / (3 * (3G - E)))
+BulkModulus(K::BulkModulus, ::ElasticModulus) = K
+BulkModulus(E::YoungModulus, λ::Lame1stParameter) = BulkModulus((E.v + 3λ.v + _auxiliaryR(E, λ)) / 6)
+BulkModulus(E::YoungModulus, G::ShearModulus) = BulkModulus(E.v * G.v / (3 * (3G.v - E.v)))
+BulkModulus(E::YoungModulus, ν::PoissonRatio) = BulkModulus(E.v / (3 * (1 - 2ν.v)))
+BulkModulus(E::YoungModulus, M::LongitudinalModulus) = BulkModulus((3M.v - E.v + _auxiliaryS(E, M)))
+BulkModulus(λ::Lame1stParameter, G::ShearModulus) = BulkModulus(λ.v + 2G.v / 3)
+BulkModulus(λ::Lame1stParameter, ν::PoissonRatio) = BulkModulus(λ.v * (1 + ν.v) / 3 / ν.v)
+BulkModulus(λ::Lame1stParameter, M::LongitudinalModulus) = BulkModulus((M.v + 2λ.v) / 3)
+BulkModulus(G::ShearModulus, ν::PoissonRatio) = BulkModulus(2G.v * (1 + ν.v) / (3 * (1 - 2ν.v)))
+BulkModulus(G::ShearModulus, M::LongitudinalModulus) = BulkModulus(M.v - 4G.v / 3)
+BulkModulus(ν::PoissonRatio, M::LongitudinalModulus) = BulkModulus(M.v * (1 + ν.v) / (3 * (1 - ν.v)))
+BulkModulus(x::ElasticModulus, y::ElasticModulus) = BulkModulus(y, x)
 
-for op in (:+, :-, :*, :/, ://, :div)
-    eval(quote
-        Base.$op(a::ElasticModulus, b::ElasticModulus) = $op(a.v, b.v)
-        Base.$op(a::T, b::Number) where {T<:ElasticModulus} = T($op(a.v, b))
-        Base.$op(a::Number, b::ElasticModulus) = $op(b, a)
-    end)
-end
-for op in (:-,)
-    eval(:(Base.$op(a::ElasticModulus) = $op(a.v)))
-end
-Base.:^(a::T, n::Number) where {T<:ElasticModulus} = T(a.v^n)
+YoungModulus(E::YoungModulus, ::ElasticModulus) = E
 
 end # module Moduli
