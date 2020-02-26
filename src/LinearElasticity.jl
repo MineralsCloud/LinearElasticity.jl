@@ -115,20 +115,24 @@ end # function Base.convert
 function Base.convert(::Type{EngineeringStiffness{T}}, c::TensorStiffness{T}) where {T}
     p, dim = pairs(VOIGT_INDICES), 6
     # From https://github.com/KristofferC/Tensors.jl/blob/bff451c/src/utilities.jl#L5-L14
-    return EngineeringStiffness([c[p[i]..., p[j]...] for i in 1:dim, j in 1:dim])
+    return EngineeringStiffness([c[p[i]..., p[j]...] for i = 1:dim, j = 1:dim])
 end # function Base.convert
 function Base.convert(::Type{TensorStiffness{T}}, c::EngineeringStiffness{T}) where {T}
     d, dim = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6])), 3
-    return TensorStiffness([c[d[(i, j)], d[(k, l)]] for i in 1:dim, j in 1:dim, k in 1:dim, l in 1:dim])
+    return TensorStiffness([
+        c[d[(i, j)], d[(k, l)]] for i = 1:dim, j = 1:dim, k = 1:dim, l = 1:dim
+    ])
 end # function Base.convert
 function Base.convert(::Type{EngineeringCompliance{T}}, c::TensorCompliance{T}) where {T}  # FIXME Rules are wrong
     p, dim = pairs(VOIGT_INDICES), 6
     # From https://github.com/KristofferC/Tensors.jl/blob/bff451c/src/utilities.jl#L5-L14
-    return EngineeringStiffness([c[p[i]..., p[j]...] for i in 1:dim, j in 1:dim])
+    return EngineeringStiffness([c[p[i]..., p[j]...] for i = 1:dim, j = 1:dim])
 end # function Base.convert
 function Base.convert(::Type{TensorCompliance{T}}, c::EngineeringCompliance{T}) where {T}  # FIXME Rules are wrong
     d, dim = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6])), 3
-    return TensorStiffness([c[d[(i, j)], d[(k, l)]] for i in 1:dim, j in 1:dim, k in 1:dim, l in 1:dim])
+    return TensorStiffness([
+        c[d[(i, j)], d[(k, l)]] for i = 1:dim, j = 1:dim, k = 1:dim, l = 1:dim
+    ])
 end # function Base.convert
 
 for T in (:TensorStress, :TensorStrain)
@@ -158,7 +162,8 @@ for T in (:TensorStiffness, :TensorCompliance)
     end)
 end
 
-const VOIGT_INDICES = ((1, 1), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1), (2, 3), (1, 3), (1, 2))
+const VOIGT_INDICES =
+    ((1, 1), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1), (2, 3), (1, 3), (1, 2))
 
 include("StabilityConditions.jl")
 include("Moduli.jl")
