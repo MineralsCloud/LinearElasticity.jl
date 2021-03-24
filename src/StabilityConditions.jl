@@ -32,13 +32,14 @@ function isstable(::Tetragonal, c::EngineeringStiffness)
         c[1, 1], c[1, 2], c[1, 3], c[1, 6], c[3, 3], c[4, 4], c[6, 6]
     if c₁₆ == 0  # Tetragonal (I) class
         return all((c₁₁ > abs(c₁₂), 2 * c₁₃^2 < c₃₃ * (c₁₁ + c₁₂), c₄₄ > 0, c₆₆ > 0))
+    else
+        return all((  # Tetragonal (II) class
+            c₁₁ > abs(c₁₂),
+            2c₁₃^2 < c₃₃ * (c₁₁ + c₁₂),
+            c₄₄ > 0,
+            2c₁₆^2 < c₆₆ * (c₁₁ - c₁₂),
+        ))
     end
-    return all((  # Tetragonal (II) class
-        c₁₁ > abs(c₁₂),
-        2c₁₃^2 < c₃₃ * (c₁₁ + c₁₂),
-        c₄₄ > 0,
-        2c₁₆^2 < c₆₆ * (c₁₁ - c₁₂),
-    ))
 end
 function isstable(::Trigonal, c::EngineeringStiffness)
     c₁₁, c₁₂, c₁₃, c₁₄, c₁₅, c₃₃, c₄₄, c₆₆ =
@@ -51,14 +52,15 @@ function isstable(::Trigonal, c::EngineeringStiffness)
             2c₁₄^2 < c₄₄ * (c₁₁ - c₁₂),
             c₄₄ * (c₁₁ - c₁₂) == 2c₄₄ * c₆₆,
         ))
+    else
+        return all((  # Rhombohedral (II) class
+            c₁₁ > abs(c₁₂),
+            c₄₄ > 0,
+            2c₁₃^2 < c₃₃ * (c₁₁ + c₁₂),
+            2(c₁₄^2 + c₁₅^2) < c₄₄ * (c₁₁ - c₁₂),
+            c₄₄ * (c₁₁ - c₁₂) == 2c₄₄ * c₆₆,
+        ))
     end
-    return all((  # Rhombohedral (II) class
-        c₁₁ > abs(c₁₂),
-        c₄₄ > 0,
-        2c₁₃^2 < c₃₃ * (c₁₁ + c₁₂),
-        2(c₁₄^2 + c₁₅^2) < c₄₄ * (c₁₁ - c₁₂),
-        c₄₄ * (c₁₁ - c₁₂) == 2c₄₄ * c₆₆,
-    ))
 end
 function isstable(::Orthorhombic, c::EngineeringStiffness)
     c₁₁, c₂₂, c₃₃, c₄₄, c₅₅, c₆₆ = diag(c)
