@@ -187,5 +187,6 @@ function issystem(::Monoclinic, c::EngineeringStiffness)
         ),
     ))
 end
+issystem(C::CrystalSystem, s::EngineeringCompliance) = issystem(C, inv(s))
 
 end
