@@ -16,7 +16,7 @@ function isstable(::Cubic, c::EngineeringStiffness)
         c11 + 2 * c12 > 0,
         c44 > 0,
     ])
-end # function isstable
+end
 function isstable(::Hexagonal, c::EngineeringStiffness)
     c11, c12, c13, c33, c44, c66 = c[1, 1], c[1, 2], c[1, 3], c[3, 3], c[4, 4], c[6, 6]
     return all([  # Must satisfy all criteria!
@@ -26,7 +26,7 @@ function isstable(::Hexagonal, c::EngineeringStiffness)
         c44 > 0,
         c66 > 0,
     ])
-end # function isstable
+end
 function isstable(::Tetragonal, c::EngineeringStiffness)
     c11, c12, c13, c16, c33, c44, c66 =
         c[1, 1], c[1, 2], c[1, 3], c[1, 6], c[3, 3], c[4, 4], c[6, 6]
@@ -39,7 +39,7 @@ function isstable(::Tetragonal, c::EngineeringStiffness)
         c44 > 0,
         2 * c16^2 < c66 * (c11 - c12),
     ])
-end # function isstable
+end
 function isstable(::Trigonal, c::EngineeringStiffness)
     c11, c12, c13, c14, c15, c33, c44, c66 =
         c[1, 1], c[1, 2], c[1, 3], c[1, 4], c[1, 5], c[3, 3], c[4, 4], c[6, 6]
@@ -59,7 +59,7 @@ function isstable(::Trigonal, c::EngineeringStiffness)
         c14^2 + c15^2 < 0.5 * c44 * (c11 - c12),
         0.5 * c44 * (c11 - c12) == c44 * c66,
     ])
-end # function isstable
+end
 function isstable(::Orthorhombic, c::EngineeringStiffness)
     c11, c22, c33, c44, c55, c66 = diag(c)
     c12, c13, c23 = c[1, 2], c[1, 3], c[2, 3]
@@ -71,7 +71,7 @@ function isstable(::Orthorhombic, c::EngineeringStiffness)
         c55 > 0,
         c66 > 0,
     ])
-end # function isstable
+end
 function isstable(::Monoclinic, c::EngineeringStiffness)
     c11, c22, c33, c44, c55, c66 = diag(c)
     c12, c13, c15, c23, c25, c35, c46 =
@@ -96,7 +96,7 @@ function isstable(::Monoclinic, c::EngineeringStiffness)
             c35 * c35 * (c11 * c22 - c12^2)
         ) + c55 * g > 0,
     ])
-end # function isstable
+end
 isstable(C::CrystalSystem, s::EngineeringCompliance) = isstable(C, inv(s))
 
-end # module StabilityConditions
+end
