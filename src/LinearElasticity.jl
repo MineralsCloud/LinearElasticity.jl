@@ -53,7 +53,7 @@ const Strain = Union{TensorStrain,EngineeringStrain}
 const Stiffness = Union{TensorStiffness,EngineeringStiffness}
 const Compliance = Union{TensorCompliance,EngineeringCompliance}
 
-function issystem(::Cubic, c::EngineeringStiffness)
+function symmetry_criteria(::Cubic, c::EngineeringStiffness)
     return all((
         issymmetric(c),
         c[1, 1] == c[2, 2] == c[3, 3],
@@ -61,7 +61,7 @@ function issystem(::Cubic, c::EngineeringStiffness)
         c[1, 2] == c[1, 3] == c[2, 3],
     ))
 end
-function issystem(::Hexagonal, c::EngineeringStiffness)
+function symmetry_criteria(::Hexagonal, c::EngineeringStiffness)
     return all((
         issymmetric(c),
         c[1, 1] == c[2, 2],
@@ -70,7 +70,7 @@ function issystem(::Hexagonal, c::EngineeringStiffness)
         2c[6, 6] == c[1, 1] - c[1, 2],
     ))
 end
-function issystem(::Tetragonal, c::EngineeringStiffness)
+function symmetry_criteria(::Tetragonal, c::EngineeringStiffness)
     return all((
         issymmetric(c),
         c[1, 1] == c[2, 2],
@@ -83,7 +83,7 @@ function issystem(::Tetragonal, c::EngineeringStiffness)
         end,
     ))
 end
-function issystem(::Trigonal, c::EngineeringStiffness)
+function symmetry_criteria(::Trigonal, c::EngineeringStiffness)
     return all((
         issymmetric(c),
         c[1, 1] == c[2, 2],
@@ -98,7 +98,7 @@ function issystem(::Trigonal, c::EngineeringStiffness)
         end,
     ))
 end
-function issystem(::Orthorhombic, c::EngineeringStiffness)
+function symmetry_criteria(::Orthorhombic, c::EngineeringStiffness)
     return all((
         issymmetric(c),
         all(
@@ -134,7 +134,7 @@ function issystem(::Orthorhombic, c::EngineeringStiffness)
         ),
     ))
 end
-function issystem(::Monoclinic, c::EngineeringStiffness)
+function symmetry_criteria(::Monoclinic, c::EngineeringStiffness)
     return all((
         issymmetric(c),
         all(
@@ -143,7 +143,10 @@ function issystem(::Monoclinic, c::EngineeringStiffness)
         ),
     ))
 end
-issystem(C::CrystalSystem, s::EngineeringCompliance) = issystem(C, inv(s))
+symmetry_criteria(C::CrystalSystem, s::EngineeringCompliance) = symmetry_criteria(C, inv(s))
+
+issystem(C::CrystalSystem, x::Union{EngineeringStiffness,EngineeringCompliance}) =
+    all(symmetry_criteria(C, x))
 
 principal_values(x::Union{Stress,Strain}) = eigvals(x)
 principal_axes(x::Union{Stress,Strain}) = eigvecs(x)
