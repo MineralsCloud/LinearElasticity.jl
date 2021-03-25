@@ -1,4 +1,4 @@
-module StabilityConditions
+module StabilityCriteria
 
 using LinearAlgebra: diag
 
