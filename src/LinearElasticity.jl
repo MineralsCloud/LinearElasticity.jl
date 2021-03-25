@@ -1,7 +1,9 @@
 module LinearElasticity
 
-using LinearAlgebra: tr, det, eigvals, eigvecs
+using LinearAlgebra: tr, det, eigvals, eigvecs, issymmetric
 
+using Crystallography:
+    CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
 using StaticArrays: SHermitianCompact, SArray, SMatrix, SVector
 
 export TensorStress,
@@ -12,7 +14,7 @@ export TensorStress,
     EngineeringStrain,
     EngineeringCompliance,
     EngineeringStiffness
-export principal_values, principal_axes, principal_invariants, main_invariants
+export principal_values, principal_axes, principal_invariants, main_invariants, issystem
 
 struct TensorStress{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T}
@@ -50,6 +52,98 @@ const Stress = Union{TensorStress,EngineeringStress}
 const Strain = Union{TensorStrain,EngineeringStrain}
 const Stiffness = Union{TensorStiffness,EngineeringStiffness}
 const Compliance = Union{TensorCompliance,EngineeringCompliance}
+
+function issystem(::Cubic, c::EngineeringStiffness)
+    return all((
+        issymmetric(c),
+        c[1, 1] == c[2, 2] == c[3, 3],
+        c[4, 4] == c[5, 5] == c[6, 6],
+        c[1, 2] == c[1, 3] == c[2, 3],
+    ))
+end
+function issystem(::Hexagonal, c::EngineeringStiffness)
+    return all((
+        issymmetric(c),
+        c[1, 1] == c[2, 2],
+        c[4, 4] == c[5, 5],
+        c[1, 3] == c[2, 3],
+        2c[6, 6] == c[1, 1] - c[1, 2],
+    ))
+end
+function issystem(::Tetragonal, c::EngineeringStiffness)
+    return all((
+        issymmetric(c),
+        c[1, 1] == c[2, 2],
+        c[4, 4] == c[5, 5],
+        c[1, 3] == c[2, 3],
+        if iszero(c[1, 6])  # Tetragonal (I) class, 4mm, -42m, 422, 4/mmm
+            true
+        else  # Tetragonal (II) class, 4, -4, 4/m
+            c[1, 6] == -c[2, 6]
+        end,
+    ))
+end
+function issystem(::Trigonal, c::EngineeringStiffness)
+    return all((
+        issymmetric(c),
+        c[1, 1] == c[2, 2],
+        c[4, 4] == c[5, 5],
+        c[1, 3] == c[2, 3],
+        2c[6, 6] == c[1, 1] - c[1, 2],
+        c[1, 4] == -c[2, 4] == -c[5, 6],
+        if iszero(c[1, 5])  # # Rhombohedral (I) class, 32, -3m, 3m
+            true
+        else  # Rhombohedral (II) class, 3, -3
+            -c[1, 5] == c[2, 5] == c[4, 6]
+        end,
+    ))
+end
+function issystem(::Orthorhombic, c::EngineeringStiffness)
+    return all((
+        issymmetric(c),
+        all(
+            iszero,
+            (
+                c[1, 4],
+                c[2, 4],
+                c[3, 4],
+                c[1, 5],
+                c[2, 5],
+                c[3, 5],
+                c[4, 5],
+                c[1, 6],
+                c[2, 6],
+                c[3, 6],
+                c[4, 6],
+                c[5, 6],
+            ),
+        ),
+        all(
+            !iszero,
+            (
+                c[1, 1],
+                c[1, 2],
+                c[1, 3],
+                c[2, 2],
+                c[2, 3],
+                c[3, 3],
+                c[4, 4],
+                c[5, 5],
+                c[6, 6],
+            ),
+        ),
+    ))
+end
+function issystem(::Monoclinic, c::EngineeringStiffness)
+    return all((
+        issymmetric(c),
+        all(
+            iszero,
+            (c[1, 4], c[2, 4], c[3, 4], c[4, 5], c[1, 6], c[2, 6], c[3, 6], c[5, 6]),
+        ),
+    ))
+end
+issystem(C::CrystalSystem, s::EngineeringCompliance) = issystem(C, inv(s))
 
 principal_values(x::Union{Stress,Strain}) = eigvals(x)
 principal_axes(x::Union{Stress,Strain}) = eigvecs(x)
