@@ -1,4 +1,4 @@
-module StabilityConditions
+module StabilityCriteria
 
 using LinearAlgebra: diag
 
@@ -11,7 +11,7 @@ export isstable
 
 ispositive(x) = x > zero(x)
 
-function criteria(::Cubic, c::EngineeringStiffness)
+function stability_criteria(::Cubic, c::EngineeringStiffness)
     c₁₁, c₁₂, c₄₄ = c[1, 1], c[1, 2], c[4, 4]
     return (  # Must satisfy all criteria!
         c₁₁ > abs(c₁₂),
@@ -19,7 +19,7 @@ function criteria(::Cubic, c::EngineeringStiffness)
         ispositive(c₄₄),
     )
 end
-function criteria(::Hexagonal, c::EngineeringStiffness)
+function stability_criteria(::Hexagonal, c::EngineeringStiffness)
     c₁₁, c₁₂, c₁₃, c₃₃, c₄₄, c₆₆ = c[1, 1], c[1, 2], c[1, 3], c[3, 3], c[4, 4], c[6, 6]
     return (  # Must satisfy all criteria!
         2c₆₆ == c₁₁ - c₁₂,
@@ -29,7 +29,7 @@ function criteria(::Hexagonal, c::EngineeringStiffness)
         ispositive(c₆₆),
     )
 end
-function criteria(::Tetragonal, c::EngineeringStiffness)
+function stability_criteria(::Tetragonal, c::EngineeringStiffness)
     c₁₁, c₁₂, c₁₃, c₁₆, c₃₃, c₄₄, c₆₆ =
         c[1, 1], c[1, 2], c[1, 3], c[1, 6], c[3, 3], c[4, 4], c[6, 6]
     if iszero(c₁₆)  # Tetragonal (I) class
@@ -48,7 +48,7 @@ function criteria(::Tetragonal, c::EngineeringStiffness)
         )
     end
 end
-function criteria(::Trigonal, c::EngineeringStiffness)
+function stability_criteria(::Trigonal, c::EngineeringStiffness)
     c₁₁, c₁₂, c₁₃, c₁₄, c₁₅, c₃₃, c₄₄, c₆₆ =
         c[1, 1], c[1, 2], c[1, 3], c[1, 4], c[1, 5], c[3, 3], c[4, 4], c[6, 6]
     return (
@@ -63,7 +63,7 @@ function criteria(::Trigonal, c::EngineeringStiffness)
         end,
     )
 end
-function criteria(::Orthorhombic, c::EngineeringStiffness)
+function stability_criteria(::Orthorhombic, c::EngineeringStiffness)
     c₁₁, c₂₂, c₃₃, c₄₄, c₅₅, c₆₆ = diag(c)
     c₁₂, c₁₃, c₂₃ = c[1, 2], c[1, 3], c[2, 3]
     return (
@@ -72,7 +72,7 @@ function criteria(::Orthorhombic, c::EngineeringStiffness)
         c₁₁ * c₂₂ * c₃₃ + 2c₁₂ * c₁₃ * c₂₃ > c₁₁ * c₂₃^2 + c₂₂ * c₁₃^2 + c₃₃ * c₁₂^2,
     )
 end
-function criteria(::Monoclinic, c::EngineeringStiffness)
+function stability_criteria(::Monoclinic, c::EngineeringStiffness)
     c₁₁, c₂₂, c₃₃, c₄₄, c₅₅, c₆₆ = diag(c)
     c₁₂, c₁₃, c₁₅, c₂₃, c₂₅, c₃₅, c₄₆ =
         c[1, 2], c[1, 3], c[1, 5], c[2, 3], c[2, 5], c[3, 5], c[4, 6]
@@ -97,9 +97,10 @@ function criteria(::Monoclinic, c::EngineeringStiffness)
         ) > -c₅₅ * g,
     )
 end
-criteria(C::CrystalSystem, s::EngineeringCompliance) = criteria(C, inv(s))
+stability_criteria(C::CrystalSystem, s::EngineeringCompliance) =
+    stability_criteria(C, inv(s))
 
 isstable(C::CrystalSystem, x::Union{EngineeringStiffness,EngineeringCompliance}) =
-    all(criteria(C, x))
+    all(stability_criteria(C, x))
 
 end
