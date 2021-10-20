@@ -87,12 +87,12 @@ for T in (
     :PoissonRatio,
     :LongitudinalModulus,
 )
-    eval(quote
+    @eval begin  # See https://github.com/JuliaLang/julia/blob/45c518d/base/fastmath.jl#L253-L259
         # As long as creating from one parameter already defined, return the parameter itself.
         $T(x::$T, ::ElasticModulus) = x
         # If there is no method match, switch the parameters and try again.
         $T(x::ElasticModulus, y::ElasticModulus) = $T(y, x)
-    end)
+    end
 end
 
 end # module Moduli

@@ -234,29 +234,29 @@ end # function Base.convert
 
 for T in (:TensorStress, :TensorStrain)
     # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
-    eval(quote
+    @eval begin
         $T(m::AbstractMatrix) = $T(SHermitianCompact{3}(m))
         $T(v::AbstractVector) = $T(SHermitianCompact(SVector{6}(v)))
         $T(t::NTuple{9}) = $T(SHermitianCompact{3}(t))
-    end)
+    end
 end
 for T in (:EngineeringStress, :EngineeringStrain)
     # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
-    eval(quote
+    @eval begin
         $T(v::AbstractVector) = $T(SVector{6}(v))
-    end)
+    end
 end
 for T in (:EngineeringStiffness, :EngineeringCompliance)
-    eval(quote
+    @eval begin
         $T(m::AbstractMatrix) = $T(SHermitianCompact{6}(m))
         $T(v::AbstractVector) = $T(SHermitianCompact(SVector{21}(v)))
         $T(t::NTuple{36}) = $T(SHermitianCompact{6}(t))
-    end)
+    end
 end
 for T in (:TensorStiffness, :TensorCompliance)
-    eval(quote
+    @eval begin
         $T(a::AbstractArray) = $T(SArray{Tuple{3,3,3,3}}(a))
-    end)
+    end
 end
 
 const VOIGT_INDICES =
