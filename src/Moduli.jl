@@ -5,6 +5,8 @@ export BulkModulus,
     Lamé1stParameter,
     Lame1stParameter,
     ShearModulus,
+    Lamé2ndParameter,
+    Lame2ndParameter,
     PoissonRatio,
     LongitudinalModulus,
     unpack
@@ -23,6 +25,8 @@ const Lame1stParameter = Lamé1stParameter
 struct ShearModulus{T} <: ElasticModulus{T}
     v::T
 end
+const Lamé2ndParameter = ShearModulus
+const Lame2ndParameter = Lamé2ndParameter
 struct PoissonRatio{T} <: ElasticModulus{T}
     v::T
 end
