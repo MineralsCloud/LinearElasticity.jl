@@ -23,31 +23,24 @@ abstract type Compliance{T,N} <: AbstractArray{T,N} end
 struct TensorStress{T} <: Stress{T,2}
     data::SHermitianCompact{3,T}
 end
-
 struct TensorStrain{T} <: Strain{T,2}
     data::SHermitianCompact{3,T}
 end
-
 struct TensorStiffness{T} <: Stiffness{T,4}
     data::SArray{Tuple{3,3,3,3},T}
 end
-
 struct TensorCompliance{T} <: Compliance{T,4}
     data::SArray{Tuple{3,3,3,3},T}
 end
-
 struct EngineeringStress{T} <: Stress{T,1}
     data::SVector{6,T}
 end
-
 struct EngineeringStrain{T} <: Strain{T,1}
     data::SVector{6,T}
 end
-
 struct EngineeringStiffness{T} <: Stiffness{T,2}
     data::SHermitianCompact{6,T}
 end
-
 struct EngineeringCompliance{T} <: Compliance{T,2}
     data::SHermitianCompact{6,T}
 end
