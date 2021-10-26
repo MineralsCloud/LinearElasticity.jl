@@ -36,7 +36,7 @@ function symmetry_criteria(::Trigonal, c::EngineeringStiffness)
         c[1, 3] == c[2, 3],
         2c[6, 6] == c[1, 1] - c[1, 2],
         c[1, 4] == -c[2, 4] == -c[5, 6],
-        if iszero(c[1, 5])  # # Rhombohedral (I) class, 32, -3m, 3m
+        if iszero(c[1, 5])  # Rhombohedral (I) class, 32, -3m, 3m
             true
         else  # Rhombohedral (II) class, 3, -3
             -c[1, 5] == c[2, 5] == c[4, 6]
