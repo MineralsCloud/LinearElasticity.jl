@@ -63,6 +63,8 @@ Base.getindex(
     I::Vararg{Int},
 ) = getindex(A.data, I...)
 
+Base.IndexStyle(::Type{<:Union{Stress,Strain,Stiffness,Compliance}}) = IndexLinear()
+
 for T in (:TensorStress, :TensorStrain)
     # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
     @eval begin
