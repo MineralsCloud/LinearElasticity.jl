@@ -16,14 +16,7 @@ function Base.convert(::Type{TensorStrain{T}}, e::EngineeringStrain{T}) where {T
     return TensorStrain([e[1], e[6] / 2, e[5] / 2, e[2], e[4] / 2, e[3]])
 end
 function Base.convert(::Type{EngineeringStrain{T}}, e::TensorStrain{T}) where {T}
-    return EngineeringStrain([
-        e[1, 1],
-        e[2, 2],
-        e[3, 3],
-        2 * e[2, 3],
-        2 * e[1, 3],
-        2 * e[1, 2],
-    ])
+    return EngineeringStrain([e[1, 1], e[2, 2], e[3, 3], 2e[2, 3], 2e[1, 3], 2e[1, 2]])
 end
 function Base.convert(::Type{EngineeringStiffness{T}}, c::TensorStiffness{T}) where {T}
     p, dim = pairs(VOIGT_INDICES), 6
