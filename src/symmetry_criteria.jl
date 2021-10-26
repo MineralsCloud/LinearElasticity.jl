@@ -1,3 +1,7 @@
+using Crystallography:
+    CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
+using LinearAlgebra: issymmetric
+
 function symmetry_criteria(::Cubic, c::EngineeringStiffness)
     return all((
         issymmetric(c),

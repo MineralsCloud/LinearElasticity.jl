@@ -1,9 +1,5 @@
 module LinearElasticity
 
-using LinearAlgebra: tr, det, eigvals, eigvecs, issymmetric
-
-using Crystallography:
-    CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
 using StaticArrays: SHermitianCompact, SArray, SMatrix, SVector
 
 export TensorStress,
@@ -14,7 +10,6 @@ export TensorStress,
     EngineeringStrain,
     EngineeringCompliance,
     EngineeringStiffness
-export principal_values, principal_axes, principal_invariants, main_invariants, issystem
 
 abstract type Stress{T,N} <: AbstractArray{T,N} end
 abstract type Strain{T,N} <: AbstractArray{T,N} end

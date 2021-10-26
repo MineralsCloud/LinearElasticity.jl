@@ -1,8 +1,14 @@
+using LinearAlgebra: tr, det, eigvals, eigvecs
+
+export principal_values, principal_axes, principal_invariants, main_invariants, issystem
+
 issystem(C::CrystalSystem, x::Union{EngineeringStiffness,EngineeringCompliance}) =
     all(symmetry_criteria(C, x))
 
 principal_values(x::Union{Stress,Strain}) = eigvals(x)
+
 principal_axes(x::Union{Stress,Strain}) = eigvecs(x)
+
 principal_invariants(x::Union{Stress,Strain}, n::Int) = principal_invariants(x, Val(n))
 principal_invariants(x::Union{Stress,Strain}, ::Val{1}) = tr(x)
 function principal_invariants(x::Union{Stress,Strain}, ::Val{2})
