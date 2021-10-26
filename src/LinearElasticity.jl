@@ -90,9 +90,6 @@ for T in (:TensorStiffness, :TensorCompliance)
     end
 end
 
-const VOIGT_INDICES =
-    ((1, 1), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1), (2, 3), (1, 3), (1, 2))
-
 include("conversion.jl")
 include("symmetry_criteria.jl")
 include("utils.jl")
