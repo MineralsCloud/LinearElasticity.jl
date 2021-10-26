@@ -50,18 +50,7 @@ Base.size(::Union{TensorStiffness,TensorCompliance}) = (3, 3, 3, 3)
 Base.size(::Union{EngineeringStress,EngineeringStrain}) = (6,)
 Base.size(::Union{EngineeringStiffness,EngineeringCompliance}) = (6, 6)
 
-Base.getindex(A::Union{EngineeringStress,EngineeringStrain}, i::Int) = getindex(A.data, i)
-Base.getindex(
-    A::Union{
-        TensorStress,
-        TensorStrain,
-        TensorStiffness,
-        TensorCompliance,
-        EngineeringStiffness,
-        EngineeringCompliance,
-    },
-    I::Vararg{Int},
-) = getindex(A.data, I...)
+Base.getindex(A::Union{Stress,Strain,Stiffness,Compliance}, i...) = getindex(A.data, i...)
 
 Base.IndexStyle(::Type{<:Union{Stress,Strain,Stiffness,Compliance}}) = IndexLinear()
 
