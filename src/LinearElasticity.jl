@@ -16,42 +16,41 @@ export TensorStress,
     EngineeringStiffness
 export principal_values, principal_axes, principal_invariants, main_invariants, issystem
 
-struct TensorStress{T} <: AbstractMatrix{T}
+abstract type Stress{T,N} <: AbstractArray{T,N} end
+abstract type Strain{T,N} <: AbstractArray{T,N} end
+abstract type Stiffness{T,N} <: AbstractArray{T,N} end
+abstract type Compliance{T,N} <: AbstractArray{T,N} end
+struct TensorStress{T} <: Stress{T,2}
     data::SHermitianCompact{3,T}
 end
 
-struct TensorStrain{T} <: AbstractMatrix{T}
+struct TensorStrain{T} <: Strain{T,2}
     data::SHermitianCompact{3,T}
 end
 
-struct TensorStiffness{T} <: AbstractArray{T,4}
+struct TensorStiffness{T} <: Stiffness{T,4}
     data::SArray{Tuple{3,3,3,3},T}
 end
 
-struct TensorCompliance{T} <: AbstractArray{T,4}
+struct TensorCompliance{T} <: Compliance{T,4}
     data::SArray{Tuple{3,3,3,3},T}
 end
 
-struct EngineeringStress{T} <: AbstractVector{T}
+struct EngineeringStress{T} <: Stress{T,1}
     data::SVector{6,T}
 end
 
-struct EngineeringStrain{T} <: AbstractVector{T}
+struct EngineeringStrain{T} <: Strain{T,1}
     data::SVector{6,T}
 end
 
-struct EngineeringStiffness{T} <: AbstractMatrix{T}
+struct EngineeringStiffness{T} <: Stiffness{T,2}
     data::SHermitianCompact{6,T}
 end
 
-struct EngineeringCompliance{T} <: AbstractMatrix{T}
+struct EngineeringCompliance{T} <: Compliance{T,2}
     data::SHermitianCompact{6,T}
 end
-
-const Stress = Union{TensorStress,EngineeringStress}
-const Strain = Union{TensorStrain,EngineeringStrain}
-const Stiffness = Union{TensorStiffness,EngineeringStiffness}
-const Compliance = Union{TensorCompliance,EngineeringCompliance}
 
 function symmetry_criteria(::Cubic, c::EngineeringStiffness)
     return all((
