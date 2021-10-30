@@ -1,7 +1,7 @@
 using Tensorial: fromvoigt
 
-Base.inv(c::StiffnessTensor) = ComplianceTensor(inv(c))
-Base.inv(s::ComplianceTensor) = StiffnessTensor(inv(s))
+Base.inv(c::StiffnessTensor) = ComplianceTensor(inv(c.data))
+Base.inv(s::ComplianceTensor) = StiffnessTensor(inv(s.data))
 Base.inv(c::StiffnessMatrix) = ComplianceMatrix(inv(c.data))
 Base.inv(s::ComplianceMatrix) = StiffnessMatrix(inv(s.data))
 
