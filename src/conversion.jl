@@ -6,18 +6,14 @@ Base.inv(s::EngineeringCompliance) = EngineeringStiffness(inv(s))
 const VOIGT_INDICES =
     ((1, 1), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1), (2, 3), (1, 3), (1, 2))
 
-function Base.convert(::Type{TensorStress{T}}, s::EngineeringStress{T}) where {T}
-    return TensorStress([s[1], s[6], s[5], s[2], s[4], s[3]])
-end
-function Base.convert(::Type{EngineeringStress{T}}, σ::TensorStress{T}) where {T}
-    return EngineeringStress([σ[1, 1], σ[2, 2], σ[3, 3], σ[2, 3], σ[1, 3], σ[1, 2]])
-end
-function Base.convert(::Type{TensorStrain{T}}, ϵ::EngineeringStrain{T}) where {T}
-    return TensorStrain([ϵ[1], ϵ[6] / 2, ϵ[5] / 2, ϵ[2], ϵ[4] / 2, ϵ[3]])
-end
-function Base.convert(::Type{EngineeringStrain{T}}, ε::TensorStrain{T}) where {T}
-    return EngineeringStrain([ε[1, 1], ε[2, 2], ε[3, 3], 2ε[2, 3], 2ε[1, 3], 2ε[1, 2]])
-end
+Base.convert(::Type{TensorStress{T}}, s::EngineeringStress{T}) where {T} =
+    TensorStress([s[1], s[6], s[5], s[2], s[4], s[3]])
+Base.convert(::Type{EngineeringStress{T}}, σ::TensorStress{T}) where {T} =
+    EngineeringStress([σ[1, 1], σ[2, 2], σ[3, 3], σ[2, 3], σ[1, 3], σ[1, 2]])
+Base.convert(::Type{TensorStrain{T}}, ϵ::EngineeringStrain{T}) where {T} =
+    TensorStrain([ϵ[1], ϵ[6] / 2, ϵ[5] / 2, ϵ[2], ϵ[4] / 2, ϵ[3]])
+Base.convert(::Type{EngineeringStrain{T}}, ε::TensorStrain{T}) where {T} =
+    EngineeringStrain([ε[1, 1], ε[2, 2], ε[3, 3], 2ε[2, 3], 2ε[1, 3], 2ε[1, 2]])
 function Base.convert(::Type{EngineeringStiffness{T}}, c::TensorStiffness{T}) where {T}
     p, dim = pairs(VOIGT_INDICES), 6
     # From https://github.com/KristofferC/Tensors.jl/blob/bff451c/src/utilities.jl#L5-L14
