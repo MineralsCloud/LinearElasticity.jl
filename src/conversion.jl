@@ -1,10 +1,10 @@
+using Tensorial: fromvoigt
+
 Base.inv(c::StiffnessTensor) = ComplianceTensor(inv(c))
 Base.inv(s::ComplianceTensor) = StiffnessTensor(inv(s))
 Base.inv(c::StiffnessMatrix) = ComplianceMatrix(inv(c))
 Base.inv(s::ComplianceMatrix) = StiffnessMatrix(inv(s))
 
-const VOIGT_INDICES =
-    ((1, 1), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1), (2, 3), (1, 3), (1, 2))
 
 Base.convert(::Type{TensorStress{T}}, s::EngineeringStress{T}) where {T} =
     TensorStress([s[1], s[6], s[5], s[2], s[4], s[3]])
@@ -62,20 +62,20 @@ Base.convert(::Type{ComplianceMatrix{T}}, s::ComplianceTensor{T}) where {T} =
         4s[1, 3, 1, 2],
         4s[1, 2, 1, 2],
     ])
-function Base.convert(::Type{StiffnessTensor{T}}, c::StiffnessMatrix{T}) where {T}
-    d = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6]))
-    return StiffnessTensor([
-        c[d[(i, j)], d[(k, l)]] for i in 1:3, j in 1:3, k in 1:3, l in 1:3
-    ])
-end
-function Base.convert(::Type{ComplianceMatrix{T}}, s::ComplianceTensor{T}) where {T}  # FIXME Rules are wrong
-    p = pairs(VOIGT_INDICES)
-    # From https://github.com/KristofferC/Tensors.jl/blob/bff451c/src/utilities.jl#L5-L14
-    return StiffnessMatrix([s[p[i]..., p[j]...] for i in 1:6, j in 1:6])
-end
-function Base.convert(::Type{ComplianceTensor{T}}, s::ComplianceMatrix{T}) where {T}  # FIXME Rules are wrong
-    d = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6]))
-    return StiffnessTensor([
-        s[d[(i, j)], d[(k, l)]] for i in 1:3, j in 1:3, k in 1:3, l in 1:3
-    ])
+Base.convert(::Type{StiffnessTensor{T}}, c::StiffnessMatrix{T}) where {T} =
+    StiffnessTensor(fromvoigt(SymmetricFourthOrderTensor{3,T}, c.data))
+function Base.convert(::Type{ComplianceTensor{T}}, s::ComplianceMatrix{T}) where {T}
+    ComplianceTensor(
+        SymmetricFourthOrderTensor{3,T}(function (i, j, k, l)
+            if i == j && k == l
+                return s[i, k]
+            elseif i != j && k != l  # 4 = 9 - (2+3), 5 = 9 - (1+3), 6 = 9 - (1+2)
+                return s[9-(i+j), 9-(k+l)] / 4
+            elseif i == j && k != l
+                return s[i, 9-(k+l)] / 2
+            else  # i != j && k == l
+                return s[9-(i+j), k] / 2
+            end
+        end),
+    )
 end
