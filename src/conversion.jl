@@ -2,9 +2,8 @@ using Tensorial: fromvoigt
 
 Base.inv(c::StiffnessTensor) = ComplianceTensor(inv(c))
 Base.inv(s::ComplianceTensor) = StiffnessTensor(inv(s))
-Base.inv(c::StiffnessMatrix) = ComplianceMatrix(inv(c))
-Base.inv(s::ComplianceMatrix) = StiffnessMatrix(inv(s))
-
+Base.inv(c::StiffnessMatrix) = ComplianceMatrix(inv(c.data))
+Base.inv(s::ComplianceMatrix) = StiffnessMatrix(inv(s.data))
 
 Base.convert(::Type{TensorStress{T}}, s::EngineeringStress{T}) where {T} =
     TensorStress([s[1], s[6], s[5], s[2], s[4], s[3]])
