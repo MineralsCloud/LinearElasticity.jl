@@ -34,10 +34,10 @@ struct EngineeringStrain{T} <: Strain{T,1}
     data::Vec{6,T}
 end
 struct StiffnessMatrix{T} <: Stiffness{T,2}
-    data::SymmetricSecondOrderTensor{3,T,21}
+    data::SymmetricSecondOrderTensor{6,T,21}
 end
 struct ComplianceMatrix{T} <: Compliance{T,2}
-    data::SymmetricSecondOrderTensor{3,T,21}
+    data::SymmetricSecondOrderTensor{6,T,21}
 end
 
 TensorStress(x::EngineeringStress) = convert(TensorStress{eltype(x)}, x)
