@@ -1,6 +1,7 @@
 module LinearElasticity
 
-using StaticArrays: SHermitianCompact, SArray, SMatrix, SVector
+using StaticArrays: SHermitianCompact, SMatrix, SVector
+using Tensorial: SymmetricFourthOrderTensor
 
 export TensorStress,
     TensorStrain,
@@ -22,10 +23,10 @@ struct TensorStrain{T} <: Strain{T,2}
     data::SHermitianCompact{3,T}
 end
 struct StiffnessTensor{T} <: Stiffness{T,4}
-    data::SArray{Tuple{3,3,3,3},T}
+    data::SymmetricFourthOrderTensor{3,T}
 end
 struct ComplianceTensor{T} <: Compliance{T,4}
-    data::SArray{Tuple{3,3,3,3},T}
+    data::SymmetricFourthOrderTensor{3,T}
 end
 struct EngineeringStress{T} <: Stress{T,1}
     data::SVector{6,T}
