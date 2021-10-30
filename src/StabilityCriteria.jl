@@ -97,8 +97,7 @@ function stability_criteria(::Monoclinic, c::MatrixStiffness)
         ) > -c₅₅ * g,
     )
 end
-stability_criteria(C::CrystalSystem, s::MatrixCompliance) =
-    stability_criteria(C, inv(s))
+stability_criteria(C::CrystalSystem, s::MatrixCompliance) = stability_criteria(C, inv(s))
 
 isstable(C::CrystalSystem, x::Union{MatrixStiffness,MatrixCompliance}) =
     all(stability_criteria(C, x))
