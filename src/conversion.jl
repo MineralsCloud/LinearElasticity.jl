@@ -15,24 +15,24 @@ Base.convert(::Type{TensorStrain{T}}, ϵ::EngineeringStrain{T}) where {T} =
 Base.convert(::Type{EngineeringStrain{T}}, ε::TensorStrain{T}) where {T} =
     EngineeringStrain([ε[1, 1], ε[2, 2], ε[3, 3], 2ε[2, 3], 2ε[1, 3], 2ε[1, 2]])
 function Base.convert(::Type{EngineeringStiffness{T}}, c::TensorStiffness{T}) where {T}
-    p, dim = pairs(VOIGT_INDICES), 6
+    p = pairs(VOIGT_INDICES)
     # From https://github.com/KristofferC/Tensors.jl/blob/bff451c/src/utilities.jl#L5-L14
-    return EngineeringStiffness([c[p[i]..., p[j]...] for i in 1:dim, j in 1:dim])
+    return EngineeringStiffness([c[p[i]..., p[j]...] for i in 1:6, j in 1:6])
 end
 function Base.convert(::Type{TensorStiffness{T}}, c::EngineeringStiffness{T}) where {T}
-    d, dim = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6])), 3
+    d = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6]))
     return TensorStiffness([
-        c[d[(i, j)], d[(k, l)]] for i in 1:dim, j in 1:dim, k in 1:dim, l in 1:dim
+        c[d[(i, j)], d[(k, l)]] for i in 1:3, j in 1:3, k in 1:3, l in 1:3
     ])
 end
 function Base.convert(::Type{EngineeringCompliance{T}}, s::TensorCompliance{T}) where {T}  # FIXME Rules are wrong
-    p, dim = pairs(VOIGT_INDICES), 6
+    p = pairs(VOIGT_INDICES)
     # From https://github.com/KristofferC/Tensors.jl/blob/bff451c/src/utilities.jl#L5-L14
-    return EngineeringStiffness([s[p[i]..., p[j]...] for i in 1:dim, j in 1:dim])
+    return EngineeringStiffness([s[p[i]..., p[j]...] for i in 1:6, j in 1:6])
 end
 function Base.convert(::Type{TensorCompliance{T}}, s::EngineeringCompliance{T}) where {T}  # FIXME Rules are wrong
-    d, dim = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6])), 3
+    d = Dict(zip(VOIGT_INDICES, [1, 2, 3, 4, 5, 6, 4, 5, 6]))
     return TensorStiffness([
-        s[d[(i, j)], d[(k, l)]] for i in 1:dim, j in 1:dim, k in 1:dim, l in 1:dim
+        s[d[(i, j)], d[(k, l)]] for i in 1:3, j in 1:3, k in 1:3, l in 1:3
     ])
 end
