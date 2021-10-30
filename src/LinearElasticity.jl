@@ -41,6 +41,22 @@ struct ComplianceMatrix{T} <: Compliance{T,2}
     data::SHermitianCompact{6,T}
 end
 
+TensorStress(x::EngineeringStress) = convert(TensorStress{eltype(x)}, x)
+
+TensorStrain(x::EngineeringStrain) = convert(TensorStrain{eltype(x)}, x)
+
+StiffnessTensor(x::StiffnessMatrix) = convert(StiffnessTensor{eltype(x)}, x)
+
+ComplianceTensor(x::ComplianceMatrix) = convert(ComplianceTensor{eltype(x)}, x)
+
+EngineeringStress(x::TensorStress) = convert(EngineeringStress{eltype(x)}, x)
+
+EngineeringStrain(x::TensorStrain) = convert(EngineeringStrain{eltype(x)}, x)
+
+StiffnessMatrix(x::StiffnessTensor) = convert(StiffnessMatrix{eltype(x)}, x)
+
+ComplianceMatrix(x::ComplianceTensor) = convert(ComplianceMatrix{eltype(x)}, x)
+
 Base.size(::Union{TensorStress,TensorStrain}) = (3, 3)
 Base.size(::Union{StiffnessTensor,ComplianceTensor}) = (3, 3, 3, 3)
 Base.size(::Union{EngineeringStress,EngineeringStrain}) = (6,)
