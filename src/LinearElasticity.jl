@@ -70,11 +70,6 @@ for T in (:StiffnessMatrix, :ComplianceMatrix)
         $T(t::NTuple{36}) = $T(SHermitianCompact{6}(t))
     end
 end
-for T in (:StiffnessTensor, :ComplianceTensor)
-    @eval begin
-        $T(a::AbstractArray) = $T(SArray{Tuple{3,3,3,3}}(a))
-    end
-end
 
 include("conversion.jl")
 include("symmetry_criteria.jl")
