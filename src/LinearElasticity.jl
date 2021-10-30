@@ -66,24 +66,21 @@ Base.getindex(A::Union{Stress,Strain,Stiffness,Compliance}, i...) = getindex(A.d
 Base.IndexStyle(::Type{<:Union{Stress,Strain,Stiffness,Compliance}}) = IndexLinear()
 
 for T in (:TensorStress, :TensorStrain)
-    # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
     @eval begin
-        $T(m::AbstractMatrix) = $T(SHermitianCompact{3}(m))
-        $T(v::AbstractVector) = $T(SHermitianCompact(SVector{6}(v)))
-        $T(t::NTuple{9}) = $T(SHermitianCompact{3}(t))
+        $T(m::AbstractMatrix) = $T(SymmetricSecondOrderTensor{3}(m))
+        $T(data...) = $T(SymmetricSecondOrderTensor{3}(data...))
     end
 end
 for T in (:EngineeringStress, :EngineeringStrain)
-    # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
     @eval begin
-        $T(v::AbstractVector) = $T(SVector{6}(v))
+        $T(v::AbstractVector) = $T(Vec{6}(v))
+        $T(data...) = $T(Vec{6}(data...))
     end
 end
 for T in (:StiffnessMatrix, :ComplianceMatrix)
     @eval begin
-        $T(m::AbstractMatrix) = $T(SHermitianCompact{6}(m))
-        $T(v::AbstractVector) = $T(SHermitianCompact(SVector{21}(v)))
-        $T(t::NTuple{36}) = $T(SHermitianCompact{6}(t))
+        $T(m::AbstractMatrix) = $T(SymmetricSecondOrderTensor{6}(m))
+        $T(data...) = $T(SymmetricSecondOrderTensor{6}(data...))
     end
 end
 
