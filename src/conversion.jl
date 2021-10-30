@@ -78,3 +78,6 @@ function Base.convert(::Type{ComplianceTensor{T}}, s::ComplianceMatrix{T}) where
         end),
     )
 end
+
+Base.:*(c::StiffnessMatrix, ϵ::EngineeringStrain) = EngineeringStress(c.data * ϵ.data)
+Base.:*(s::ComplianceMatrix, σ::EngineeringStress) = EngineeringStrain(s.data * σ.data)
