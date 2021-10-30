@@ -1,7 +1,7 @@
 module LinearElasticity
 
 using StaticArrays: SHermitianCompact, SMatrix, SVector
-using Tensorial: SymmetricFourthOrderTensor
+using Tensorial: SymmetricSecondOrderTensor, SymmetricFourthOrderTensor, Vec
 
 export TensorStress,
     TensorStrain,
@@ -17,28 +17,28 @@ abstract type Strain{T,N} <: AbstractArray{T,N} end
 abstract type Stiffness{T,N} <: AbstractArray{T,N} end
 abstract type Compliance{T,N} <: AbstractArray{T,N} end
 struct TensorStress{T} <: Stress{T,2}
-    data::SHermitianCompact{3,T}
+    data::SymmetricSecondOrderTensor{3,T,6}
 end
 struct TensorStrain{T} <: Strain{T,2}
-    data::SHermitianCompact{3,T}
+    data::SymmetricSecondOrderTensor{3,T,6}
 end
 struct StiffnessTensor{T} <: Stiffness{T,4}
-    data::SymmetricFourthOrderTensor{3,T}
+    data::SymmetricFourthOrderTensor{3,T,21}
 end
 struct ComplianceTensor{T} <: Compliance{T,4}
-    data::SymmetricFourthOrderTensor{3,T}
+    data::SymmetricFourthOrderTensor{3,T,21}
 end
 struct EngineeringStress{T} <: Stress{T,1}
-    data::SVector{6,T}
+    data::Vec{6,T}
 end
 struct EngineeringStrain{T} <: Strain{T,1}
-    data::SVector{6,T}
+    data::Vec{6,T}
 end
 struct StiffnessMatrix{T} <: Stiffness{T,2}
-    data::SHermitianCompact{6,T}
+    data::SymmetricSecondOrderTensor{3,T,21}
 end
 struct ComplianceMatrix{T} <: Compliance{T,2}
-    data::SHermitianCompact{6,T}
+    data::SymmetricSecondOrderTensor{3,T,21}
 end
 
 TensorStress(x::EngineeringStress) = convert(TensorStress{eltype(x)}, x)
