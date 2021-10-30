@@ -2,7 +2,7 @@ using Crystallography:
     CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
 using LinearAlgebra: issymmetric
 
-function symmetry_criteria(::Cubic, c::EngineeringStiffness)
+function symmetry_criteria(::Cubic, c::MatrixStiffness)
     return all((
         issymmetric(c),
         c[1, 1] == c[2, 2] == c[3, 3],
@@ -10,7 +10,7 @@ function symmetry_criteria(::Cubic, c::EngineeringStiffness)
         c[1, 2] == c[1, 3] == c[2, 3],
     ))
 end
-function symmetry_criteria(::Hexagonal, c::EngineeringStiffness)
+function symmetry_criteria(::Hexagonal, c::MatrixStiffness)
     return all((
         issymmetric(c),
         c[1, 1] == c[2, 2],
@@ -19,7 +19,7 @@ function symmetry_criteria(::Hexagonal, c::EngineeringStiffness)
         2c[6, 6] == c[1, 1] - c[1, 2],
     ))
 end
-function symmetry_criteria(::Tetragonal, c::EngineeringStiffness)
+function symmetry_criteria(::Tetragonal, c::MatrixStiffness)
     return all((
         issymmetric(c),
         c[1, 1] == c[2, 2],
@@ -32,7 +32,7 @@ function symmetry_criteria(::Tetragonal, c::EngineeringStiffness)
         end,
     ))
 end
-function symmetry_criteria(::Trigonal, c::EngineeringStiffness)
+function symmetry_criteria(::Trigonal, c::MatrixStiffness)
     return all((
         issymmetric(c),
         c[1, 1] == c[2, 2],
@@ -47,7 +47,7 @@ function symmetry_criteria(::Trigonal, c::EngineeringStiffness)
         end,
     ))
 end
-function symmetry_criteria(::Orthorhombic, c::EngineeringStiffness)
+function symmetry_criteria(::Orthorhombic, c::MatrixStiffness)
     return all((
         issymmetric(c),
         all(
@@ -83,7 +83,7 @@ function symmetry_criteria(::Orthorhombic, c::EngineeringStiffness)
         ),
     ))
 end
-function symmetry_criteria(::Monoclinic, c::EngineeringStiffness)
+function symmetry_criteria(::Monoclinic, c::MatrixStiffness)
     return all((
         issymmetric(c),
         all(
@@ -92,4 +92,4 @@ function symmetry_criteria(::Monoclinic, c::EngineeringStiffness)
         ),
     ))
 end
-symmetry_criteria(C::CrystalSystem, s::EngineeringCompliance) = symmetry_criteria(C, inv(s))
+symmetry_criteria(C::CrystalSystem, s::MatrixCompliance) = symmetry_criteria(C, inv(s))

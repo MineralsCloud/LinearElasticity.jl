@@ -8,8 +8,8 @@ export TensorStress,
     TensorCompliance,
     EngineeringStress,
     EngineeringStrain,
-    EngineeringCompliance,
-    EngineeringStiffness
+    MatrixCompliance,
+    MatrixStiffness
 
 abstract type Stress{T,N} <: AbstractArray{T,N} end
 abstract type Strain{T,N} <: AbstractArray{T,N} end
@@ -33,17 +33,17 @@ end
 struct EngineeringStrain{T} <: Strain{T,1}
     data::SVector{6,T}
 end
-struct EngineeringStiffness{T} <: Stiffness{T,2}
+struct MatrixStiffness{T} <: Stiffness{T,2}
     data::SHermitianCompact{6,T}
 end
-struct EngineeringCompliance{T} <: Compliance{T,2}
+struct MatrixCompliance{T} <: Compliance{T,2}
     data::SHermitianCompact{6,T}
 end
 
 Base.size(::Union{TensorStress,TensorStrain}) = (3, 3)
 Base.size(::Union{TensorStiffness,TensorCompliance}) = (3, 3, 3, 3)
 Base.size(::Union{EngineeringStress,EngineeringStrain}) = (6,)
-Base.size(::Union{EngineeringStiffness,EngineeringCompliance}) = (6, 6)
+Base.size(::Union{MatrixStiffness,MatrixCompliance}) = (6, 6)
 
 Base.getindex(A::Union{Stress,Strain,Stiffness,Compliance}, i...) = getindex(A.data, i...)
 
@@ -63,7 +63,7 @@ for T in (:EngineeringStress, :EngineeringStrain)
         $T(v::AbstractVector) = $T(SVector{6}(v))
     end
 end
-for T in (:EngineeringStiffness, :EngineeringCompliance)
+for T in (:MatrixStiffness, :MatrixCompliance)
     @eval begin
         $T(m::AbstractMatrix) = $T(SHermitianCompact{6}(m))
         $T(v::AbstractVector) = $T(SHermitianCompact(SVector{21}(v)))
