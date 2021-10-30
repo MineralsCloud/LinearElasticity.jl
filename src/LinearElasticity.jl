@@ -1,6 +1,5 @@
 module LinearElasticity
 
-using StaticArrays: SHermitianCompact, SMatrix, SVector
 using Tensorial: SymmetricSecondOrderTensor, SymmetricFourthOrderTensor, Vec
 
 export TensorStress,
