@@ -86,7 +86,7 @@ end
 
 include("conversion.jl")
 include("symmetry_criteria.jl")
-include("utils.jl")
+include("invariants.jl")
 include("StabilityCriteria.jl")
 include("Moduli.jl")
 
