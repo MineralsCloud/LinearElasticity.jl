@@ -2,5 +2,5 @@ using LinearElasticity
 using Test
 
 @testset "LinearElasticity.jl" begin
-    # Write your tests here.
+    include("invariants.jl")
 end
