@@ -22,10 +22,10 @@ struct TensorStrain{T} <: Strain{T,2}
     data::SymmetricSecondOrderTensor{3,T,6}
 end
 struct StiffnessTensor{T} <: Stiffness{T,4}
-    data::SymmetricFourthOrderTensor{3,T,21}
+    data::SymmetricFourthOrderTensor{3,T}
 end
 struct ComplianceTensor{T} <: Compliance{T,4}
-    data::SymmetricFourthOrderTensor{3,T,21}
+    data::SymmetricFourthOrderTensor{3,T}
 end
 struct EngineeringStress{T} <: Stress{T,1}
     data::Vec{6,T}
