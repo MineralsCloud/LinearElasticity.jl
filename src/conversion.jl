@@ -1,4 +1,4 @@
-using Tensorial: fromvoigt, ⊡
+using Tensorial: fromvoigt, ⊡, ⋅
 
 import Tensorial: contraction, double_contraction
 
@@ -82,8 +82,8 @@ function Base.convert(::Type{ComplianceTensor{T}}, s::ComplianceMatrix{T}) where
     )
 end
 
-Base.:*(c::StiffnessMatrix, ϵ::EngineeringStrain) = EngineeringStress(c.data * ϵ.data)
-Base.:*(s::ComplianceMatrix, σ::EngineeringStress) = EngineeringStrain(s.data * σ.data)
+Base.:*(c::StiffnessMatrix, ϵ::EngineeringStrain) = EngineeringStress(c.data ⋅ ϵ.data)
+Base.:*(s::ComplianceMatrix, σ::EngineeringStress) = EngineeringStrain(s.data ⋅ σ.data)
 
 contraction(c::StiffnessTensor, ε::TensorStrain, ::Val{2}) = TensorStress(c.data ⊡ ε.data)
 contraction(s::ComplianceTensor, σ::TensorStress, ::Val{2}) = TensorStrain(s.data ⊡ σ.data)
