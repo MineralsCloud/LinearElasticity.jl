@@ -1,7 +1,6 @@
 module LinearElasticity
 
-using StaticArrays: SHermitianCompact, SMatrix, SVector
-using Tensorial: SymmetricFourthOrderTensor
+using Tensorial: SymmetricSecondOrderTensor, SymmetricFourthOrderTensor, Vec
 
 export TensorStress,
     TensorStrain,
@@ -17,10 +16,10 @@ abstract type Strain{T,N} <: AbstractArray{T,N} end
 abstract type Stiffness{T,N} <: AbstractArray{T,N} end
 abstract type Compliance{T,N} <: AbstractArray{T,N} end
 struct TensorStress{T} <: Stress{T,2}
-    data::SHermitianCompact{3,T}
+    data::SymmetricSecondOrderTensor{3,T,6}
 end
 struct TensorStrain{T} <: Strain{T,2}
-    data::SHermitianCompact{3,T}
+    data::SymmetricSecondOrderTensor{3,T,6}
 end
 struct StiffnessTensor{T} <: Stiffness{T,4}
     data::SymmetricFourthOrderTensor{3,T}
@@ -29,16 +28,16 @@ struct ComplianceTensor{T} <: Compliance{T,4}
     data::SymmetricFourthOrderTensor{3,T}
 end
 struct EngineeringStress{T} <: Stress{T,1}
-    data::SVector{6,T}
+    data::Vec{6,T}
 end
 struct EngineeringStrain{T} <: Strain{T,1}
-    data::SVector{6,T}
+    data::Vec{6,T}
 end
 struct StiffnessMatrix{T} <: Stiffness{T,2}
-    data::SHermitianCompact{6,T}
+    data::SymmetricSecondOrderTensor{6,T,21}
 end
 struct ComplianceMatrix{T} <: Compliance{T,2}
-    data::SHermitianCompact{6,T}
+    data::SymmetricSecondOrderTensor{6,T,21}
 end
 
 TensorStress(x::EngineeringStress) = convert(TensorStress{eltype(x)}, x)
@@ -67,24 +66,21 @@ Base.getindex(A::Union{Stress,Strain,Stiffness,Compliance}, i...) = getindex(A.d
 Base.IndexStyle(::Type{<:Union{Stress,Strain,Stiffness,Compliance}}) = IndexLinear()
 
 for T in (:TensorStress, :TensorStrain)
-    # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
     @eval begin
-        $T(m::AbstractMatrix) = $T(SHermitianCompact{3}(m))
-        $T(v::AbstractVector) = $T(SHermitianCompact(SVector{6}(v)))
-        $T(t::NTuple{9}) = $T(SHermitianCompact{3}(t))
+        $T(m::AbstractMatrix) = $T(SymmetricSecondOrderTensor{3}(m))
+        $T(data...) = $T(SymmetricSecondOrderTensor{3}(data...))
     end
 end
 for T in (:EngineeringStress, :EngineeringStrain)
-    # See https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#StaticArrays.SHermitianCompact
     @eval begin
-        $T(v::AbstractVector) = $T(SVector{6}(v))
+        $T(v::AbstractVector) = $T(Vec{6}(v))
+        $T(data...) = $T(Vec{6}(data...))
     end
 end
 for T in (:StiffnessMatrix, :ComplianceMatrix)
     @eval begin
-        $T(m::AbstractMatrix) = $T(SHermitianCompact{6}(m))
-        $T(v::AbstractVector) = $T(SHermitianCompact(SVector{21}(v)))
-        $T(t::NTuple{36}) = $T(SHermitianCompact{6}(t))
+        $T(m::AbstractMatrix) = $T(SymmetricSecondOrderTensor{6}(m))
+        $T(data...) = $T(SymmetricSecondOrderTensor{6}(data...))
     end
 end
 
