@@ -10,6 +10,7 @@ Tensorial = "98f94333-fa9f-48a9-ad80-1c66397b2b38"
 
 [compat]
 Crystallography = "0.2, 0.3"
+Tensorial = "0.10"
 julia = "1"
 
 [extras]
