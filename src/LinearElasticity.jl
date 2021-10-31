@@ -63,6 +63,8 @@ Base.size(::Union{StiffnessMatrix,ComplianceMatrix}) = (6, 6)
 
 Base.getindex(A::Union{Stress,Strain,Stiffness,Compliance}, i...) = getindex(A.data, i...)
 
+Base.parent(A::Union{Stress,Strain,Stiffness,Compliance}) = A.data
+
 Base.IndexStyle(::Type{<:Union{Stress,Strain,Stiffness,Compliance}}) = IndexLinear()
 
 for T in (:TensorStress, :TensorStrain)
@@ -86,7 +88,7 @@ end
 
 include("conversion.jl")
 include("symmetry_criteria.jl")
-include("utils.jl")
+include("invariants.jl")
 include("StabilityCriteria.jl")
 include("Moduli.jl")
 

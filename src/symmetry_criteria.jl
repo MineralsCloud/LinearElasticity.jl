@@ -2,6 +2,8 @@ using Crystallography:
     CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
 using LinearAlgebra: issymmetric
 
+export issystem
+
 function symmetry_criteria(::Cubic, c::StiffnessMatrix)
     return all((
         issymmetric(c),
@@ -93,3 +95,6 @@ function symmetry_criteria(::Monoclinic, c::StiffnessMatrix)
     ))
 end
 symmetry_criteria(C::CrystalSystem, s::ComplianceMatrix) = symmetry_criteria(C, inv(s))
+
+issystem(C::CrystalSystem, x::Union{StiffnessMatrix,ComplianceMatrix}) =
+    all(symmetry_criteria(C, x))
