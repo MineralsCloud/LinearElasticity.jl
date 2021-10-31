@@ -12,11 +12,4 @@ principal_axes(x::Union{Stress,Strain}) = eigvecs(x)
 
 principal_invariants(x::Union{TensorStress,TensorStrain}) = stress_invariants(x.data)
 
-main_invariants(x::Union{Stress,Strain}, n::Int) = main_invariants(x, Val(n))
-main_invariants(x::Union{Stress,Strain}, ::Val{1}) = principal_invariants(x, 1)
-main_invariants(x::Union{Stress,Strain}, ::Val{2}) =
-    principal_invariants(x, 1)^2 - 2 * principal_invariants(x, 2)
-main_invariants(x::Union{Stress,Strain}, ::Val{3}) =
-    principal_invariants(x, 1)^3 +
-    3 *
-    (principal_invariants(x, 3) - principal_invariants(x, 1) * principal_invariants(x, 2))
+main_invariants(x::Union{Stress,Strain}) = deviatoric_stress_invariants(x.data)
