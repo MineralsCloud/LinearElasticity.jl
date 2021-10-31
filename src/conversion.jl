@@ -10,39 +10,38 @@ Base.inv(c::StiffnessMatrix) = ComplianceMatrix(inv(c.data))
 Base.inv(s::ComplianceMatrix) = StiffnessMatrix(inv(s.data))
 
 Base.convert(::Type{TensorStress{T}}, s::EngineeringStress{T}) where {T} =
-    TensorStress([s[1], s[6], s[5], s[2], s[4], s[3]])
+    TensorStress(s[1], s[6], s[5], s[2], s[4], s[3])
 Base.convert(::Type{EngineeringStress{T}}, σ::TensorStress{T}) where {T} =
-    EngineeringStress([σ[1, 1], σ[2, 2], σ[3, 3], σ[2, 3], σ[1, 3], σ[1, 2]])
+    EngineeringStress(σ[1, 1], σ[2, 2], σ[3, 3], σ[2, 3], σ[1, 3], σ[1, 2])
 Base.convert(::Type{TensorStrain{T}}, ϵ::EngineeringStrain{T}) where {T} =
-    TensorStrain([ϵ[1], ϵ[6] / 2, ϵ[5] / 2, ϵ[2], ϵ[4] / 2, ϵ[3]])
+    TensorStrain(ϵ[1], ϵ[6] / 2, ϵ[5] / 2, ϵ[2], ϵ[4] / 2, ϵ[3])
 Base.convert(::Type{EngineeringStrain{T}}, ε::TensorStrain{T}) where {T} =
-    EngineeringStrain([ε[1, 1], ε[2, 2], ε[3, 3], 2ε[2, 3], 2ε[1, 3], 2ε[1, 2]])
-Base.convert(::Type{StiffnessMatrix{T}}, c::StiffnessTensor{T}) where {T} =
-    StiffnessMatrix([
-        c[1, 1, 1, 1],
-        c[1, 1, 2, 2],
-        c[1, 1, 3, 3],
-        c[1, 1, 2, 3],
-        c[1, 1, 1, 3],
-        c[1, 1, 1, 2],
-        c[2, 2, 2, 2],
-        c[2, 2, 3, 3],
-        c[2, 2, 2, 3],
-        c[2, 2, 1, 3],
-        c[2, 2, 1, 2],
-        c[3, 3, 3, 3],
-        c[3, 3, 2, 3],
-        c[3, 3, 1, 3],
-        c[3, 3, 1, 2],
-        c[2, 3, 2, 3],
-        c[2, 3, 1, 3],
-        c[2, 3, 1, 2],
-        c[1, 3, 1, 3],
-        c[1, 3, 1, 2],
-        c[1, 2, 1, 2],
-    ])
+    EngineeringStrain(ε[1, 1], ε[2, 2], ε[3, 3], 2ε[2, 3], 2ε[1, 3], 2ε[1, 2])
+Base.convert(::Type{StiffnessMatrix{T}}, c::StiffnessTensor{T}) where {T} = StiffnessMatrix(
+    c[1, 1, 1, 1],
+    c[1, 1, 2, 2],
+    c[1, 1, 3, 3],
+    c[1, 1, 2, 3],
+    c[1, 1, 1, 3],
+    c[1, 1, 1, 2],
+    c[2, 2, 2, 2],
+    c[2, 2, 3, 3],
+    c[2, 2, 2, 3],
+    c[2, 2, 1, 3],
+    c[2, 2, 1, 2],
+    c[3, 3, 3, 3],
+    c[3, 3, 2, 3],
+    c[3, 3, 1, 3],
+    c[3, 3, 1, 2],
+    c[2, 3, 2, 3],
+    c[2, 3, 1, 3],
+    c[2, 3, 1, 2],
+    c[1, 3, 1, 3],
+    c[1, 3, 1, 2],
+    c[1, 2, 1, 2],
+)
 Base.convert(::Type{ComplianceMatrix{T}}, s::ComplianceTensor{T}) where {T} =
-    ComplianceMatrix([
+    ComplianceMatrix(
         s[1, 1, 1, 1],
         s[1, 1, 2, 2],
         s[1, 1, 3, 3],
@@ -64,7 +63,7 @@ Base.convert(::Type{ComplianceMatrix{T}}, s::ComplianceTensor{T}) where {T} =
         4s[1, 3, 1, 3],
         4s[1, 3, 1, 2],
         4s[1, 2, 1, 2],
-    ])
+    )
 Base.convert(::Type{StiffnessTensor{T}}, c::StiffnessMatrix{T}) where {T} =
     StiffnessTensor(fromvoigt(SymmetricFourthOrderTensor{3,T}, c.data))
 function Base.convert(::Type{ComplianceTensor{T}}, s::ComplianceMatrix{T}) where {T}
