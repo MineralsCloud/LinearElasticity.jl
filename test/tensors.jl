@@ -1,3 +1,5 @@
+using Tensorial: SymmetricFourthOrderTensor
+
 # Compared with https://ferrite-fem.github.io/Tensors.jl/stable/demos/
 @testset "Creating the linear elasticity tensor" begin
     E = 2

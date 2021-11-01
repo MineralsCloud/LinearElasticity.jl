@@ -1,4 +1,4 @@
-using LinearAlgebra: diagm, norm
+using LinearAlgebra: I, diagm, norm, tr
 # using Unitful: @u_str
 
 # Example from https://www.continuummechanics.org/hydrodeviatoricstrain.html
