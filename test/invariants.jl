@@ -19,6 +19,7 @@ end
         0.2 -0.1 0.1
     ])
     evecs = principal_axes(E)
+    @test transpose(evecs) * evecs ≈ evecs * transpose(evecs) ≈ I
     normal_strains = transpose(evecs) * E * evecs
     @test norm(normal_strains - [
         -0.370577 0 0
