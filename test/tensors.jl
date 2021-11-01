@@ -50,3 +50,22 @@
         @test c[4, 4] * s[4, 4] ≈ 1
     end
 end
+
+@testset "Creating the stresses and strains" begin
+    σ₂₂ = 200
+    σ₁₂ = σ₂₃ = 141
+    σ = TensorStress([
+        0 σ₁₂ 0
+        σ₁₂ σ₂₂ σ₂₃
+        0 σ₂₃ 0
+    ])
+    @test EngineeringStress(σ) == EngineeringStress([0, 200, 0, 141, 0, 141])
+    @test TensorStress(EngineeringStress(σ)) == σ
+    E = TensorStrain([
+        0.5 0.3 0.2
+        0.3 -0.2 -0.1
+        0.2 -0.1 0.1
+    ])
+    @test EngineeringStrain(E) == EngineeringStrain([0.5, -0.2, 0.1, -0.2, 0.4, 0.6])
+    @test TensorStrain(EngineeringStrain(E)) == E
+end
