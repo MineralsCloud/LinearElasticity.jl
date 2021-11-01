@@ -28,3 +28,16 @@ end
     @test isapprox(principal_values(E), [-0.370577, 0.115308, 0.655269]; atol = 1e-6)
     @test tr(normal_strains) ≈ tr(E) ≈ 2 / 5
 end
+
+# Example from https://www.continuummechanics.org/principalstrain.html
+@testset "Test principal invariants" begin
+    E = TensorStrain([
+        0.5 0.3 0.2
+        0.3 -0.2 -0.1
+        0.2 -0.1 0.1
+    ])
+    @test length(principal_invariants(E)) == 3
+    @test principal_invariants(E)[1] == 0.4
+    @test principal_invariants(E)[:I2] ≈ -0.21
+    @test principal_invariants(E)[:I3] == -0.028
+end
