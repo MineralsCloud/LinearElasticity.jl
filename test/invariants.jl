@@ -40,8 +40,8 @@ end
     ])
     @test length(principal_invariants(E)) == 3
     @test principal_invariants(E)[1] == 0.4
-    @test principal_invariants(E)[:I2] ≈ -0.21
-    @test principal_invariants(E)[:I3] == -0.028
+    @test principal_invariants(E)[2] ≈ -0.21
+    @test principal_invariants(E)[3] == -0.028
 end
 
 # @testset "Tests from homework 1" begin
