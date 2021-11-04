@@ -90,6 +90,6 @@ include("conversion.jl")
 # include("symmetry_criteria.jl")
 include("invariants.jl")
 # include("StabilityCriteria.jl")
-# include("Moduli.jl")
+include("Isotropic.jl")
 
 end

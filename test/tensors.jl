@@ -40,13 +40,13 @@ using Tensorial: SymmetricFourthOrderTensor
             0.0 0.0 0.0 0.0 0.0 0.769231
         ];
         rtol = 1e-5,
-    )  # This is a cubic system
+    )  # This is an isotropic system
     @test StiffnessTensor(c) == C
     S = inv(C)
     s = ComplianceMatrix(S)
     @test s ≈ inv(c)
     @test inv(s) ≈ StiffnessMatrix(C)
-    @testset "Test for cubic system" begin
+    @testset "Test for an isotropic system" begin
         @test c[1, 1] * s[1, 1] + 2c[1, 2] * s[1, 2] == 1
         @test c[1, 1] * s[1, 2] + c[1, 2] * s[1, 1] + c[1, 2] * s[1, 2] < eps()
         @test c[4, 4] * s[4, 4] ≈ 1

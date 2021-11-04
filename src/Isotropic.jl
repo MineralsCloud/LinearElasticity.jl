@@ -1,4 +1,4 @@
-module Moduli
+module Isotropic
 
 export BulkModulus,
     YoungModulus,
