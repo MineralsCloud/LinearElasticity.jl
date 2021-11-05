@@ -69,6 +69,24 @@ YoungModulus(G::ShearModulus, M::LongitudinalModulus) =
 YoungModulus(ν::PoissonRatio, M::LongitudinalModulus) =
     YoungModulus(M.v * (1 + ν.v) * (1 - 2 * ν.v) / (1 - ν.v))
 
+Lamé1stParameter(K::BulkModulus, E::YoungModulus) =
+    Lamé1stParameter((9K.v^2 - 3K.v * E.v) / (9K.v - E.v))
+Lamé1stParameter(K::BulkModulus, G::ShearModulus) = Lamé1stParameter(K.v - 2G.v / 3)
+Lamé1stParameter(K::BulkModulus, ν::PoissonRatio) = Lamé1stParameter(3K.v * ν.v / (1 + ν.v))
+Lamé1stParameter(K::BulkModulus, M::LongitudinalModulus) =
+    Lamé1stParameter((3K.v - M.v) / 2)
+Lamé1stParameter(E::YoungModulus, G::ShearModulus) =
+    Lamé1stParameter(G.v * (E.v - 2G.v) / (3G.v - E.v))
+Lamé1stParameter(E::YoungModulus, ν::PoissonRatio) =
+    Lamé1stParameter(E.v * ν.v / (1 + ν.v) / (1 - 2ν.v))
+Lamé1stParameter(E::YoungModulus, M::LongitudinalModulus) =
+    Lamé1stParameter((M.v - E.v + _auxiliaryS(E, M)) / 4)
+Lamé1stParameter(G::ShearModulus, ν::PoissonRatio) =
+    Lamé1stParameter(2G.v * ν.v / (1 - 2ν.v))
+Lamé1stParameter(G::ShearModulus, M::ShearModulus) = Lamé1stParameter(M.v - 2G.v)
+Lamé1stParameter(ν::PoissonRatio, M::LongitudinalModulus) =
+    Lamé1stParameter(M.v * ν.v / (1 - ν.v))
+
 # These are helper functions and should not be exported!
 _auxiliaryR(E::YoungModulus, λ::Lamé1stParameter) = sqrt(E.v^2 + 9 * λ.v^2 + 2 * E.v * λ.v)
 _auxiliaryS(E::YoungModulus, M::LongitudinalModulus) =
