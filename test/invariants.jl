@@ -44,15 +44,19 @@ end
     @test principal_invariants(E)[3] == -0.028
 end
 
-# @testset "Tests from homework 1" begin
-#     σ = TensorStress([
-#         300 100 0
-#         100 100 0
-#         0 0 0
-#     ] * u"MPa")
-#     @test principal_values(E)[1] == (200 + 100 √ 2) * u"MPa"
-#     @test principal_values(E)[2] == (200 - 100 √ 2) * u"MPa"
-# end
+@testset "Tests from homework 1" begin
+    σ = TensorStress([
+        300 100 0
+        100 100 0
+        0 0 0
+    ] * u"MPa")
+    @test length(principal_invariants(σ)) == 3
+    @test principal_invariants(σ) == (400u"MPa", 2e4u"MPa^2", 0u"MPa^3")
+    @test maximum(principal_values(σ)) ≈ (200 + 100 √ 2)u"MPa"
+    @test sort(principal_values(σ))[2] ≈ (200 - 100 √ 2)u"MPa"
+    @test hydrostatic(σ) == TensorStress(diagm([400, 400, 400] * u"MPa" / 3))
+    @test hydrostatic(σ) + deviatoric(σ) == σ
+end
 
 @testset "Tests from homework 2" begin
     σ₂₂ = 200
