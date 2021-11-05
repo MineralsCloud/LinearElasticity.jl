@@ -14,7 +14,7 @@ main_invariants(x::Union{TensorStress,TensorStrain}) = deviatoric_stress_invaria
 
 for T in (:TensorStress, :TensorStrain)
     @eval begin
-        hydrostatic(x::$T) = $T(vol(SymmetricSecondOrderTensor{3}(float(x.data))))
-        deviatoric(x::$T) = $T(dev(SymmetricSecondOrderTensor{3}(float(x.data))))
+        hydrostatic(x::$T) = $T(vol(SymmetricSecondOrderTensor{3}(float(x))))
+        deviatoric(x::$T) = $T(dev(SymmetricSecondOrderTensor{3}(float(x))))
     end
 end
