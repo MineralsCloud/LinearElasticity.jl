@@ -49,7 +49,6 @@ BulkModulus(G::ShearModulus, ν::PoissonRatio) =
 BulkModulus(G::ShearModulus, M::LongitudinalModulus) = BulkModulus(M.v - 4 * G.v / 3)
 BulkModulus(ν::PoissonRatio, M::LongitudinalModulus) =
     BulkModulus(M.v * (1 + ν.v) / (3 * (1 - ν.v)))
-BulkModulus(x::ElasticModulus, y::ElasticModulus) = BulkModulus(y, x)
 
 YoungModulus(K::BulkModulus, λ::Lamé1stParameter) =
     YoungModulus(9 * K.v * (K.v - λ.v) / (3 * K.v - λ.v))
