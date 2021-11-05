@@ -65,9 +65,11 @@ end
     @test principal_values(σ)[1] == -123.07397876041034
     @test isapprox(principal_values(σ)[2], 0; atol = 1e-13)
     @test principal_values(σ)[3] == 323.07397876041034
-    @test norm(principal_axes(σ) - [
-        0.601723   0.707107     0.371389
-        -0.525223   0  0.850965
-         0.601723  -0.707107     0.371389
-    ]) < 1e-6
+    @test norm(
+        principal_axes(σ) - [
+            0.601723 0.707107 0.371389
+            -0.525223 0 0.850965
+            0.601723 -0.707107 0.371389
+        ],
+    ) < 1e-6
 end
