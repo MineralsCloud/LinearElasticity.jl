@@ -8,8 +8,8 @@ using Unitful: @u_str
         0.3 -0.2 -0.1
         0.2 -0.1 0.1
     ])
-    @test hydrostatic(E) == TensorStrain(diagm([2, 2, 2] / 15))
-    @test deviatoric(E) == TensorStrain(E - diagm([2, 2, 2] / 15))
+    @test hydrostatic(E) == TensorStrain(diagm(0 => [2, 2, 2] / 15))
+    @test deviatoric(E) == TensorStrain(E - diagm(0 => [2, 2, 2] / 15))
     @test TensorStrain(hydrostatic(E) + deviatoric(E)) ≈ E
 end
 
@@ -54,7 +54,7 @@ end
     @test principal_invariants(σ) == (400u"MPa", 2e4u"MPa^2", 0u"MPa^3")
     @test maximum(principal_values(σ)) ≈ (200 + 100 * sqrt(2))u"MPa"
     @test sort(principal_values(σ))[2] ≈ (200 - 100 * sqrt(2))u"MPa"
-    @test hydrostatic(σ) == TensorStress(diagm([400, 400, 400] * u"MPa" / 3))
+    @test hydrostatic(σ) == TensorStress(diagm(0 => [400, 400, 400] * u"MPa" / 3))
     @test hydrostatic(σ) + deviatoric(σ) == σ
 end
 
@@ -66,7 +66,7 @@ end
         σ₁₂ σ₂₂ σ₂₃
         0u"MPa" σ₂₃ 0u"MPa"
     ])
-    @test minimum(principal_values(σ) )≈ -123.07397876041034u"MPa"
+    @test minimum(principal_values(σ)) ≈ -123.07397876041034u"MPa"
     @test isapprox(sort(principal_values(σ))[2], 0u"MPa"; atol = 1e-12u"MPa")
     @test maximum(principal_values(σ)) == 323.07397876041034u"MPa"
     @test norm(
