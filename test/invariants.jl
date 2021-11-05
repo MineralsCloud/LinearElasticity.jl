@@ -1,5 +1,5 @@
 using LinearAlgebra: I, diagm, norm, tr
-# using Unitful: @u_str
+using Unitful: @u_str
 
 # Example from https://www.continuummechanics.org/hydrodeviatoricstrain.html
 @testset "Test `hydrostatic` and `deviatoric`" begin
@@ -52,23 +52,23 @@ end
     ] * u"MPa")
     @test length(principal_invariants(σ)) == 3
     @test principal_invariants(σ) == (400u"MPa", 2e4u"MPa^2", 0u"MPa^3")
-    @test maximum(principal_values(σ)) ≈ (200 + 100 √ 2)u"MPa"
-    @test sort(principal_values(σ))[2] ≈ (200 - 100 √ 2)u"MPa"
+    @test maximum(principal_values(σ)) ≈ (200 + 100 * sqrt(2))u"MPa"
+    @test sort(principal_values(σ))[2] ≈ (200 - 100 * sqrt(2))u"MPa"
     @test hydrostatic(σ) == TensorStress(diagm([400, 400, 400] * u"MPa" / 3))
     @test hydrostatic(σ) + deviatoric(σ) == σ
 end
 
 @testset "Tests from homework 2" begin
-    σ₂₂ = 200
-    σ₁₂ = σ₂₃ = 141
+    σ₂₂ = 200u"MPa"
+    σ₁₂ = σ₂₃ = 141u"MPa"
     σ = TensorStress([
-        0 σ₁₂ 0
+        0u"MPa" σ₁₂ 0u"MPa"
         σ₁₂ σ₂₂ σ₂₃
-        0 σ₂₃ 0
+        0u"MPa" σ₂₃ 0u"MPa"
     ])
-    @test principal_values(σ)[1] == -123.07397876041034
-    @test isapprox(principal_values(σ)[2], 0; atol = 1e-13)
-    @test principal_values(σ)[3] == 323.07397876041034
+    @test minimum(principal_values(σ) )≈ -123.07397876041034u"MPa"
+    @test isapprox(sort(principal_values(σ))[2], 0u"MPa"; atol = 1e-12u"MPa")
+    @test maximum(principal_values(σ)) == 323.07397876041034u"MPa"
     @test norm(
         principal_axes(σ) - [
             0.601723 0.707107 0.371389
