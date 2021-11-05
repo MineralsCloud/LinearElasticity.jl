@@ -1,6 +1,6 @@
 module Isotropic
 
-export bulk, young, lamé1st
+export bulk, young, lame1st, shear
 
 bulk(; kwargs...) = bulk(NamedTuple(kwargs))
 bulk((E, λ)::NamedTuple{(:E, :λ)}) = (E + 3 * λ + _auxiliaryR(E, λ)) / 6
@@ -41,6 +41,21 @@ lamé1st((G, M)::NamedTuple{(:G, :M)}) = M - 2G
 lamé1st((ν, M)::NamedTuple{(:ν, :M)}) = M * ν / (1 - ν)
 lamé1st(x::NamedTuple) = haskey(x, :λ) ? x[:λ] : lamé1st(_reverse(x))
 const lame1st = lamé1st
+
+shear(; kwargs...) = shear(NamedTuple(kwargs))
+shear((K, E)::NamedTuple{(:K, :E)}) = 3K * E / (9K - E)
+shear((K, λ)::NamedTuple{(:K, :λ)}) = 3(K - λ) / 2
+shear((K, ν)::NamedTuple{(:K, :ν)}) = 3K * (1 - 2ν) / 2 / (1 + ν)
+shear((K, M)::NamedTuple{(:K, :M)}) = 3(M - K) / 4
+shear((E, λ)::NamedTuple{(:E, :λ)}) = (E - 3λ + _auxiliaryR(E, λ)) / 4
+shear((E, ν)::NamedTuple{(:E, :ν)}) = E / 2 / (1 + ν)
+shear((E, M)::NamedTuple{(:E, :M)}) = (3M + E - _auxiliaryS(E, M)) / 8
+shear((λ, ν)::NamedTuple{(:λ, :ν)}) = λ * (1 - 2ν) / 2 / ν
+shear((λ, M)::NamedTuple{(:λ, :M)}) = (M - λ) / 2
+shear((ν, M)::NamedTuple{(:ν, :M)}) = M * (1 - 2ν) / 2 / (1 - ν)
+shear(x::NamedTuple) = haskey(x, :G) ? x[:G] : shear(_reverse(x))
+const lamé2nd = shear
+const lame2nd = shear
 
 # These are helper functions and should not be exported!
 _auxiliaryR(E, λ) = sqrt(E^2 + 9 * λ^2 + 2 * E * λ)
