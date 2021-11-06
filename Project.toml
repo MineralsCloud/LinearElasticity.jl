@@ -1,7 +1,7 @@
 name = "LinearElasticity"
 uuid = "8b390c8a-e41e-419b-b3a5-595c9a4d2b26"
 authors = ["Qi Zhang <singularitti@outlook.com>"]
-version = "0.2.2-DEV"
+version = "0.3.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
