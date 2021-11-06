@@ -59,21 +59,21 @@ end
 end
 
 @testset "Tests from homework 2" begin
-    σ₂₂ = 200u"MPa"
-    σ₁₂ = σ₂₃ = 141u"MPa"
+    σ₂₂ = Int64(200)u"MPa"
+    σ₁₂ = σ₂₃ = Int64(141)u"MPa"
     σ = TensorStress([
-        0u"MPa" σ₁₂ 0u"MPa"
+        Int64(0)u"MPa" σ₁₂ Int64(0)u"MPa"
         σ₁₂ σ₂₂ σ₂₃
-        0u"MPa" σ₂₃ 0u"MPa"
+        Int64(0)u"MPa" σ₂₃ Int64(0)u"MPa"
     ])
     @test minimum(principal_values(σ)) ≈ -123.07397876041034u"MPa"
     @test isapprox(sort(principal_values(σ))[2], 0u"MPa"; atol = 1e-12u"MPa")
     @test maximum(principal_values(σ)) == 323.07397876041034u"MPa"
     @test norm(
-        principal_axes(σ) - [
+        principal_axes(σ) - Float64[
             0.601723 0.707107 0.371389
             -0.525223 0 0.850965
             0.601723 -0.707107 0.371389
         ],
-    ) < 1e-5
+    ) < 1e-6
 end
