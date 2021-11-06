@@ -7,5 +7,6 @@
 [![Build Status](https://cloud.drone.io/api/badges/MineralsCloud/LinearElasticity.jl/status.svg)](https://cloud.drone.io/MineralsCloud/LinearElasticity.jl)
 [![pipeline status](https://gitlab.com/singularitti/LinearElasticity.jl/badges/master/pipeline.svg)](https://gitlab.com/singularitti/LinearElasticity.jl/-/pipelines)
 [![Build Status](https://api.cirrus-ci.com/github/MineralsCloud/LinearElasticity.jl.svg)](https://cirrus-ci.com/github/MineralsCloud/LinearElasticity.jl)
+[![coverage report](https://gitlab.com/singularitti/LinearElasticity.jl/badges/master/coverage.svg)](https://gitlab.com/singularitti/LinearElasticity.jl/-/jobs)
 [![Coverage](https://codecov.io/gh/MineralsCloud/LinearElasticity.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MineralsCloud/LinearElasticity.jl)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
