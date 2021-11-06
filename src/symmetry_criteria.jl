@@ -1,6 +1,5 @@
-using Crystallography:
+using CrystallographyBase:
     CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
-using LinearAlgebra: issymmetric
 
 export issystem
 
