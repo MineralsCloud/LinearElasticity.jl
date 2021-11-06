@@ -1,12 +1,12 @@
 module Isotropic
 
-export bulk, young, lame1st, shear
+export bulk, young, lame1st, shear, poisson
 
 bulk(; kwargs...) = bulk(NamedTuple(kwargs))
 bulk((E, λ)::NamedTuple{(:E, :λ)}) = (E + 3 * λ + _auxiliaryR(E, λ)) / 6
 bulk((E, G)::NamedTuple{(:E, :G)}) = E * G / (3 * (3 * G - E))
 bulk((E, ν)::NamedTuple{(:E, :ν)}) = E / (3 * (1 - 2 * ν))
-bulk((E, M)::NamedTuple{(:E, :M)}) = (3 * M - E + _auxiliaryS(E, M))
+bulk((E, M)::NamedTuple{(:E, :M)}) = (3 * M - E + _auxiliaryS(E, M)) / 6
 bulk((λ, G)::NamedTuple{(:λ, :G)}) = λ + 2 * G / 3
 bulk((λ, ν)::NamedTuple{(:λ, :ν)}) = λ * (1 + ν) / 3 / ν
 bulk((λ, M)::NamedTuple{(:λ, :M)}) = (M + 2 * λ) / 3
@@ -56,6 +56,19 @@ shear((ν, M)::NamedTuple{(:ν, :M)}) = M * (1 - 2ν) / 2 / (1 - ν)
 shear(x::NamedTuple) = haskey(x, :G) ? x[:G] : shear(_reverse(x))
 const lamé2nd = shear
 const lame2nd = shear
+
+poisson(; kwargs...) = poisson(NamedTuple(kwargs))
+poisson((K, E)::NamedTuple{(:K, :E)}) = (3K - E) / 6 / K
+poisson((K, λ)::NamedTuple{(:K, :λ)}) = λ / (3K - λ)
+poisson((K, G)::NamedTuple{(:K, :G)}) = (3K - 2G) / 2 / (3K + G)
+poisson((K, M)::NamedTuple{(:K, :M)}) = (3K - M) / (3K + M)
+poisson((E, λ)::NamedTuple{(:E, :λ)}) = 2λ / (E + λ + _auxiliaryR(E, λ))
+poisson((E, G)::NamedTuple{(:E, :G)}) = E / 2 / G - 1
+poisson((E, M)::NamedTuple{(:E, :M)}) = (E - M + _auxiliaryS(E, M)) / 4 / M
+poisson((λ, G)::NamedTuple{(:λ, :G)}) = λ / 2 / (λ + G)
+poisson((λ, M)::NamedTuple{(:λ, :M)}) = λ / (M + λ)
+poisson((G, M)::NamedTuple{(:G, :M)}) = (M - 2G) / 2 / (M - G)
+poisson(x::NamedTuple) = haskey(x, :ν) ? x[:ν] : poisson(_reverse(x))
 
 # These are helper functions and should not be exported!
 _auxiliaryR(E, λ) = sqrt(E^2 + 9 * λ^2 + 2 * E * λ)
