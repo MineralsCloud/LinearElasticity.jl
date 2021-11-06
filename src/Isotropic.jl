@@ -1,6 +1,6 @@
 module Isotropic
 
-export bulk, young, lame1st, shear, poisson
+export bulk, young, lame1st, shear, poisson, longitudinal
 
 bulk(; kwargs...) = bulk(NamedTuple(kwargs))
 bulk((E, λ)::NamedTuple{(:E, :λ)}) = (E + 3 * λ + _auxiliaryR(E, λ)) / 6
@@ -69,6 +69,20 @@ poisson((λ, G)::NamedTuple{(:λ, :G)}) = λ / 2 / (λ + G)
 poisson((λ, M)::NamedTuple{(:λ, :M)}) = λ / (M + λ)
 poisson((G, M)::NamedTuple{(:G, :M)}) = (M - 2G) / 2 / (M - G)
 poisson(x::NamedTuple) = haskey(x, :ν) ? x[:ν] : poisson(_reverse(x))
+
+longitudinal(; kwargs...) = longitudinal(NamedTuple(kwargs))
+longitudinal((K, E)::NamedTuple{(:K, :E)}) = 3K * (3K + E) / (9K - E)
+longitudinal((K, λ)::NamedTuple{(:K, :λ)}) = 3K - 2λ
+longitudinal((K, G)::NamedTuple{(:K, :G)}) = K + 4G / 3
+longitudinal((K, ν)::NamedTuple{(:K, :ν)}) = 3K * (1 - ν) / (1 + ν)
+longitudinal((E, λ)::NamedTuple{(:E, :λ)}) = (E - λ + _auxiliaryR(E, λ)) / 2
+longitudinal((E, G)::NamedTuple{(:E, :G)}) = G * (4G - E) / (3G - E)
+longitudinal((E, ν)::NamedTuple{(:E, :ν)}) = E * (1 - ν) / (1 + ν) / (1 - 2ν)
+longitudinal((λ, G)::NamedTuple{(:λ, :G)}) = λ + 2G
+longitudinal((λ, ν)::NamedTuple{(:λ, :ν)}) = λ * (1 - ν) / ν
+longitudinal((G, ν)::NamedTuple{(:G, :ν)}) = 2G * (1 - ν) / (1 - 2ν)
+longitudinal(x::NamedTuple) = haskey(x, :M) ? x[:M] : longitudinal(_reverse(x))
+const constrained = longitudinal
 
 # These are helper functions and should not be exported!
 _auxiliaryR(E, λ) = sqrt(E^2 + 9 * λ^2 + 2 * E * λ)
