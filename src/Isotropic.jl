@@ -1,97 +1,115 @@
 module Isotropic
 
-export BulkModulus,
-    YoungModulus,
-    Lamé1stParameter,
-    Lame1stParameter,
-    ShearModulus,
-    Lamé2ndParameter,
-    Lame2ndParameter,
-    PoissonRatio,
-    LongitudinalModulus,
-    unpack
+export bulk, young, lame1st, shear, poisson, longitudinal
 
-abstract type ElasticModulus{T} end
-struct BulkModulus{T} <: ElasticModulus{T}
-    v::T
-end
-struct YoungModulus{T} <: ElasticModulus{T}
-    v::T
-end
-struct Lamé1stParameter{T} <: ElasticModulus{T}
-    v::T
-end
-const Lame1stParameter = Lamé1stParameter
-struct ShearModulus{T} <: ElasticModulus{T}
-    v::T
-end
-const Lamé2ndParameter = ShearModulus
-const Lame2ndParameter = Lamé2ndParameter
-struct PoissonRatio{T} <: ElasticModulus{T}
-    v::T
-end
-struct LongitudinalModulus{T} <: ElasticModulus{T}
-    v::T
+const ALLOWED_KEYS = (:K, :E, :λ, :G, :ν, :M)
+
+bulk(; kwargs...) = bulk(NamedTuple(kwargs))
+bulk((E, λ)::NamedTuple{(:E, :λ)}) = (E + 3λ + _R(E, λ)) / 6
+bulk((E, G)::NamedTuple{(:E, :G)}) = E * G / 3(3G - E)
+bulk((E, ν)::NamedTuple{(:E, :ν)}) = E / 3(1 - 2ν)
+bulk((E, M)::NamedTuple{(:E, :M)}) = (3M - E + _S(E, M)) / 6
+bulk((λ, G)::NamedTuple{(:λ, :G)}) = λ + 2G / 3
+bulk((λ, ν)::NamedTuple{(:λ, :ν)}) = λ * (1 + ν) / 3ν
+bulk((λ, M)::NamedTuple{(:λ, :M)}) = (M + 2λ) / 3
+bulk((G, ν)::NamedTuple{(:G, :ν)}) = 2G * (1 + ν) / 3(1 - 2ν)
+bulk((G, M)::NamedTuple{(:G, :M)}) = M - 4G / 3
+bulk((ν, M)::NamedTuple{(:ν, :M)}) = M * (1 + ν) / 3(1 - ν)
+function bulk(x::NamedTuple)
+    _checkkeys(x)
+    return haskey(x, :K) ? x[:K] : bulk(_reverse(x))
 end
 
-BulkModulus(E::YoungModulus, λ::Lamé1stParameter) =
-    BulkModulus((E.v + 3 * λ.v + _auxiliaryR(E, λ)) / 6)
-BulkModulus(E::YoungModulus, G::ShearModulus) =
-    BulkModulus(E.v * G.v / (3 * (3 * G.v - E.v)))
-BulkModulus(E::YoungModulus, ν::PoissonRatio) = BulkModulus(E.v / (3 * (1 - 2 * ν.v)))
-BulkModulus(E::YoungModulus, M::LongitudinalModulus) =
-    BulkModulus((3 * M.v - E.v + _auxiliaryS(E, M)))
-BulkModulus(λ::Lamé1stParameter, G::ShearModulus) = BulkModulus(λ.v + 2 * G.v / 3)
-BulkModulus(λ::Lamé1stParameter, ν::PoissonRatio) = BulkModulus(λ.v * (1 + ν.v) / 3 / ν.v)
-BulkModulus(λ::Lamé1stParameter, M::LongitudinalModulus) = BulkModulus((M.v + 2 * λ.v) / 3)
-BulkModulus(G::ShearModulus, ν::PoissonRatio) =
-    BulkModulus(2 * G.v * (1 + ν.v) / (3 * (1 - 2 * ν.v)))
-BulkModulus(G::ShearModulus, M::LongitudinalModulus) = BulkModulus(M.v - 4 * G.v / 3)
-BulkModulus(ν::PoissonRatio, M::LongitudinalModulus) =
-    BulkModulus(M.v * (1 + ν.v) / (3 * (1 - ν.v)))
+young(; kwargs...) = young(NamedTuple(kwargs))
+young((K, λ)::NamedTuple{(:K, :λ)}) = 9K * (K - λ) / (3K - λ)
+young((K, G)::NamedTuple{(:K, :G)}) = 9K * G / (3K + G)
+young((K, ν)::NamedTuple{(:K, :ν)}) = 3K * (1 - 2ν)
+young((K, M)::NamedTuple{(:K, :M)}) = 9K * (M - K) / (3K + M)
+young((λ, G)::NamedTuple{(:λ, :G)}) = G * (3λ + 2G) / (λ + G)
+young((λ, ν)::NamedTuple{(:λ, :ν)}) = λ * (1 + ν) * (1 - 2ν) / ν
+young((λ, M)::NamedTuple{(:λ, :M)}) = (M - λ) * (M + 2λ) / (M + λ)
+young((G, ν)::NamedTuple{(:G, :ν)}) = 2G * (1 + ν)
+young((G, M)::NamedTuple{(:G, :M)}) = G * (3M - 4G) / (M - G)
+young((ν, M)::NamedTuple{(:ν, :M)}) = M * (1 + ν) * (1 - 2ν) / (1 - ν)
+function young(x::NamedTuple)
+    _checkkeys(x)
+    return haskey(x, :E) ? x[:E] : young(_reverse(x))
+end
 
-YoungModulus(K::BulkModulus, λ::Lamé1stParameter) =
-    YoungModulus(9 * K.v * (K.v - λ.v) / (3 * K.v - λ.v))
-YoungModulus(K::BulkModulus, G::ShearModulus) =
-    YoungModulus(9 * K.v * G.v / (3 * K.v + G.v))
-YoungModulus(K::BulkModulus, ν::PoissonRatio) = YoungModulus(3 * K.v * (1 - 2 * ν.v))
-YoungModulus(K::BulkModulus, M::LongitudinalModulus) =
-    YoungModulus(9 * K.v * (M.v - K.v) / (3 * K.v + M.v))
-YoungModulus(λ::Lamé1stParameter, G::ShearModulus) =
-    YoungModulus(G.v * (3 * λ.v + 2 * G.v) / (λ.v + G.v))
-YoungModulus(λ::Lamé1stParameter, ν::PoissonRatio) =
-    YoungModulus(λ.v * (1 + ν.v) * (1 - 2 * ν.v) / ν.v)
-YoungModulus(λ::Lamé1stParameter, M::LongitudinalModulus) =
-    YoungModulus((M.v - λ.v) * (M.v + 2 * λ.v) / (M.v + λ.v))
-YoungModulus(G::ShearModulus, ν::PoissonRatio) = YoungModulus(2 * G.v * (1 + ν.v))
-YoungModulus(G::ShearModulus, M::LongitudinalModulus) =
-    YoungModulus(G.v * (3 * M.v - 4 * G.v) / (M.v - G.v))
-YoungModulus(ν::PoissonRatio, M::LongitudinalModulus) =
-    YoungModulus(M.v * (1 + ν.v) * (1 - 2 * ν.v) / (1 - ν.v))
+lamé1st(; kwargs...) = lamé1st(NamedTuple(kwargs))
+lamé1st((K, E)::NamedTuple{(:K, :E)}) = (9K^2 - 3K * E) / (9K - E)
+lamé1st((K, G)::NamedTuple{(:K, :G)}) = K - 2G / 3
+lamé1st((K, ν)::NamedTuple{(:K, :ν)}) = 3K * ν / (1 + ν)
+lamé1st((K, M)::NamedTuple{(:K, :M)}) = (3K - M) / 2
+lamé1st((E, G)::NamedTuple{(:E, :G)}) = G * (E - 2G) / (3G - E)
+lamé1st((E, ν)::NamedTuple{(:E, :ν)}) = E * ν / (1 + ν) / (1 - 2ν)
+lamé1st((E, M)::NamedTuple{(:E, :M)}) = (M - E + _S(E, M)) / 4
+lamé1st((G, ν)::NamedTuple{(:G, :ν)}) = 2G * ν / (1 - 2ν)
+lamé1st((G, M)::NamedTuple{(:G, :M)}) = M - 2G
+lamé1st((ν, M)::NamedTuple{(:ν, :M)}) = M * ν / (1 - ν)
+function lamé1st(x::NamedTuple)
+    _checkkeys(x)
+    return haskey(x, :λ) ? x[:λ] : lamé1st(_reverse(x))
+end
+const lame1st = lamé1st
+
+shear(; kwargs...) = shear(NamedTuple(kwargs))
+shear((K, E)::NamedTuple{(:K, :E)}) = 3K * E / (9K - E)
+shear((K, λ)::NamedTuple{(:K, :λ)}) = 3(K - λ) / 2
+shear((K, ν)::NamedTuple{(:K, :ν)}) = 3K * (1 - 2ν) / 2(1 + ν)
+shear((K, M)::NamedTuple{(:K, :M)}) = 3(M - K) / 4
+shear((E, λ)::NamedTuple{(:E, :λ)}) = (E - 3λ + _R(E, λ)) / 4
+shear((E, ν)::NamedTuple{(:E, :ν)}) = E / 2(1 + ν)
+shear((E, M)::NamedTuple{(:E, :M)}) = (3M + E - _S(E, M)) / 8
+shear((λ, ν)::NamedTuple{(:λ, :ν)}) = λ * (1 - 2ν) / 2ν
+shear((λ, M)::NamedTuple{(:λ, :M)}) = (M - λ) / 2
+shear((ν, M)::NamedTuple{(:ν, :M)}) = M * (1 - 2ν) / 2(1 - ν)
+function shear(x::NamedTuple)
+    _checkkeys(x)
+    return haskey(x, :G) ? x[:G] : shear(_reverse(x))
+end
+const lamé2nd = shear
+const lame2nd = shear
+
+poisson(; kwargs...) = poisson(NamedTuple(kwargs))
+poisson((K, E)::NamedTuple{(:K, :E)}) = (3K - E) / 6K
+poisson((K, λ)::NamedTuple{(:K, :λ)}) = λ / (3K - λ)
+poisson((K, G)::NamedTuple{(:K, :G)}) = (3K - 2G) / 2(3K + G)
+poisson((K, M)::NamedTuple{(:K, :M)}) = (3K - M) / (3K + M)
+poisson((E, λ)::NamedTuple{(:E, :λ)}) = 2λ / (E + λ + _R(E, λ))
+poisson((E, G)::NamedTuple{(:E, :G)}) = E / 2G - 1
+poisson((E, M)::NamedTuple{(:E, :M)}) = (E - M + _S(E, M)) / 4M
+poisson((λ, G)::NamedTuple{(:λ, :G)}) = λ / 2(λ + G)
+poisson((λ, M)::NamedTuple{(:λ, :M)}) = λ / (M + λ)
+poisson((G, M)::NamedTuple{(:G, :M)}) = (M - 2G) / 2(M - G)
+function poisson(x::NamedTuple)
+    _checkkeys(x)
+    return haskey(x, :ν) ? x[:ν] : poisson(_reverse(x))
+end
+
+longitudinal(; kwargs...) = longitudinal(NamedTuple(kwargs))
+longitudinal((K, E)::NamedTuple{(:K, :E)}) = 3K * (3K + E) / (9K - E)
+longitudinal((K, λ)::NamedTuple{(:K, :λ)}) = 3K - 2λ
+longitudinal((K, G)::NamedTuple{(:K, :G)}) = K + 4G / 3
+longitudinal((K, ν)::NamedTuple{(:K, :ν)}) = 3K * (1 - ν) / (1 + ν)
+longitudinal((E, λ)::NamedTuple{(:E, :λ)}) = (E - λ + _R(E, λ)) / 2
+longitudinal((E, G)::NamedTuple{(:E, :G)}) = G * (4G - E) / (3G - E)
+longitudinal((E, ν)::NamedTuple{(:E, :ν)}) = E * (1 - ν) / (1 + ν) / (1 - 2ν)
+longitudinal((λ, G)::NamedTuple{(:λ, :G)}) = λ + 2G
+longitudinal((λ, ν)::NamedTuple{(:λ, :ν)}) = λ * (1 - ν) / ν
+longitudinal((G, ν)::NamedTuple{(:G, :ν)}) = 2G * (1 - ν) / (1 - 2ν)
+function longitudinal(x::NamedTuple)
+    _checkkeys(x)
+    return haskey(x, :M) ? x[:M] : longitudinal(_reverse(x))
+end
+const constrained = longitudinal
 
 # These are helper functions and should not be exported!
-_auxiliaryR(E::YoungModulus, λ::Lamé1stParameter) = sqrt(E.v^2 + 9 * λ.v^2 + 2 * E.v * λ.v)
-_auxiliaryS(E::YoungModulus, M::LongitudinalModulus) =
-    sqrt(E.v^2 + 9 * M.v^2 - 10 * E.v * M.v)
+_R(E, λ) = sqrt(E^2 + 9λ^2 + 2E * λ)
+_S(E, M) = sqrt(E^2 + 9M^2 - 10E * M)  # FIXME: ±S
 
-unpack(x::ElasticModulus) = getfield(x, :v)
-unpack(x::ElasticModulus...) = unpack.(x)
-unpack(x::AbstractArray{<:ElasticModulus}) = unpack.(x)
+_reverse(x::NamedTuple) = (; zip(reverse(propertynames(x)), reverse(values(x)))...)
 
-for T in (
-    :BulkModulus,
-    :YoungModulus,
-    :Lame1stParameter,
-    :ShearModulus,
-    :PoissonRatio,
-    :LongitudinalModulus,
-)
-    @eval begin  # See https://github.com/JuliaLang/julia/blob/45c518d/base/fastmath.jl#L253-L259
-        # As long as creating from one parameter already defined, return the parameter itself.
-        $T(x::$T, ::ElasticModulus) = x
-        # If there is no method match, switch the parameters and try again.
-        $T(x::ElasticModulus, y::ElasticModulus) = $T(y, x)
-    end
-end
+_checkkeys(x) = @assert all(key ∈ ALLOWED_KEYS for key in propertynames(x))
 
 end
