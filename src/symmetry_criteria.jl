@@ -6,7 +6,6 @@ export issystem
 
 function symmetry_criteria(::Cubic, c::StiffnessMatrix)
     return all((
-        issymmetric(c),
         c[1, 1] == c[2, 2] == c[3, 3],
         c[4, 4] == c[5, 5] == c[6, 6],
         c[1, 2] == c[1, 3] == c[2, 3],
@@ -14,7 +13,6 @@ function symmetry_criteria(::Cubic, c::StiffnessMatrix)
 end
 function symmetry_criteria(::Hexagonal, c::StiffnessMatrix)
     return all((
-        issymmetric(c),
         c[1, 1] == c[2, 2],
         c[4, 4] == c[5, 5],
         c[1, 3] == c[2, 3],
@@ -23,7 +21,6 @@ function symmetry_criteria(::Hexagonal, c::StiffnessMatrix)
 end
 function symmetry_criteria(::Tetragonal, c::StiffnessMatrix)
     return all((
-        issymmetric(c),
         c[1, 1] == c[2, 2],
         c[4, 4] == c[5, 5],
         c[1, 3] == c[2, 3],
@@ -36,7 +33,6 @@ function symmetry_criteria(::Tetragonal, c::StiffnessMatrix)
 end
 function symmetry_criteria(::Trigonal, c::StiffnessMatrix)
     return all((
-        issymmetric(c),
         c[1, 1] == c[2, 2],
         c[4, 4] == c[5, 5],
         c[1, 3] == c[2, 3],
@@ -51,7 +47,6 @@ function symmetry_criteria(::Trigonal, c::StiffnessMatrix)
 end
 function symmetry_criteria(::Orthorhombic, c::StiffnessMatrix)
     return all((
-        issymmetric(c),
         all(
             iszero,
             (
@@ -87,7 +82,6 @@ function symmetry_criteria(::Orthorhombic, c::StiffnessMatrix)
 end
 function symmetry_criteria(::Monoclinic, c::StiffnessMatrix)
     return all((
-        issymmetric(c),
         all(
             iszero,
             (c[1, 4], c[2, 4], c[3, 4], c[4, 5], c[1, 6], c[2, 6], c[3, 6], c[5, 6]),
