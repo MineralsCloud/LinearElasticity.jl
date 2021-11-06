@@ -1,6 +1,6 @@
 module Isotropic
 
-export bulk, young, lame1st, shear, poisson, longitudinal
+export bulk_modulus, young_modulus, lame1st, shear_modulus, poisson_ratio, longitudinal_modulus
 
 const ALLOWED_KEYS = (:K, :E, :λ, :G, :ν, :M)
 
@@ -19,7 +19,6 @@ function bulk_modulus(x::NamedTuple)
     _checkkeys(x)
     return haskey(x, :K) ? x[:K] : bulk_modulus(_reverse(x))
 end
-const bulk = bulk_modulus
 
 young_modulus(; kwargs...) = young_modulus(NamedTuple(kwargs))
 young_modulus((K, λ)::NamedTuple{(:K, :λ)}) = 9K * (K - λ) / (3K - λ)
@@ -36,7 +35,6 @@ function young_modulus(x::NamedTuple)
     _checkkeys(x)
     return haskey(x, :E) ? x[:E] : young_modulus(_reverse(x))
 end
-const young = young_modulus
 
 lamé1st(; kwargs...) = lamé1st(NamedTuple(kwargs))
 lamé1st((K, E)::NamedTuple{(:K, :E)}) = (9K^2 - 3K * E) / (9K - E)
@@ -70,9 +68,6 @@ function shear_modulus(x::NamedTuple)
     _checkkeys(x)
     return haskey(x, :G) ? x[:G] : shear_modulus(_reverse(x))
 end
-const lamé2nd = shear_modulus
-const lame2nd = shear_modulus
-const shear = shear_modulus
 
 poisson_ratio(; kwargs...) = poisson_ratio(NamedTuple(kwargs))
 poisson_ratio((K, E)::NamedTuple{(:K, :E)}) = (3K - E) / 6K
@@ -89,7 +84,6 @@ function poisson_ratio(x::NamedTuple)
     _checkkeys(x)
     return haskey(x, :ν) ? x[:ν] : poisson_ratio(_reverse(x))
 end
-const poisson = poisson_ratio
 
 longitudinal_modulus(; kwargs...) = longitudinal_modulus(NamedTuple(kwargs))
 longitudinal_modulus((K, E)::NamedTuple{(:K, :E)}) = 3K * (3K + E) / (9K - E)
@@ -106,7 +100,6 @@ function longitudinal_modulus(x::NamedTuple)
     _checkkeys(x)
     return haskey(x, :M) ? x[:M] : longitudinal_modulus(_reverse(x))
 end
-const longitudinal = longitudinal_modulus
 
 # These are helper functions and should not be exported!
 _R(E, λ) = sqrt(E^2 + 9λ^2 + 2E * λ)
