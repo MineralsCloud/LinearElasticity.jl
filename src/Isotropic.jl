@@ -86,7 +86,7 @@ const constrained = longitudinal
 
 # These are helper functions and should not be exported!
 _R(E, λ) = sqrt(E^2 + 9λ^2 + 2E * λ)
-_S(E, M) = sqrt(E^2 + 9M^2 - 10E * M)
+_S(E, M) = sqrt(E^2 + 9M^2 - 10E * M)  # FIXME: ±S
 
 _reverse(x::NamedTuple) = (; zip(reverse(propertynames(x)), reverse(values(x)))...)
 
