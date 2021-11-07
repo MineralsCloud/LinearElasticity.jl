@@ -1,7 +1,7 @@
 using CrystallographyBase:
     CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
 
-export issystem
+export hassymmetry
 
 function symmetry_criteria(::Cubic, c::StiffnessMatrix)
     return (
@@ -89,5 +89,5 @@ function symmetry_criteria(::Monoclinic, c::StiffnessMatrix)
 end
 symmetry_criteria(C::CrystalSystem, s::ComplianceMatrix) = symmetry_criteria(C, inv(s))
 
-issystem(C::CrystalSystem, x::Union{StiffnessMatrix,ComplianceMatrix}) =
+hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, C::CrystalSystem) =
     all(symmetry_criteria(C, x))
