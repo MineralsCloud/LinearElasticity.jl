@@ -87,8 +87,8 @@ for T in (:StiffnessMatrix, :ComplianceMatrix)
 end
 
 include("conversion.jl")
-include("symmetry_criteria.jl")
 include("invariants.jl")
+include("SymmetryCriteria.jl")
 # include("StabilityCriteria.jl")
 include("Isotropic.jl")
 

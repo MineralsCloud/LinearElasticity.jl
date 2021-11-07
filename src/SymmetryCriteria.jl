@@ -1,3 +1,5 @@
+module SymmetryCriteria
+
 using CrystallographyBase:
     CrystalSystem,
     Cubic,
@@ -107,4 +109,6 @@ function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
         end
     end
     return Triclinic()
+end
+
 end
