@@ -1,4 +1,6 @@
+using CrystallographyBase: Cubic
 using Tensorial: SymmetricFourthOrderTensor
+using LinearElasticity.SymmetryCriteria: whichsystem, isisotropic
 
 # Compared with https://ferrite-fem.github.io/Tensors.jl/stable/demos/
 @testset "Creating the linear elasticity tensor" begin
@@ -46,10 +48,12 @@ using Tensorial: SymmetricFourthOrderTensor
     s = ComplianceMatrix(S)
     @test s ≈ inv(c)
     @test inv(s) ≈ StiffnessMatrix(C)
+    @test whichsystem(c) == Cubic()
     @testset "Test for an isotropic system" begin
         @test c[1, 1] * s[1, 1] + 2c[1, 2] * s[1, 2] == 1
         @test c[1, 1] * s[1, 2] + c[1, 2] * s[1, 1] + c[1, 2] * s[1, 2] < eps()
         @test c[4, 4] * s[4, 4] ≈ 1
+        @test isisotropic(c)
     end
 end
 
