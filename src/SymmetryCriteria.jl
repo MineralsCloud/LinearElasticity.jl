@@ -87,6 +87,8 @@ function symmetry_criteria(::Monoclinic, x::Union{StiffnessMatrix,ComplianceMatr
         end,
     )
 end
+symmetry_criteria(::Triclinic, x::Union{StiffnessMatrix,ComplianceMatrix}) =
+    all(!iszero, x.data.data)
 
 issystem(x::Union{StiffnessMatrix,ComplianceMatrix}, system::CrystalSystem) =
     all(symmetry_criteria(system, x))
