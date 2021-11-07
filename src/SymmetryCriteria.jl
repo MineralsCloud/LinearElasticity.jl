@@ -15,7 +15,9 @@ export issystem, whichsystem, isisotropic
 
 function symmetry_criteria(::Cubic, x::Union{StiffnessMatrix,ComplianceMatrix})
     return (
-        all(iszero, (x[1:3, 4:6]..., x[4, 5:6]..., x[5, 6])),
+        all(iszero, x[1:3, 4:6]),
+        all(iszero, x[4, 5:6]),
+        iszero(x[5, 6]),
         all(!iszero, (x[1, 1], x[4, 4], x[1, 3])),
         x[1, 1] == x[2, 2] == x[3, 3],
         x[4, 4] == x[5, 5] == x[6, 6],
@@ -24,7 +26,9 @@ function symmetry_criteria(::Cubic, x::Union{StiffnessMatrix,ComplianceMatrix})
 end
 function symmetry_criteria(::Hexagonal, c::StiffnessMatrix)
     return (
-        all(iszero, (c[1:3, 4:6]..., c[4, 5:6]..., c[5, 6])),
+        all(iszero, c[1:3, 4:6]),
+        all(iszero, c[4, 5:6]),
+        iszero(c[5, 6]),
         all(!iszero, (c[1, 1], c[3, 3], c[4, 4], c[1, 2], c[1, 3], c[6, 6])),
         c[1, 1] == c[2, 2],
         c[4, 4] == c[5, 5],
@@ -34,7 +38,9 @@ function symmetry_criteria(::Hexagonal, c::StiffnessMatrix)
 end
 function symmetry_criteria(::Hexagonal, s::ComplianceMatrix)
     return (
-        all(iszero, (s[1:3, 4:6]..., s[4, 5:6]..., s[5, 6])),
+        all(iszero, s[1:3, 4:6]),
+        all(iszero, s[4, 5:6]),
+        iszero(s[5, 6]),
         all(!iszero, (s[1, 1], s[3, 3], s[4, 4], s[1, 2], s[1, 3], s[6, 6])),
         s[1, 1] == s[2, 2],
         s[4, 4] == s[5, 5],
@@ -44,7 +50,9 @@ function symmetry_criteria(::Hexagonal, s::ComplianceMatrix)
 end
 function symmetry_criteria(::Tetragonal, x::Union{StiffnessMatrix,ComplianceMatrix})
     return (
-        all(iszero, (x[1:3, 4:5]..., x[3, 6], x[4, 5:6]..., x[5, 6])),
+        all(iszero, x[1:3, 4:5]),
+        all(iszero, x[4, 5:6]),
+        all(iszero, (x[3, 6], x[5, 6])),
         all(!iszero, (x[1, 1], x[1, 2], x[1, 3], x[3, 3], x[4, 4], x[6, 6])),
         x[1, 1] == x[2, 2],
         x[4, 4] == x[5, 5],
@@ -58,8 +66,12 @@ function symmetry_criteria(::Tetragonal, x::Union{StiffnessMatrix,ComplianceMatr
 end
 function symmetry_criteria(::Trigonal, c::StiffnessMatrix)
     return (
-        all(iszero, (c[1:3, 6]..., c[3, 4:5]..., c[4, 5])),
-        all(!iszero, (c[1, 1:4]..., c[2:2:3]..., c[3, 3], c[4, 4], c[6, 6])),
+        all(iszero, c[1:3, 6]),
+        all(iszero, c[3, 4:5]),
+        iszero(c[4, 5]),
+        all(!iszero, c[1, 1:4]),
+        all(!iszero, c[2, 2:3]),
+        all(!iszero, (c[3, 3], c[4, 4], c[6, 6])),
         c[1, 1] == c[2, 2],
         c[4, 4] == c[5, 5],
         c[1, 3] == c[2, 3],
@@ -74,8 +86,12 @@ function symmetry_criteria(::Trigonal, c::StiffnessMatrix)
 end
 function symmetry_criteria(::Trigonal, s::ComplianceMatrix)
     return (
-        all(iszero, (s[1:3, 6]..., s[3, 4:5]..., s[4, 5])),
-        all(!iszero, (s[1, 1:4]..., s[2:2:3]..., s[3, 3], s[4, 4], s[6, 6])),
+        all(iszero, s[1:3, 6]),
+        all(iszero, s[3, 4:5]),
+        iszero(s[4, 5]),
+        all(!iszero, s[1, 1:4]),
+        all(!iszero, s[2, 2:3]),
+        all(!iszero, (s[3, 3], s[4, 4], s[6, 6])),
         s[1, 1] == s[2, 2],
         s[4, 4] == s[5, 5],
         s[1, 3] == s[2, 3],
@@ -90,14 +106,19 @@ function symmetry_criteria(::Trigonal, s::ComplianceMatrix)
 end
 function symmetry_criteria(::Orthorhombic, x::Union{StiffnessMatrix,ComplianceMatrix})
     return (
-        all(iszero, (x[1:3, 4:6]..., x[4, 5:6]..., x[5, 6])),
-        all(!iszero, (x[1, 1:3]..., x[2, 2:3]..., x[3, 3], x[4, 4], x[5, 5], x[6, 6])),
+        all(iszero, x[1:3, 4:6]),
+        all(iszero, x[4, 5:6]),
+        iszero(x[5, 6]),
+        all(!iszero, x[1:2, 1:3]),
+        all(!iszero, (x[3, 3], x[4, 4], x[5, 5], x[6, 6])),
     )
 end
 function symmetry_criteria(::Monoclinic, x::Union{StiffnessMatrix,ComplianceMatrix})
     return (
-        all(iszero, (x[1:3, 4]..., x[5, 6])),
-        all(!iszero, (x[1, 1:3]..., x[2, 2:3]..., x[3, 3], x[4, 4], x[5, 5], x[6, 6])),
+        all(iszero, x[1:3, 4]),
+        iszero(x[5, 6]),
+        all(!iszero, x[1:2, 1:3]),
+        all(!iszero, (x[3, 3], x[4, 4], x[5, 5], x[6, 6])),
         if iszero(x[4, 5])  # Diad // x2, standard orientation
             all(iszero, x[1:3, 6]) && all(!iszero, x[1:3, 5]) && !iszero(x[4, 6])
         else
