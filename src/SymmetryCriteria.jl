@@ -11,7 +11,7 @@ using CrystallographyBase:
     Triclinic
 using ..LinearElasticity: StiffnessMatrix, ComplianceMatrix
 
-export issystem, whichsystem
+export issystem, whichsystem, isisotropic
 
 function symmetry_criteria(::Cubic, x::Union{StiffnessMatrix,ComplianceMatrix})
     return (
@@ -125,6 +125,25 @@ function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
             return system
         end
     end
+end
+
+function isisotropic(c::StiffnessMatrix)
+    return all((
+        all(iszero, (c[1:3, 4:6]..., c[4, 5:6]..., c[5, 6])),
+        all(!iszero, (c[1, 1], c[4, 4], c[1, 3])),
+        c[1, 1] == c[2, 2] == c[3, 3],
+        2c[4, 4] == 2c[5, 5] == 2c[6, 6] == c[1, 1] - c[1, 2],
+        c[1, 2] == c[1, 3] == c[2, 3],
+    ))
+end
+function isisotropic(s::ComplianceMatrix)
+    return all((
+        all(iszero, (s[1:3, 4:6]..., s[4, 5:6]..., s[5, 6])),
+        all(!iszero, (s[1, 1], s[4, 4], s[1, 3])),
+        s[1, 1] == s[2, 2] == s[3, 3],
+        s[4, 4] == s[5, 5] == s[6, 6] == 2(s[1, 1] - s[1, 2]),
+        s[1, 2] == s[1, 3] == s[2, 3],
+    ))
 end
 
 end
