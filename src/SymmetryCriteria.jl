@@ -112,13 +112,19 @@ issystem(x::Union{StiffnessMatrix,ComplianceMatrix}, system::CrystalSystem) =
     all(symmetry_criteria(system, x))
 
 function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
-    for system in
-        (Cubic(), Hexagonal(), Tetragonal(), Trigonal(), Orthorhombic(), Monoclinic())
+    for system in (
+        Cubic(),
+        Hexagonal(),
+        Tetragonal(),
+        Trigonal(),
+        Orthorhombic(),
+        Monoclinic(),
+        Triclinic(),
+    )
         if issystem(x, system)
             return system
         end
     end
-    return Triclinic()
 end
 
 end
