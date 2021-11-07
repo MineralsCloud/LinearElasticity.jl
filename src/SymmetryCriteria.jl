@@ -58,15 +58,33 @@ function symmetry_criteria(::Tetragonal, x::Union{StiffnessMatrix,ComplianceMatr
 end
 function symmetry_criteria(::Trigonal, c::StiffnessMatrix)
     return (
+        all(iszero, (c[1:3, 6]..., c[3, 4:5]..., c[4, 5])),
+        all(!iszero, (c[1, 1:4]..., c[2:2:3]..., c[3, 3], c[4, 4], c[6, 6])),
         c[1, 1] == c[2, 2],
         c[4, 4] == c[5, 5],
         c[1, 3] == c[2, 3],
         2c[6, 6] == c[1, 1] - c[1, 2],
-        c[1, 4] == -c[2, 4] == -c[5, 6],
+        c[1, 4] == -c[2, 4] == c[5, 6],
         if iszero(c[1, 5])  # Rhombohedral (I) class, 32, -3m, 3m
-            true
+            all(iszero, (c[2, 5], c[4, 6]))
         else  # Rhombohedral (II) class, 3, -3
             -c[1, 5] == c[2, 5] == c[4, 6]
+        end,
+    )
+end
+function symmetry_criteria(::Trigonal, s::ComplianceMatrix)
+    return (
+        all(iszero, (s[1:3, 6]..., s[3, 4:5]..., s[4, 5])),
+        all(!iszero, (s[1, 1:4]..., s[2:2:3]..., s[3, 3], s[4, 4], s[6, 6])),
+        s[1, 1] == s[2, 2],
+        s[4, 4] == s[5, 5],
+        s[1, 3] == s[2, 3],
+        s[6, 6] == 2(s[1, 1] - s[1, 2]),
+        2s[1, 4] == -2s[2, 4] == s[5, 6],
+        if iszero(s[1, 5])  # Rhombohedral (I) class, 32, -3m, 3m
+            all(iszero, (s[2, 5], s[4, 6]))
+        else  # Rhombohedral (II) class, 3, -3
+            -2s[1, 5] == 2s[2, 5] == s[4, 6]
         end,
     )
 end
