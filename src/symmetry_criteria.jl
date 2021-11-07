@@ -1,7 +1,14 @@
 using CrystallographyBase:
-    CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
+    CrystalSystem,
+    Cubic,
+    Hexagonal,
+    Tetragonal,
+    Trigonal,
+    Orthorhombic,
+    Monoclinic,
+    Triclinic
 
-export hassymmetry
+export hassymmetry, whichsystem
 
 function symmetry_criteria(::Cubic, c::StiffnessMatrix)
     return (
@@ -91,3 +98,13 @@ symmetry_criteria(C::CrystalSystem, s::ComplianceMatrix) = symmetry_criteria(C, 
 
 hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, C::CrystalSystem) =
     all(symmetry_criteria(C, x))
+
+function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
+    for system in
+        (Cubic(), Hexagonal(), Tetragonal(), Trigonal(), Orthorhombic(), Monoclinic())
+        if hassymmetry(x, system)
+            return system
+        end
+    end
+    return Triclinic()
+end
