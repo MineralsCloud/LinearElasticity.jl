@@ -8,7 +8,7 @@ using CrystallographyBase:
     Monoclinic,
     Triclinic
 
-export hassymmetry, whichsystem
+export issystem, whichsystem
 
 function symmetry_criteria(::Cubic, c::StiffnessMatrix)
     return (
@@ -96,13 +96,13 @@ function symmetry_criteria(::Monoclinic, c::StiffnessMatrix)
 end
 symmetry_criteria(C::CrystalSystem, s::ComplianceMatrix) = symmetry_criteria(C, inv(s))
 
-hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, C::CrystalSystem) =
-    all(symmetry_criteria(C, x))
+issystem(x::Union{StiffnessMatrix,ComplianceMatrix}, system::CrystalSystem) =
+    all(symmetry_criteria(system, x))
 
 function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
     for system in
         (Cubic(), Hexagonal(), Tetragonal(), Trigonal(), Orthorhombic(), Monoclinic())
-        if hassymmetry(x, system)
+        if issystem(x, system)
             return system
         end
     end
