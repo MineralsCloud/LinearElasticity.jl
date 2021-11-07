@@ -1,6 +1,7 @@
 module Isotropic
 
-export bulk_modulus, young_modulus, lame1st, shear_modulus, poisson_ratio, longitudinal_modulus
+export bulk_modulus,
+    young_modulus, lame1st, shear_modulus, poisson_ratio, longitudinal_modulus
 
 const ALLOWED_KEYS = (:K, :E, :λ, :G, :ν, :M)
 
