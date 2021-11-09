@@ -91,5 +91,6 @@ include("invariants.jl")
 include("SymmetryCriteria.jl")
 # include("StabilityCriteria.jl")
 include("Isotropic.jl")
+include("distort.jl")
 
 end
