@@ -1,14 +1,14 @@
 using CrystallographyBase: Lattice, CrystalSystem, Cubic
 using LinearAlgebra: I, svd, diagm, qr
 
-export distort, fit
+export distort, lsqfit
 
 # See https://link.springer.com/content/pdf/10.1007%2F978-3-7091-0382-1_7.pdf and https://doi.org/10.2138/am-1997-1-207
 distort(lattice::Lattice, strain::TensorStrain) = Lattice((I + strain.data) * lattice.data)
 distort(lattice::Lattice, strain::EngineeringStrain) =
     distort(lattice, TensorStrain(strain))
 
-function fit(ϵ::EngineeringStrain, σ::EngineeringStress, ::Cubic)
+function lsqfit(ϵ::EngineeringStrain, σ::EngineeringStress, ::Cubic)
     σ = map(Base.Fix1(oftype, σ[1]) ∘ float, σ)
     ϵ₁, ϵ₂, ϵ₃ = ϵ[1:3]
     Aᵀ = [
@@ -29,7 +29,7 @@ function fit(ϵ::EngineeringStrain, σ::EngineeringStress, ::Cubic)
         ] * oneunit(σ[1])
     return StiffnessMatrix(data)
 end
-function fit(ϵ::TensorStrain, σ::TensorStress, x::CrystalSystem)
-    c = fit(EngineeringStrain(ϵ), EngineeringStress(σ), x)
+function lsqfit(ϵ::TensorStrain, σ::TensorStress, x::CrystalSystem)
+    c = lsqfit(EngineeringStrain(ϵ), EngineeringStress(σ), x)
     return StiffnessTensor(c)
 end
