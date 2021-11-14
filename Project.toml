@@ -4,6 +4,7 @@ authors = ["Qi Zhang <singularitti@outlook.com>"]
 version = "0.5.1-DEV"
 
 [deps]
+ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 CrystallographyBase = "93b1d1cd-a8ea-4aa5-adb1-b2407ea0ba8d"
 Tensorial = "98f94333-fa9f-48a9-ad80-1c66397b2b38"
@@ -14,6 +15,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 julia = "1"
+ConstructionBase = "0.1, 1"
 CrystallographyBase = "0.1, 0.2, 0.3, 0.4"
 Tensorial = "0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.10, 0.11"
 
