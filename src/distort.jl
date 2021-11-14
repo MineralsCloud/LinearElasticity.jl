@@ -32,4 +32,9 @@ function solve(::Cubic, σ::EngineeringStress, ϵ::EngineeringStrain)
         ] * oneunit(σ[1])
     return StiffnessMatrix(data)
 end
+function solve(x::CrystalSystem, σ::TensorStress, ϵ::TensorStrain)
+    c = solve(x, EngineeringStress(σ), EngineeringStrain(ϵ))
+    return StiffnessTensor(c)
+end
+
 _f(x, p) = p[1] .* x
