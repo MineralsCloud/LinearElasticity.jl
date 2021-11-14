@@ -11,14 +11,11 @@ distort(lattice::Lattice, strain::EngineeringStrain) =
 function fit(ϵ::EngineeringStrain, σ::EngineeringStress, ::Cubic)
     σ = map(Base.Fix1(oftype, σ[1]) ∘ float, σ)
     ϵ₁, ϵ₂, ϵ₃ = ϵ[1:3]
-    A = [
-        ϵ₁ ϵ₂+ϵ₃
-        ϵ₂ ϵ₁+ϵ₃
-        ϵ₃ ϵ₂+ϵ₁
+    Aᵀ = [
+        ϵ₁ ϵ₂ ϵ₃
+        ϵ₂+ϵ₃ ϵ₁+ϵ₃ ϵ₂+ϵ₁
     ]
-    # https://discourse.julialang.org/t/why-does-julia-systematically-fails-when-doing-operation/67242/9
-    Aᵀ = transpose(A)
-    c11, c12 = inv(Aᵀ * A) * Aᵀ * σ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
+    c11, c12 = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * σ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
     c44 = first(curve_fit(_f, ϵ[4:6], σ[4:6], [σ[4] / ϵ[4]]).param)
     𝟘 = zero(c11)
     data =
