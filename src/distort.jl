@@ -15,17 +15,17 @@ function fit(ϵ::EngineeringStrain, σ::EngineeringStress, ::Cubic)
         ϵ₁ ϵ₂ ϵ₃
         ϵ₂+ϵ₃ ϵ₁+ϵ₃ ϵ₂+ϵ₁
     ]
-    c11, c12 = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * σ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
-    c44 = first(curve_fit(_f, ϵ[4:6], σ[4:6], [σ[4] / ϵ[4]]).param)
-    𝟘 = zero(c11)
+    c₁₁, c₁₂ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * σ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
+    c₄₄ = σ[4] / ϵ[4]
+    𝟘 = zero(c₁₁)
     data =
         [
-            c11 c12 c12 𝟘 𝟘 𝟘
-            c12 c11 c12 𝟘 𝟘 𝟘
-            c12 c12 c11 𝟘 𝟘 𝟘
-            𝟘 𝟘 𝟘 c44 𝟘 𝟘
-            𝟘 𝟘 𝟘 𝟘 c44 𝟘
-            𝟘 𝟘 𝟘 𝟘 𝟘 c44
+            c₁₁ c₁₂ c₁₂ 𝟘 𝟘 𝟘
+            c₁₂ c₁₁ c₁₂ 𝟘 𝟘 𝟘
+            c₁₂ c₁₂ c₁₁ 𝟘 𝟘 𝟘
+            𝟘 𝟘 𝟘 c₄₄ 𝟘 𝟘
+            𝟘 𝟘 𝟘 𝟘 c₄₄ 𝟘
+            𝟘 𝟘 𝟘 𝟘 𝟘 c₄₄
         ] * oneunit(σ[1])
     return StiffnessMatrix(data)
 end
@@ -33,5 +33,3 @@ function fit(ϵ::TensorStrain, σ::TensorStress, x::CrystalSystem)
     c = fit(EngineeringStrain(ϵ), EngineeringStress(σ), x)
     return StiffnessTensor(c)
 end
-
-_f(x, p) = p[1] .* x
