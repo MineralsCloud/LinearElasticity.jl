@@ -1,5 +1,6 @@
 module LinearElasticity
 
+using ConstructionBase: constructorof
 using Tensorial: SymmetricSecondOrderTensor, SymmetricFourthOrderTensor, Vec
 
 export TensorStress,
@@ -85,6 +86,16 @@ for T in (:StiffnessMatrix, :ComplianceMatrix)
         $T(data...) = $T(SymmetricSecondOrderTensor{6}(data...))
     end
 end
+
+# See https://github.com/JuliaLang/julia/blob/cb9acf5/base/arraymath.jl#L19-L26
+for op in (:*, :/)
+    @eval Base.$op(A::Union{Stress,Strain,Stiffness,Compliance}, B::Number) =
+        constructorof(typeof(A))(Base.broadcast_preserving_zero_d($f, A, B))
+end
+Base.:*(B::Number, A::Union{Stress,Strain,Stiffness,Compliance}) = A * B
+
+Base.:-(A::Union{Stress,Strain,Stiffness,Compliance}) =
+    constructorof(typeof(A))(Base.broadcast_preserving_zero_d(-, A))
 
 include("conversion.jl")
 include("invariants.jl")
