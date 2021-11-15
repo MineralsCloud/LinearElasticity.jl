@@ -18,7 +18,7 @@ function lsqfit(ϵ::EngineeringStrain, σ::EngineeringStress, ::Cubic)
     c₁₁, c₁₂ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * σ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
     c₄₄ = σ[4] / ϵ[4]
     𝟘 = zero(c₁₁)
-    data =
+    return StiffnessMatrix(
         [
             c₁₁ c₁₂ c₁₂ 𝟘 𝟘 𝟘
             c₁₂ c₁₁ c₁₂ 𝟘 𝟘 𝟘
@@ -26,8 +26,8 @@ function lsqfit(ϵ::EngineeringStrain, σ::EngineeringStress, ::Cubic)
             𝟘 𝟘 𝟘 c₄₄ 𝟘 𝟘
             𝟘 𝟘 𝟘 𝟘 c₄₄ 𝟘
             𝟘 𝟘 𝟘 𝟘 𝟘 c₄₄
-        ] * oneunit(σ[1])
-    return StiffnessMatrix(data)
+        ],
+    )
 end
 function lsqfit(ϵ::TensorStrain, σ::TensorStress, x::CrystalSystem)
     c = lsqfit(EngineeringStrain(ϵ), EngineeringStress(σ), x)
