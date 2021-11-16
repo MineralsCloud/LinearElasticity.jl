@@ -97,6 +97,21 @@ Base.:*(B::Number, A::Union{Stress,Strain,Stiffness,Compliance}) = A * B
 Base.:-(A::Union{Stress,Strain,Stiffness,Compliance}) =
     constructorof(typeof(A))(Base.broadcast_preserving_zero_d(-, A))
 
+for op in (:+, :-)
+    for T in (
+        :TensorStress,
+        :TensorStrain,
+        :EngineeringStress,
+        :EngineeringStrain,
+        :StiffnessMatrix,
+        :ComplianceMatrix,
+        :StiffnessTensor,
+        :ComplianceTensor,
+    )
+        @eval Base.$op(A::$T, B::$T) = $T(Base.broadcast_preserving_zero_d($op, A, B))
+    end
+end
+
 include("conversion.jl")
 include("invariants.jl")
 include("SymmetryCriteria.jl")
