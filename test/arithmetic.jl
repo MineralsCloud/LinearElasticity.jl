@@ -14,3 +14,16 @@ end
     @test a / 2 == EngineeringStress(0.5, 1, 1.5, 2, 2.5, 3)
     @test 2a / 2 == a
 end
+
+@testset "Test addition and subtraction" begin
+    a = EngineeringStrain(1:6)
+    b = -EngineeringStrain(1:1:6)
+    @test a - b == 2a
+    @test b - a == -2a
+    @test a + b == EngineeringStrain(zeros(6))
+    a = TensorStress(EngineeringStress(1:6))
+    b = -TensorStress(EngineeringStress(1:6))
+    @test a - b == 2a
+    @test b - a == -2a
+    @test a + b == TensorStress(zeros(3, 3))
+end
