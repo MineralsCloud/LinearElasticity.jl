@@ -61,5 +61,8 @@ function (x::ElasticConstantFitter)(σ::TensorStress, ϵ::TensorStrain)
     return ComplianceTensor(s)
 end
 for (X, Y) in ((:EngineeringStrain, :EngineeringStress), (:TensorStrain, :TensorStress))
-    @eval (x::ElasticConstantFitter)(ϵ::$X, σ::$Y, σ₀::$Y) = x(ϵ, σ - σ₀)
+    @eval begin
+        (x::ElasticConstantFitter)(ϵ::$X, σ::$Y, σ₀::$Y) = x(ϵ, σ - σ₀)
+        (x::ElasticConstantFitter)(σ::$Y, ϵ::$X, ϵ₀::$X) = x(σ, ϵ - ϵ₀)
+    end
 end
