@@ -33,7 +33,14 @@ function (::ElasticConstantFitter{Cubic})(ϵ::EngineeringStrain, σ::Engineering
         ],
     )
 end
+(x::ElasticConstantFitter)(
+    ϵ::EngineeringStrain,
+    σ::EngineeringStress,
+    σ₀::EngineeringStress,
+) = x(ϵ, σ - σ₀)
 function (x::ElasticConstantFitter)(ϵ::TensorStrain, σ::TensorStress)
     c = x(EngineeringStrain(ϵ), EngineeringStress(σ))
     return StiffnessTensor(c)
 end
+(x::ElasticConstantFitter)(ϵ::TensorStrain, σ::TensorStress, σ₀::TensorStress) =
+    x(ϵ, σ - σ₀)
