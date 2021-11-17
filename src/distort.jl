@@ -32,6 +32,26 @@ function (::ElasticConstantFitter{Cubic})(ϵ::EngineeringStrain, σ::Engineering
         ],
     )
 end
+function (::ElasticConstantFitter{Cubic})(σ::EngineeringStress, ϵ::EngineeringStrain)
+    σ₁, σ₂, σ₃ = σ[1:3]
+    Aᵀ = [
+        σ₁ σ₂ σ₃
+        σ₂+σ₃ σ₁+σ₃ σ₂+σ₁
+    ]
+    s₁₁, s₁₂ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * ϵ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
+    s₄₄ = dot(σ[4:6], ϵ[4:6]) / sum(abs2, σ[4:6])  # B = σ[4:6], s₄₄ = inv(Bᵀ * B) * Bᵀ * σ[4:6]
+    𝟘 = zero(s₁₁)
+    return ComplianceMatrix(
+        [
+            s₁₁ s₁₂ s₁₂ 𝟘 𝟘 𝟘
+            s₁₂ s₁₁ s₁₂ 𝟘 𝟘 𝟘
+            s₁₂ s₁₂ s₁₁ 𝟘 𝟘 𝟘
+            𝟘 𝟘 𝟘 s₄₄ 𝟘 𝟘
+            𝟘 𝟘 𝟘 𝟘 s₄₄ 𝟘
+            𝟘 𝟘 𝟘 𝟘 𝟘 s₄₄
+        ],
+    )
+end
 function (x::ElasticConstantFitter)(ϵ::TensorStrain, σ::TensorStress)
     c = x(EngineeringStrain(ϵ), EngineeringStress(σ))
     return StiffnessTensor(c)
