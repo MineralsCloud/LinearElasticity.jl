@@ -56,6 +56,10 @@ function (x::ElasticConstantFitter)(ϵ::TensorStrain, σ::TensorStress)
     c = x(EngineeringStrain(ϵ), EngineeringStress(σ))
     return StiffnessTensor(c)
 end
+function (x::ElasticConstantFitter)(σ::TensorStress, ϵ::TensorStrain)
+    s = x(EngineeringStress(σ), EngineeringStrain(ϵ))
+    return ComplianceTensor(s)
+end
 for (X, Y) in ((:EngineeringStrain, :EngineeringStress), (:TensorStrain, :TensorStress))
     @eval (x::ElasticConstantFitter)(ϵ::$X, σ::$Y, σ₀::$Y) = x(ϵ, σ - σ₀)
 end
