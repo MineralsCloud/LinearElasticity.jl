@@ -1,5 +1,5 @@
-using CrystallographyBase: Lattice, CrystalSystem, Cubic
-using LinearAlgebra: I, svd, diagm, qr
+using CrystallographyBase: Lattice, CrystalSystem, Cubic, Hexagonal
+using LinearAlgebra: I, norm, dot
 
 export distort, lsqfit
 
@@ -16,7 +16,7 @@ function lsqfit(ϵ::EngineeringStrain, σ::EngineeringStress, ::Cubic)
         ϵ₂+ϵ₃ ϵ₁+ϵ₃ ϵ₂+ϵ₁
     ]
     c₁₁, c₁₂ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * σ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
-    c₄₄ = σ[4] / ϵ[4]
+    c₄₄ = dot(ϵ[4:6], σ[4:6]) / sum(abs2, ϵ[4:6])  # B = ϵ[4:6], c₄₄ = inv(Bᵀ * B) * Bᵀ * σ[4:6]
     𝟘 = zero(c₁₁)
     return StiffnessMatrix(
         [
