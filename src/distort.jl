@@ -13,7 +13,6 @@ struct ElasticConstantFitter{T<:CrystalSystem}
 end
 
 function (::ElasticConstantFitter{Cubic})(ϵ::EngineeringStrain, σ::EngineeringStress)
-    σ = map(Base.Fix1(oftype, σ[1]) ∘ float, σ)
     ϵ₁, ϵ₂, ϵ₃ = ϵ[1:3]
     Aᵀ = [
         ϵ₁ ϵ₂ ϵ₃
