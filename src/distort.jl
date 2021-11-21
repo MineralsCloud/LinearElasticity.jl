@@ -16,7 +16,39 @@ struct ElasticConstantFitter{T<:CrystalSystem}
     system::T
 end
 
-function (::ElasticConstantFitter{Cubic})(ϵ::EngineeringStrain, σ::EngineeringStress)
+function (::ElasticConstantFitter{Hexagonal})(
+    ϵs::AbstractVector{<:EngineeringStrain},
+    σs::AbstractVector{<:EngineeringStress},
+)
+    @assert length(ϵs) == length(σs) >= 2
+    ϵ₁, ϵ₂, ϵ₃ = ϵs[1][1:3]
+    ϵ₁′, ϵ₂′, ϵ₃′ = ϵs[2][1:3]
+    Aᵀ = [
+        ϵ₁ ϵ₂ 0 ϵ₁′ ϵ₂′ 0
+        ϵ₂ ϵ₁ 0 ϵ₂′ ϵ₁′ 0
+        ϵ₃ ϵ₃ ϵ₁+ϵ₂ ϵ₃′ ϵ₃′ ϵ₁′+ϵ₂′
+        0 0 ϵ₃ 0 0 ϵ₃′
+    ]
+    c₁₁, c₁₂, c₁₃, c₃₃ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * append!(σs[1][1:3], σs[2][1:3])
+    c₄₄ = σs[1][4] / ϵs[1][4]
+    c₆₆ = σs[1][6] / ϵs[1][6]
+    𝟘 = zero(c₁₁)
+    return StiffnessMatrix(
+        [
+            c₁₁ c₁₂ c₁₃ 𝟘 𝟘 𝟘
+            c₁₂ c₁₁ c₁₃ 𝟘 𝟘 𝟘
+            c₁₃ c₁₃ c₃₃ 𝟘 𝟘 𝟘
+            𝟘 𝟘 𝟘 c₄₄ 𝟘 𝟘
+            𝟘 𝟘 𝟘 𝟘 c₄₄ 𝟘
+            𝟘 𝟘 𝟘 𝟘 𝟘 c₆₆
+        ],
+    )
+end
+function (::ElasticConstantFitter{Cubic})(
+    strains::AbstractVector{<:EngineeringStrain},
+    stresses::AbstractVector{<:EngineeringStress},
+)
+    ϵ, σ = first(strains), first(stresses)
     ϵ₁, ϵ₂, ϵ₃ = ϵ[1:3]
     Aᵀ = [
         ϵ₁ ϵ₂ ϵ₃
@@ -36,7 +68,11 @@ function (::ElasticConstantFitter{Cubic})(ϵ::EngineeringStrain, σ::Engineering
         ],
     )
 end
-function (::ElasticConstantFitter{Cubic})(σ::EngineeringStress, ϵ::EngineeringStrain)
+function (::ElasticConstantFitter{Cubic})(
+    stresses::AbstractVector{<:EngineeringStress},
+    strains::AbstractVector{<:EngineeringStrain},
+)
+    σ, ϵ = first(stresses), first(strains)
     σ₁, σ₂, σ₃ = σ[1:3]
     Aᵀ = [
         σ₁ σ₂ σ₃
@@ -56,17 +92,31 @@ function (::ElasticConstantFitter{Cubic})(σ::EngineeringStress, ϵ::Engineering
         ],
     )
 end
-function (x::ElasticConstantFitter)(ϵ::TensorStrain, σ::TensorStress)
-    c = x(EngineeringStrain(ϵ), EngineeringStress(σ))
+function (x::ElasticConstantFitter)(
+    strains::AbstractVector{<:TensorStrain},
+    stresses::AbstractVector{<:TensorStress},
+)
+    c = x(EngineeringStrain.(strains), EngineeringStress.(stresses))
     return StiffnessTensor(c)
 end
-function (x::ElasticConstantFitter)(σ::TensorStress, ϵ::TensorStrain)
-    s = x(EngineeringStress(σ), EngineeringStrain(ϵ))
+function (x::ElasticConstantFitter)(
+    stresses::AbstractVector{<:TensorStress},
+    strains::AbstractVector{<:TensorStrain},
+)
+    s = x(EngineeringStress.(stresses), EngineeringStrain.(strains))
     return ComplianceTensor(s)
 end
 for (X, Y) in ((:EngineeringStrain, :EngineeringStress), (:TensorStrain, :TensorStress))
     @eval begin
-        (x::ElasticConstantFitter)(ϵ::$X, σ::$Y, σ₀::$Y) = x(ϵ, σ - σ₀)
-        (x::ElasticConstantFitter)(σ::$Y, ϵ::$X, ϵ₀::$X) = x(σ, ϵ - ϵ₀)
+        (x::ElasticConstantFitter)(
+            strains::AbstractVector{<:$X},
+            stresses::AbstractVector{<:$Y},
+            σ₀::$Y,
+        ) = x(strains, map(Base.Fix2(-, σ₀), stresses))  # Subtract a common initial value σ₀
+        (x::ElasticConstantFitter)(
+            stresses::AbstractVector{<:$Y},
+            strains::AbstractVector{<:$X},
+            ϵ₀::$X,
+        ) = x(stresses, map(Base.Fix2(-, ϵ₀), strains))
     end
 end
