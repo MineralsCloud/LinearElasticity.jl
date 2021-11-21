@@ -16,6 +16,34 @@ struct ElasticConstantFitter{T<:CrystalSystem}
     system::T
 end
 
+function (::ElasticConstantFitter{Hexagonal})(
+    ϵs::AbstractVector{<:EngineeringStrain},
+    σs::AbstractVector{<:EngineeringStress},
+)
+    @assert length(ϵs) == length(σs) >= 2
+    ϵ₁, ϵ₂, ϵ₃ = ϵs[1][1:3]
+    ϵ₁′, ϵ₂′, ϵ₃′ = ϵs[2][1:3]
+    Aᵀ = [
+        ϵ₁ ϵ₂ 0 ϵ₁′ ϵ₂′ 0
+        ϵ₂ ϵ₁ 0 ϵ₂′ ϵ₁′ 0
+        ϵ₃ ϵ₃ ϵ₁+ϵ₂ ϵ₃′ ϵ₃′ ϵ₁′+ϵ₂′
+        0 0 ϵ₃ 0 0 ϵ₃′
+    ]
+    c₁₁, c₁₂, c₁₃, c₃₃ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * append!(σs[1][1:3], σs[2][1:3])
+    c₄₄ = σs[1][4] / ϵs[1][4]
+    c₆₆ = σs[1][6] / ϵs[1][6]
+    𝟘 = zero(c₁₁)
+    return StiffnessMatrix(
+        [
+            c₁₁ c₁₂ c₁₃ 𝟘 𝟘 𝟘
+            c₁₂ c₁₁ c₁₃ 𝟘 𝟘 𝟘
+            c₁₃ c₁₃ c₃₃ 𝟘 𝟘 𝟘
+            𝟘 𝟘 𝟘 c₄₄ 𝟘 𝟘
+            𝟘 𝟘 𝟘 𝟘 c₄₄ 𝟘
+            𝟘 𝟘 𝟘 𝟘 𝟘 c₆₆
+        ],
+    )
+end
 function (::ElasticConstantFitter{Cubic})(ϵ::EngineeringStrain, σ::EngineeringStress)
     ϵ₁, ϵ₂, ϵ₃ = ϵ[1:3]
     Aᵀ = [
