@@ -92,17 +92,31 @@ function (::ElasticConstantFitter{Cubic})(
         ],
     )
 end
-function (x::ElasticConstantFitter)(ϵ::TensorStrain, σ::TensorStress)
-    c = x(EngineeringStrain(ϵ), EngineeringStress(σ))
+function (x::ElasticConstantFitter)(
+    strains::AbstractVector{<:TensorStrain},
+    stresses::AbstractVector{<:TensorStress},
+)
+    c = x(EngineeringStrain.(strains), EngineeringStress.(stresses))
     return StiffnessTensor(c)
 end
-function (x::ElasticConstantFitter)(σ::TensorStress, ϵ::TensorStrain)
-    s = x(EngineeringStress(σ), EngineeringStrain(ϵ))
+function (x::ElasticConstantFitter)(
+    stresses::AbstractVector{<:TensorStress},
+    strains::AbstractVector{<:TensorStrain},
+)
+    s = x(EngineeringStress.(stresses), EngineeringStrain.(strains))
     return ComplianceTensor(s)
 end
 for (X, Y) in ((:EngineeringStrain, :EngineeringStress), (:TensorStrain, :TensorStress))
     @eval begin
-        (x::ElasticConstantFitter)(ϵ::$X, σ::$Y, σ₀::$Y) = x(ϵ, σ - σ₀)
-        (x::ElasticConstantFitter)(σ::$Y, ϵ::$X, ϵ₀::$X) = x(σ, ϵ - ϵ₀)
+        (x::ElasticConstantFitter)(
+            strains::AbstractVector{<:$X},
+            stresses::AbstractVector{<:$Y},
+            σ₀::$Y,
+        ) = x(strains, map(Base.Fix2(-, σ₀), stresses))  # Subtract a common initial value σ₀
+        (x::ElasticConstantFitter)(
+            stresses::AbstractVector{<:$Y},
+            strains::AbstractVector{<:$X},
+            ϵ₀::$X,
+        ) = x(stresses, map(Base.Fix2(-, ϵ₀), strains))
     end
 end
