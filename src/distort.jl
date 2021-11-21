@@ -44,7 +44,11 @@ function (::ElasticConstantFitter{Hexagonal})(
         ],
     )
 end
-function (::ElasticConstantFitter{Cubic})(ϵ::EngineeringStrain, σ::EngineeringStress)
+function (::ElasticConstantFitter{Cubic})(
+    strains::AbstractVector{<:EngineeringStrain},
+    stresses::AbstractVector{<:EngineeringStress},
+)
+    ϵ, σ = first(strains), first(stresses)
     ϵ₁, ϵ₂, ϵ₃ = ϵ[1:3]
     Aᵀ = [
         ϵ₁ ϵ₂ ϵ₃
@@ -64,7 +68,11 @@ function (::ElasticConstantFitter{Cubic})(ϵ::EngineeringStrain, σ::Engineering
         ],
     )
 end
-function (::ElasticConstantFitter{Cubic})(σ::EngineeringStress, ϵ::EngineeringStrain)
+function (::ElasticConstantFitter{Cubic})(
+    stresses::AbstractVector{<:EngineeringStress},
+    strains::AbstractVector{<:EngineeringStrain},
+)
+    σ, ϵ = first(stresses), first(strains)
     σ₁, σ₂, σ₃ = σ[1:3]
     Aᵀ = [
         σ₁ σ₂ σ₃
