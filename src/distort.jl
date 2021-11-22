@@ -32,15 +32,15 @@ function (::ElasticConstantFitter{Hexagonal})(
     c₁₁, c₁₂, c₁₃, c₃₃ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * append!(σs[1][1:3], σs[2][1:3])
     c₄₄ = σs[1][4] / ϵs[1][4]
     c₆₆ = σs[1][6] / ϵs[1][6]
-    𝟘 = zero(c₁₁)
+    𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         [
-            c₁₁ c₁₂ c₁₃ 𝟘 𝟘 𝟘
-            c₁₂ c₁₁ c₁₃ 𝟘 𝟘 𝟘
-            c₁₃ c₁₃ c₃₃ 𝟘 𝟘 𝟘
-            𝟘 𝟘 𝟘 c₄₄ 𝟘 𝟘
-            𝟘 𝟘 𝟘 𝟘 c₄₄ 𝟘
-            𝟘 𝟘 𝟘 𝟘 𝟘 c₆₆
+            c₁₁ c₁₂ c₁₃ 𝟎 𝟎 𝟎
+            c₁₂ c₁₁ c₁₃ 𝟎 𝟎 𝟎
+            c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
+            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
+            𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
+            𝟎 𝟎 𝟎 𝟎 𝟎 c₆₆
         ],
     )
 end
@@ -56,15 +56,15 @@ function (::ElasticConstantFitter{Cubic})(
     ]
     c₁₁, c₁₂ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * σ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
     c₄₄ = dot(ϵ[4:6], σ[4:6]) / sum(abs2, ϵ[4:6])  # B = ϵ[4:6], c₄₄ = inv(Bᵀ * B) * Bᵀ * σ[4:6]
-    𝟘 = zero(c₁₁)
+    𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         [
-            c₁₁ c₁₂ c₁₂ 𝟘 𝟘 𝟘
-            c₁₂ c₁₁ c₁₂ 𝟘 𝟘 𝟘
-            c₁₂ c₁₂ c₁₁ 𝟘 𝟘 𝟘
-            𝟘 𝟘 𝟘 c₄₄ 𝟘 𝟘
-            𝟘 𝟘 𝟘 𝟘 c₄₄ 𝟘
-            𝟘 𝟘 𝟘 𝟘 𝟘 c₄₄
+            c₁₁ c₁₂ c₁₂ 𝟎 𝟎 𝟎
+            c₁₂ c₁₁ c₁₂ 𝟎 𝟎 𝟎
+            c₁₂ c₁₂ c₁₁ 𝟎 𝟎 𝟎
+            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
+            𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
+            𝟎 𝟎 𝟎 𝟎 𝟎 c₄₄
         ],
     )
 end
@@ -80,15 +80,15 @@ function (::ElasticConstantFitter{Cubic})(
     ]
     s₁₁, s₁₂ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * ϵ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
     s₄₄ = dot(σ[4:6], ϵ[4:6]) / sum(abs2, σ[4:6])  # B = σ[4:6], s₄₄ = inv(Bᵀ * B) * Bᵀ * σ[4:6]
-    𝟘 = zero(s₁₁)
+    𝟎 = zero(s₁₁)
     return ComplianceMatrix(
         [
-            s₁₁ s₁₂ s₁₂ 𝟘 𝟘 𝟘
-            s₁₂ s₁₁ s₁₂ 𝟘 𝟘 𝟘
-            s₁₂ s₁₂ s₁₁ 𝟘 𝟘 𝟘
-            𝟘 𝟘 𝟘 s₄₄ 𝟘 𝟘
-            𝟘 𝟘 𝟘 𝟘 s₄₄ 𝟘
-            𝟘 𝟘 𝟘 𝟘 𝟘 s₄₄
+            s₁₁ s₁₂ s₁₂ 𝟎 𝟎 𝟎
+            s₁₂ s₁₁ s₁₂ 𝟎 𝟎 𝟎
+            s₁₂ s₁₂ s₁₁ 𝟎 𝟎 𝟎
+            𝟎 𝟎 𝟎 s₄₄ 𝟎 𝟎
+            𝟎 𝟎 𝟎 𝟎 s₄₄ 𝟎
+            𝟎 𝟎 𝟎 𝟎 𝟎 s₄₄
         ],
     )
 end
