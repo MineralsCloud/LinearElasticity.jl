@@ -1,5 +1,5 @@
-using CrystallographyBase: Lattice, CrystalSystem, Cubic, Hexagonal
-using LinearAlgebra: I, norm, dot
+using CrystallographyBase: Lattice, CrystalSystem, Cubic, Hexagonal, Orthorhombic
+using LinearAlgebra: I, Symmetric, norm, dot
 
 export ElasticConstantFitter, distortby, distort, strainstate
 
@@ -16,6 +16,28 @@ struct ElasticConstantFitter{T<:CrystalSystem}
     system::T
 end
 
+function (::ElasticConstantFitter{Orthorhombic})(
+    ϵs::AbstractVector{<:EngineeringStrain},
+    σs::AbstractVector{<:EngineeringStress},
+)
+    @assert length(ϵs) == length(σs) >= 3
+    ϵ, σ = hcat(ϵs...), hcat(σs...)
+    c = transpose(ϵ[1:3, :]) \ transpose(σ[1:3, :]) |> Symmetric
+    Bᵀ = transpose(ϵ[4:6, :])
+    c₄₄ = (Bᵀ\σ[4, :])[1]
+    c₅₅ = (Bᵀ\σ[5, :])[2]
+    c₆₆ = (Bᵀ\σ[6, :])[3]
+    𝟎 = zero(c[1, 1])
+    mat = vcat(
+        hcat(c, fill(𝟎, 3, 3)),
+        [
+            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
+            𝟎 𝟎 𝟎 𝟎 c₅₅ 𝟎
+            𝟎 𝟎 𝟎 𝟎 𝟎 c₆₆
+        ],
+    )
+    return StiffnessMatrix(mat)
+end
 function (::ElasticConstantFitter{Hexagonal})(
     ϵs::AbstractVector{<:EngineeringStrain},
     σs::AbstractVector{<:EngineeringStress},
