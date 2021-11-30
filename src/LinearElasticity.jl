@@ -118,5 +118,6 @@ include("SymmetryCriteria.jl")
 # include("StabilityCriteria.jl")
 include("Isotropic.jl")
 include("distort.jl")
+include("fitting.jl")
 
 end
