@@ -1,3 +1,4 @@
+#! format: off
 using LinearElasticity
 using Documenter
 
