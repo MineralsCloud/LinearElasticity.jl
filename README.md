@@ -9,4 +9,5 @@
 [![Build Status](https://api.cirrus-ci.com/github/MineralsCloud/LinearElasticity.jl.svg)](https://cirrus-ci.com/github/MineralsCloud/LinearElasticity.jl)
 [![coverage report](https://gitlab.com/singularitti/LinearElasticity.jl/badges/master/coverage.svg)](https://gitlab.com/singularitti/LinearElasticity.jl/-/jobs)
 [![Coverage](https://codecov.io/gh/MineralsCloud/LinearElasticity.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MineralsCloud/LinearElasticity.jl)
+[![PkgEval](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/L/LinearElasticity.svg)](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/report.html)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
