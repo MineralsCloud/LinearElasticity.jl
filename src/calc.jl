@@ -30,7 +30,7 @@ function (::ElasticConstantSolver{Cubic})(
     )
 end
 
-_select(v, indices, index) = v[filter(==(index), indices)]
+_select(arr, indices, i) = (arr[index] for index in indices if index == i)
 
 _cij(ϵᵢ₊, ϵᵢ₋, σⱼ₊, σⱼ₋) = (σⱼ₊ - σⱼ₋) / (ϵᵢ₊ - ϵᵢ₋)
 
