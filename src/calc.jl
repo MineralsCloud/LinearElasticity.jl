@@ -1,3 +1,5 @@
+using Compat: only
+
 struct ElasticConstantSolver{T<:CrystalSystem}
     system::T
 end
@@ -34,6 +36,5 @@ _cij(ϵᵢ₊, ϵᵢ₋, σⱼ₊, σⱼ₋) = (σⱼ₊ - σⱼ₋) / (ϵᵢ₊
 
 function _whichindex(x)
     indices = findall(!iszero, x)
-    @assert length(indices) == 1
-    return first(indices)
+    return only(indices)
 end
