@@ -1,3 +1,5 @@
+using Compat: only
+
 struct ElasticConstantSolver{T<:CrystalSystem}
     system::T
 end
@@ -7,14 +9,14 @@ function (::ElasticConstantSolver{Cubic})(
     stresses::AbstractVector{<:EngineeringStress},
 )
     indices = map(_whichindex, strains)
-    strain1 = _select(strains, indices, 1)
-    stress1 = _select(stresses, indices, 1)
-    c₁₁ = _cij(strain1[1], strain1[2], stress1[1], stress1[2])
-    stress2 = _select(stresses, indices, 2)
-    c₁₂ = _cij(strain1[1], strain1[2], stress2[1], stress2[2])
-    strain4 = _select(strains, indices, 4)
-    stress4 = _select(stresses, indices, 4)
-    c₄₄ = _cij(strain4[1], strain4[2], stress4[1], stress4[2])
+    ϵ₁₊, ϵ₁₋ = _select(strains, indices, 1)
+    σ₁₊, σ₁₋ = _select(stresses, indices, 1)
+    c₁₁ = _cij(ϵ₁₊, ϵ₁₋, σ₁₊, σ₁₋)
+    σ₂₊, σ₂₋ = _select(stresses, indices, 2)
+    c₁₂ = _cij(ϵ₁₊, ϵ₁₋, σ₂₊, σ₂₋)
+    ϵ₄₊, ϵ₄₋ = _select(strains, indices, 4)
+    σ₄₊, σ₄₋ = _select(stresses, indices, 4)
+    c₄₄ = _cij(ϵ₄₊, ϵ₄₋, σ₄₊, σ₄₋)
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         [
@@ -28,12 +30,11 @@ function (::ElasticConstantSolver{Cubic})(
     )
 end
 
-_select(v, indices, index) = v[filter(==(index), indices)]
+_select(arr, indices, i) = (arr[index] for index in indices if index == i)
 
 _cij(ϵᵢ₊, ϵᵢ₋, σⱼ₊, σⱼ₋) = (σⱼ₊ - σⱼ₋) / (ϵᵢ₊ - ϵᵢ₋)
 
 function _whichindex(x)
     indices = findall(!iszero, x)
-    @assert length(indices) == 1
-    return first(indices)
+    return only(indices)
 end
