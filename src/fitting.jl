@@ -1,4 +1,4 @@
-using CrystallographyBase: CrystalSystem, Cubic, Hexagonal, Orthorhombic
+using CrystallographyBase: CrystalSystem, Cubic, Hexagonal, Tetragonal, Orthorhombic
 using LinearAlgebra: Symmetric, dot
 
 export ElasticConstantFitter
@@ -7,6 +7,45 @@ struct ElasticConstantFitter{T<:CrystalSystem}
     system::T
 end
 
+function (::ElasticConstantFitter{Tetragonal})(
+    ϵs::AbstractVector{<:EngineeringStrain},
+    σs::AbstractVector{<:EngineeringStress},
+)
+    @assert length(ϵs) == length(σs) >= 2
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵs[1]
+    ϵ₁′, ϵ₂′, ϵ₃′, ϵ₄′, ϵ₅′, ϵ₆′ = ϵs[2]
+    mat = _tetragonal1(ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆, ϵ₁′, ϵ₂′, ϵ₃′, ϵ₄′, ϵ₅′, ϵ₆′, σs)
+    return StiffnessMatrix(mat)
+end
+function _tetragonal1(ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆, ϵ₁′, ϵ₂′, ϵ₃′, ϵ₄′, ϵ₅′, ϵ₆′, σs)
+    m0 = [
+        ϵ₁ ϵ₂ ϵ₃ 0 ϵ₆ 0 0
+        ϵ₂ ϵ₁ ϵ₃ 0 -ϵ₆ 0 0
+        0 0 ϵ₁+ϵ₂ ϵ₃ 0 0 0
+        0 0 0 0 0 ϵ₄ 0
+        0 0 0 0 ϵ₁ ϵ₅ 0
+        0 0 0 0 -ϵ₁ 0 ϵ₆
+    ]
+    m1 = [
+        ϵ₁′ ϵ₂′ ϵ₃′ 0 ϵ₆′ 0 0
+        ϵ₂′ ϵ₁′ ϵ₃′ 0 -ϵ₆′ 0 0
+        0 0 ϵ₁′+ϵ₂′ ϵ₃′ 0 0 0
+        0 0 0 0 0 ϵ₄′ 0
+        0 0 0 0 ϵ₁′ ϵ₅′ 0
+        0 0 0 0 -ϵ₁′ 0 ϵ₆′
+    ]
+    m = vcat(m0, m1)
+    c₁₁, c₁₂, c₁₃, c₃₃, c₁₆, c₄₄, c₆₆ = m \ vcat(σs...)
+    𝟎 = zero(c₁₁)
+    return [
+        c₁₁ c₁₂ c₁₃ 𝟎 𝟎 c₁₆
+        c₁₂ c₁₁ c₁₃ 𝟎 𝟎 -c₁₆
+        c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
+        𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
+        𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
+        c₁₆ -c₁₆ 𝟎 𝟎 𝟎 c₆₆
+    ]
+end
 function (::ElasticConstantFitter{Orthorhombic})(
     ϵs::AbstractVector{<:EngineeringStrain},
     σs::AbstractVector{<:EngineeringStress},
