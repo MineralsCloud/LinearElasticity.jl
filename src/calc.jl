@@ -4,19 +4,34 @@ struct ElasticConstantSolver{T<:CrystalSystem}
     system::T
 end
 
+function (::ElasticConstantSolver{Hexagonal})(
+    strains::AbstractVector{<:EngineeringStrain},
+    stresses::AbstractVector{<:EngineeringStress},
+)
+    c₁₁ = _calculate_cij(strains, stresses, 1, 1)
+    c₁₂ = _calculate_cij(strains, stresses, 1, 2)
+    c₁₃ = _calculate_cij(strains, stresses, 1, 3)
+    c₃₃ = _calculate_cij(strains, stresses, 3, 3)
+    c₄₄ = _calculate_cij(strains, stresses, 4, 4)
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix(
+        [
+            c₁₁ c₁₂ c₁₃ 𝟎 𝟎 𝟎
+            c₁₂ c₁₁ c₁₃ 𝟎 𝟎 𝟎
+            c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
+            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
+            𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
+            𝟎 𝟎 𝟎 𝟎 𝟎 (c₁₁-c₁₂)/2
+        ],
+    )
+end
 function (::ElasticConstantSolver{Cubic})(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
 )
-    indices = map(_whichindex, strains)
-    ϵ₁₊, ϵ₁₋ = _select(strains, indices, 1)
-    σ₁₊, σ₁₋ = _select(stresses, indices, 1)
-    c₁₁ = _cij(ϵ₁₊, ϵ₁₋, σ₁₊, σ₁₋)
-    σ₂₊, σ₂₋ = _select(stresses, indices, 2)
-    c₁₂ = _cij(ϵ₁₊, ϵ₁₋, σ₂₊, σ₂₋)
-    ϵ₄₊, ϵ₄₋ = _select(strains, indices, 4)
-    σ₄₊, σ₄₋ = _select(stresses, indices, 4)
-    c₄₄ = _cij(ϵ₄₊, ϵ₄₋, σ₄₊, σ₄₋)
+    c₁₁ = _calculate_cij(strains, stresses, 1, 1)
+    c₁₂ = _calculate_cij(strains, stresses, 1, 2)
+    c₄₄ = _calculate_cij(strains, stresses, 4, 4)
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         [
@@ -30,11 +45,29 @@ function (::ElasticConstantSolver{Cubic})(
     )
 end
 
-_select(arr, indices, i) = (arr[index] for index in indices if index == i)
+function _indexof_nonzero_element(x::Union{EngineeringStress,EngineeringStrain})
+    indices = findall(!iszero, x)
+    return only(indices)
+end
+
+function _pick_nonzero(strains_or_stresses::AbstractVector)
+    indices = map(_indexof_nonzero_element, strains_or_stresses)
+    function _at_index(i)
+        it = (strains_or_stresses[j] for j in indices if j == i)
+        positive, negative = first(it) > 0 ? it : reverse(it)
+        return positive, negative
+    end
+end
 
 _cij(ϵᵢ₊, ϵᵢ₋, σⱼ₊, σⱼ₋) = (σⱼ₊ - σⱼ₋) / (ϵᵢ₊ - ϵᵢ₋)
 
-function _whichindex(x)
-    indices = findall(!iszero, x)
-    return only(indices)
+function _calculate_cij(
+    strains::AbstractVector{<:EngineeringStrain},
+    stresses::AbstractVector{<:EngineeringStress},
+    i,
+    j,
+)
+    ϵᵢ₊, ϵᵢ₋ = _pick_nonzero(strains)(i)
+    σⱼ₊, σⱼ₋ = _pick_nonzero(stresses)(j)
+    return _cij(ϵᵢ₊, ϵᵢ₋, σⱼ₊, σⱼ₋)
 end
