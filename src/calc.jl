@@ -4,6 +4,31 @@ struct ElasticConstantSolver{T<:CrystalSystem}
     system::T
 end
 
+function (::ElasticConstantSolver{Orthorhombic})(
+    strains::AbstractVector{<:EngineeringStrain},
+    stresses::AbstractVector{<:EngineeringStress},
+)
+    c₁₁ = _calculate_cij(strains, stresses, 1, 1)
+    c₁₂ = _calculate_cij(strains, stresses, 1, 2)
+    c₁₃ = _calculate_cij(strains, stresses, 1, 3)
+    c₂₂ = _calculate_cij(strains, stresses, 2, 2)
+    c₂₃ = _calculate_cij(strains, stresses, 2, 3)
+    c₃₃ = _calculate_cij(strains, stresses, 3, 3)
+    c₄₄ = _calculate_cij(strains, stresses, 4, 4)
+    c₅₅ = _calculate_cij(strains, stresses, 5, 5)
+    c₆₆ = _calculate_cij(strains, stresses, 6, 6)
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix(
+        [
+            c₁₁ c₁₂ c₁₃ 𝟎 𝟎 𝟎
+            c₁₂ c₂₂ c₂₃ 𝟎 𝟎 𝟎
+            c₁₃ c₂₃ c₃₃ 𝟎 𝟎 𝟎
+            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
+            𝟎 𝟎 𝟎 𝟎 c₅₅ 𝟎
+            𝟎 𝟎 𝟎 𝟎 𝟎 c₆₆
+        ],
+    )
+end
 function (::ElasticConstantSolver{Hexagonal})(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
