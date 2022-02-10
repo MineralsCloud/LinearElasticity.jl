@@ -1,4 +1,4 @@
-using CrystallographyBase: Cubic
+using Crystallography: Cubic
 using Tensorial: SymmetricFourthOrderTensor
 using LinearElasticity.SymmetryCriteria: whichsystem, isisotropic
 

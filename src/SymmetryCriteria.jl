@@ -1,6 +1,6 @@
 module SymmetryCriteria
 
-using CrystallographyBase:
+using Crystallography:
     CrystalSystem,
     Cubic,
     Hexagonal,
