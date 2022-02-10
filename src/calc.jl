@@ -1,9 +1,17 @@
 using Compat: only
+using Crystallography: Triclinic
 
 struct ElasticConstantSolver{T<:CrystalSystem}
     system::T
 end
 
+function (::ElasticConstantSolver{Triclinic})(
+    strains::AbstractVector{<:EngineeringStrain},
+    stresses::AbstractVector{<:EngineeringStress},
+)
+    cᵢⱼ = [_calculate_cij(strains, stresses, i, j) for i in 1:6 for j in i:6]
+    return StiffnessMatrix(cᵢⱼ)
+end
 function (::ElasticConstantSolver{Orthorhombic})(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
