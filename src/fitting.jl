@@ -1,4 +1,4 @@
-using CrystallographyBase: CrystalSystem, Cubic, Hexagonal, Tetragonal, Orthorhombic
+using Crystallography: CrystalSystem, Cubic, Hexagonal, Tetragonal, Orthorhombic
 using LinearAlgebra: Symmetric, dot
 
 export ElasticConstantFitter
