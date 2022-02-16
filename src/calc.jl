@@ -85,12 +85,19 @@ end
 
 function _pick_nonzero(strains_or_stresses::AbstractVector)
     indices = map(_indexof_nonzero_element, strains_or_stresses)
-    function _at_index(i)
-        it = (strains_or_stresses[j] for j in indices if j == i)
-        positive, negative = first(it) > 0 ? it : reverse(it)
+    function _at_index(desired_index)
+        i, j = filter(==(desired_index), indices)
+        x, y = strains_or_stresses[i][desired_index], strains_or_stresses[j][desired_index]
+        if _isnegative(x * y)
+            positive, negative = _isnegative(x) ? (y, x) : (x, y)
+        else
+            error("all values are of the same sign!")
+        end
         return positive, negative
     end
 end
+
+_isnegative(number) = number < zero(number)
 
 _cij(ϵᵢ₊, ϵᵢ₋, σⱼ₊, σⱼ₋) = (σⱼ₊ - σⱼ₋) / (ϵᵢ₊ - ϵᵢ₋)
 
