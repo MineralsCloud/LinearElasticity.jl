@@ -91,8 +91,6 @@ function _pick_from(strains::AbstractVector{<:EngineeringStrain})
     end
 end
 
-_isnegative(number) = number < zero(number)
-
 function _cᵢⱼ(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
