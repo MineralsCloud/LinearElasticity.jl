@@ -78,8 +78,8 @@ function (::ElasticConstantSolver{Cubic})(
     )
 end
 
-function _indexof_nonzero_element(x::Union{EngineeringStress,EngineeringStrain})
-    indices = findall(!iszero, x)
+function _find_nonzero_element(strain_or_stress::Union{EngineeringStress,EngineeringStrain})
+    indices = findall(!iszero, strain_or_stress)
     return only(indices)
 end
 
