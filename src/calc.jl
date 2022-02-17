@@ -78,28 +78,26 @@ function (::ElasticConstantSolver{Cubic})(
     )
 end
 
-function _find_nonzero_element(strain_or_stress::Union{EngineeringStress,EngineeringStrain})
-    indices = findall(!iszero, strain_or_stress)
+function _find_nonzero_element(strain::EngineeringStrain)
+    indices = findall(!iszero, strain)
     return only(indices)
 end
 
-function _pick_nonzero(strains_or_stresses::AbstractVector)
-    indices = map(_find_nonzero_element, strains_or_stresses)
+function _pick_from(strains::AbstractVector{<:EngineeringStrain})
+    indices = map(_find_nonzero_element, strains)
     function _at_index(desired_index)
         positions = findall(==(desired_index), indices)  # No duplicated directions allowed
-        position = only(positions)
-        return strains_or_stresses[position]
+        return only(positions)
     end
 end
-
-_isnegative(number) = number < zero(number)
 
 function _cᵢⱼ(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
-    i,
     j,
+    i,
 )
-    ϵⱼ, σᵢ = _pick_nonzero(strains)(i), _pick_nonzero(stresses)(j)
-    return σᵢ / ϵⱼ
+    position = _pick_from(strains)(j)
+    σᵢ, ϵⱼ = stresses[position][i], strains[position][j]
+    return -σᵢ / ϵⱼ
 end
