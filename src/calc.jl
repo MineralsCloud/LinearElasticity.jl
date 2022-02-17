@@ -99,5 +99,5 @@ function _cᵢⱼ(
 )
     position = _pick_from(strains)(j)
     σᵢ, ϵⱼ = stresses[position][i], strains[position][j]
-    return σᵢ / ϵⱼ
+    return -σᵢ / ϵⱼ
 end
