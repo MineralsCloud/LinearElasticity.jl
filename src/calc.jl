@@ -9,22 +9,22 @@ function (::ElasticConstantSolver{Triclinic})(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
 )
-    cᵢⱼ = [_calculate_cij(strains, stresses, i, j) for i in 1:6 for j in i:6]
+    cᵢⱼ = [_cᵢⱼ(strains, stresses, i, j) for i in 1:6 for j in i:6]
     return StiffnessMatrix(cᵢⱼ)
 end
 function (::ElasticConstantSolver{Orthorhombic})(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
 )
-    c₁₁ = _calculate_cij(strains, stresses, 1, 1)
-    c₁₂ = _calculate_cij(strains, stresses, 1, 2)
-    c₁₃ = _calculate_cij(strains, stresses, 1, 3)
-    c₂₂ = _calculate_cij(strains, stresses, 2, 2)
-    c₂₃ = _calculate_cij(strains, stresses, 2, 3)
-    c₃₃ = _calculate_cij(strains, stresses, 3, 3)
-    c₄₄ = _calculate_cij(strains, stresses, 4, 4)
-    c₅₅ = _calculate_cij(strains, stresses, 5, 5)
-    c₆₆ = _calculate_cij(strains, stresses, 6, 6)
+    c₁₁ = _cᵢⱼ(strains, stresses, 1, 1)
+    c₁₂ = _cᵢⱼ(strains, stresses, 1, 2)
+    c₁₃ = _cᵢⱼ(strains, stresses, 1, 3)
+    c₂₂ = _cᵢⱼ(strains, stresses, 2, 2)
+    c₂₃ = _cᵢⱼ(strains, stresses, 2, 3)
+    c₃₃ = _cᵢⱼ(strains, stresses, 3, 3)
+    c₄₄ = _cᵢⱼ(strains, stresses, 4, 4)
+    c₅₅ = _cᵢⱼ(strains, stresses, 5, 5)
+    c₆₆ = _cᵢⱼ(strains, stresses, 6, 6)
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         [
@@ -41,11 +41,11 @@ function (::ElasticConstantSolver{Hexagonal})(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
 )
-    c₁₁ = _calculate_cij(strains, stresses, 1, 1)
-    c₁₂ = _calculate_cij(strains, stresses, 1, 2)
-    c₁₃ = _calculate_cij(strains, stresses, 1, 3)
-    c₃₃ = _calculate_cij(strains, stresses, 3, 3)
-    c₄₄ = _calculate_cij(strains, stresses, 4, 4)
+    c₁₁ = _cᵢⱼ(strains, stresses, 1, 1)
+    c₁₂ = _cᵢⱼ(strains, stresses, 1, 2)
+    c₁₃ = _cᵢⱼ(strains, stresses, 1, 3)
+    c₃₃ = _cᵢⱼ(strains, stresses, 3, 3)
+    c₄₄ = _cᵢⱼ(strains, stresses, 4, 4)
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         [
@@ -62,9 +62,9 @@ function (::ElasticConstantSolver{Cubic})(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
 )
-    c₁₁ = _calculate_cij(strains, stresses, 1, 1)
-    c₁₂ = _calculate_cij(strains, stresses, 1, 2)
-    c₄₄ = _calculate_cij(strains, stresses, 4, 4)
+    c₁₁ = _cᵢⱼ(strains, stresses, 1, 1)
+    c₁₂ = _cᵢⱼ(strains, stresses, 1, 2)
+    c₄₄ = _cᵢⱼ(strains, stresses, 4, 4)
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         [
@@ -94,15 +94,12 @@ end
 
 _isnegative(number) = number < zero(number)
 
-_cij(ϵᵢ₊, ϵᵢ₋, σⱼ₊, σⱼ₋) = (σⱼ₊ - σⱼ₋) / (ϵᵢ₊ - ϵᵢ₋)
-
-function _calculate_cij(
+function _cᵢⱼ(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
     i,
     j,
 )
-    ϵᵢ₊, ϵᵢ₋ = _pick_nonzero(strains)(i)
-    σⱼ₊, σⱼ₋ = _pick_nonzero(stresses)(j)
-    return _cij(ϵᵢ₊, ϵᵢ₋, σⱼ₊, σⱼ₋)
+    ϵⱼ, σᵢ = _pick_nonzero(strains)(i), _pick_nonzero(stresses)(j)
+    return σᵢ / ϵⱼ
 end
