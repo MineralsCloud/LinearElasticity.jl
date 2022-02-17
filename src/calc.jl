@@ -96,9 +96,10 @@ _isnegative(number) = number < zero(number)
 function _cᵢⱼ(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
-    i,
     j,
+    i,
 )
-    ϵⱼ, σᵢ = _pick_nonzero(strains)(i), _pick_nonzero(stresses)(j)
+    position = _pick_from(strains)(j)
+    σᵢ, ϵⱼ = stresses[position][i], strains[position][j]
     return σᵢ / ϵⱼ
 end
