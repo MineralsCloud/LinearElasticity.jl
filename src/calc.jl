@@ -83,12 +83,11 @@ function _find_nonzero_element(strain::EngineeringStrain)
     return only(indices)
 end
 
-function _pick_nonzero(strains_or_stresses::AbstractVector)
-    indices = map(_find_nonzero_element, strains_or_stresses)
+function _pick_from(strains::AbstractVector{<:EngineeringStrain})
+    indices = map(_find_nonzero_element, strains)
     function _at_index(desired_index)
         positions = findall(==(desired_index), indices)  # No duplicated directions allowed
-        position = only(positions)
-        return strains_or_stresses[position]
+        return only(positions)
     end
 end
 
