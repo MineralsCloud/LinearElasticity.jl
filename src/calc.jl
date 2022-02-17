@@ -84,16 +84,11 @@ function _find_nonzero_element(strain_or_stress::Union{EngineeringStress,Enginee
 end
 
 function _pick_nonzero(strains_or_stresses::AbstractVector)
-    indices = map(_indexof_nonzero_element, strains_or_stresses)
+    indices = map(_find_nonzero_element, strains_or_stresses)
     function _at_index(desired_index)
-        i, j = findall(==(desired_index), indices)
-        x, y = strains_or_stresses[i][desired_index], strains_or_stresses[j][desired_index]
-        if _isnegative(x * y)
-            positive, negative = _isnegative(x) ? (y, x) : (x, y)
-        else
-            error("all values are of the same sign!")
-        end
-        return positive, negative
+        positions = findall(==(desired_index), indices)  # No duplicated directions allowed
+        position = only(positions)
+        return strains_or_stresses[position]
     end
 end
 
