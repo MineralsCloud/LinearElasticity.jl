@@ -86,7 +86,7 @@ end
 function _pick_nonzero(strains_or_stresses::AbstractVector)
     indices = map(_indexof_nonzero_element, strains_or_stresses)
     function _at_index(desired_index)
-        i, j = filter(==(desired_index), indices)
+        i, j = findall(==(desired_index), indices)
         x, y = strains_or_stresses[i][desired_index], strains_or_stresses[j][desired_index]
         if _isnegative(x * y)
             positive, negative = _isnegative(x) ? (y, x) : (x, y)
