@@ -10,7 +10,7 @@ function (::ElasticConstantSolver{Triclinic})(
     stresses::AbstractVector{<:EngineeringStress},
 )
     cᵢⱼ = [_cᵢⱼ(strains, stresses, i, j) for i in 1:6 for j in i:6]
-    return StiffnessMatrix(cᵢⱼ)
+    return StiffnessMatrix(cᵢⱼ...)
 end
 function (::ElasticConstantSolver{Orthorhombic})(
     strains::AbstractVector{<:EngineeringStrain},
