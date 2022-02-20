@@ -37,6 +37,30 @@ function (::ElasticConstantSolver{Orthorhombic})(
         ],
     )
 end
+function (::ElasticConstantSolver{Tetragonal})(
+    strains::AbstractVector{<:EngineeringStrain},
+    stresses::AbstractVector{<:EngineeringStress},
+)
+    c₁₁ = _cᵢⱼ(strains, stresses, 1, 1)
+    c₁₂ = _cᵢⱼ(strains, stresses, 1, 2)
+    c₁₃ = _cᵢⱼ(strains, stresses, 1, 3)
+    c₁₆ = _cᵢⱼ(strains, stresses, 1, 6)
+    c₂₂ = _cᵢⱼ(strains, stresses, 2, 2)
+    c₃₃ = _cᵢⱼ(strains, stresses, 3, 3)
+    c₄₄ = _cᵢⱼ(strains, stresses, 4, 4)
+    c₆₆ = _cᵢⱼ(strains, stresses, 6, 6)
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix(
+        [
+            c₁₁ c₁₂ c₁₃ 𝟎 𝟎 c₁₆
+            c₁₂ c₂₂ c₁₃ 𝟎 𝟎 -c₁₆
+            c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
+            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
+            𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
+            c₁₆ -c₁₆ 𝟎 𝟎 𝟎 c₆₆
+        ],
+    )
+end
 function (::ElasticConstantSolver{Hexagonal})(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
