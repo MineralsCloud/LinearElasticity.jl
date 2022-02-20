@@ -79,9 +79,9 @@ function (::ElasticConstantSolver{Trigonal})(
             c₁₁ c₁₂ c₁₃ c₁₄ c₁₅ 𝟎
             c₁₂ c₂₂ c₁₃ -c₁₄ -c₁₅ 𝟎
             c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
-            𝟎 𝟎 𝟎 c₄₄ 𝟎 -c₁₅
-            𝟎 𝟎 𝟎 𝟎 c₄₄ c₁₄
-            𝟎 𝟎 𝟎 𝟎 𝟎 (c₁₁-c₁₂)/2
+            c₁₄ -c₁₄ 𝟎 c₄₄ 𝟎 -c₁₅
+            c₁₅ -c₁₅ 𝟎 𝟎 c₄₄ c₁₄
+            𝟎 𝟎 𝟎 -c₁₅ c₁₄ (c₁₁-c₁₂)/2
         ],
     )
 end
