@@ -1,5 +1,5 @@
 using Compat: only
-using Crystallography: Triclinic
+using Crystallography: Triclinic, Trigonal
 
 struct ElasticConstantSolver{T<:CrystalSystem}
     system::T
@@ -58,6 +58,30 @@ function (::ElasticConstantSolver{Tetragonal})(
             𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
             𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
             c₁₆ -c₁₆ 𝟎 𝟎 𝟎 c₆₆
+        ],
+    )
+end
+function (::ElasticConstantSolver{Trigonal})(
+    strains::AbstractVector{<:EngineeringStrain},
+    stresses::AbstractVector{<:EngineeringStress},
+)
+    c₁₁ = _cᵢⱼ(strains, stresses, 1, 1)
+    c₁₂ = _cᵢⱼ(strains, stresses, 1, 2)
+    c₁₃ = _cᵢⱼ(strains, stresses, 1, 3)
+    c₁₄ = _cᵢⱼ(strains, stresses, 1, 4)
+    c₁₅ = _cᵢⱼ(strains, stresses, 1, 5)
+    c₂₂ = _cᵢⱼ(strains, stresses, 2, 2)
+    c₃₃ = _cᵢⱼ(strains, stresses, 3, 3)
+    c₄₄ = _cᵢⱼ(strains, stresses, 4, 4)
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix(
+        [
+            c₁₁ c₁₂ c₁₃ c₁₄ c₁₅ 𝟎
+            c₁₂ c₂₂ c₁₃ -c₁₄ -c₁₅ 𝟎
+            c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
+            𝟎 𝟎 𝟎 c₄₄ 𝟎 -c₁₅
+            𝟎 𝟎 𝟎 𝟎 c₄₄ c₁₄
+            𝟎 𝟎 𝟎 𝟎 𝟎 (c₁₁-c₁₂)/2
         ],
     )
 end
