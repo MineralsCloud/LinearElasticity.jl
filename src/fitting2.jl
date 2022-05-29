@@ -129,48 +129,108 @@ function reorder_cᵢⱼ(::Orthorhombic, cᵢⱼ)
     c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = cᵢⱼ
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
-        [
-            c₁₁ c₁₂ c₁₃ 𝟎 𝟎 𝟎
-            c₁₂ c₂₂ c₂₃ 𝟎 𝟎 𝟎
-            c₁₃ c₂₃ c₃₃ 𝟎 𝟎 𝟎
-            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
-            𝟎 𝟎 𝟎 𝟎 c₅₅ 𝟎
-            𝟎 𝟎 𝟎 𝟎 𝟎 c₆₆
-        ],
-        c₁₁ c₁₂ c₁₃ 𝟎 𝟎 𝟎 c₂₂ c₂₃ 𝟎 𝟎 𝟎 c₃₃ 𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎 c₅₅ 𝟎
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₂₂,
+        c₂₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₃₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        𝟎,
+        c₅₅,
+        𝟎,
+        c₆₆,
     )
 end
 function reorder_cᵢⱼ(::Hexagonal, cᵢⱼ)
     c₁₁, c₃₃, c₁₂, c₁₃, c₄₄ = cᵢⱼ
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
-        [
-            c₁₁ c₁₂ c₁₃ 𝟎 𝟎 𝟎
-            c₁₂ c₁₁ c₁₃ 𝟎 𝟎 𝟎
-            c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
-            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
-            𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
-            𝟎 𝟎 𝟎 𝟎 𝟎 (c₁₁-c₁₂)/2
-        ],
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₁₁,
+        c₁₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₃₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        (c₁₁ - c₁₂) / 2,
     )
 end
 function reorder_cᵢⱼ(::Trigonal, cᵢⱼ)
     c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄ = cᵢⱼ
     𝟎 = zero(c₁₁)
-    return StiffnessMatrix([])
+    return StiffnessMatrix(
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        c₁₄,
+        𝟎,
+        𝟎,
+        c₁₁,
+        c₁₃,
+        -c₁₄,
+        𝟎,
+        𝟎,
+        c₃₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        𝟎,
+        c₄₄,
+        c₁₄,
+        (c₁₁ - c₁₂) / 2,
+    )
 end
 function reorder_cᵢⱼ(::Monoclinic, cᵢⱼ)
     c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₆, c₂₆, c₃₆, c₄₅ = cᵢⱼ
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
-        [
-            c₁₁ c₁₂ c₁₃ 𝟎 𝟎 c₁₆
-            c₁₂ c₂₂ c₂₃ 𝟎 𝟎 c₂₆
-            c₁₃ c₂₃ c₃₃ 𝟎 𝟎 c₃₆
-            𝟎 𝟎 𝟎 c₄₄ c₄₅ 𝟎
-            𝟎 𝟎 𝟎 𝟎 c₅₅ 𝟎
-            𝟎 𝟎 𝟎 𝟎 𝟎 c₆₆
-        ],
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        𝟎,
+        𝟎,
+        c₁₆,
+        c₂₂,
+        c₂₃,
+        𝟎,
+        𝟎,
+        c₂₆,
+        c₃₃,
+        𝟎,
+        𝟎,
+        c₃₆,
+        c₄₄,
+        c₄₅,
+        𝟎,
+        c₅₅,
+        𝟎,
+        c₆₆,
     )
 end
 function reorder_cᵢⱼ(::Triclinic, cᵢⱼ)
@@ -192,16 +252,28 @@ function reorder_cᵢⱼ(::Triclinic, cᵢⱼ)
     c₁₅,
     c₂₅,
     c₄₅ = cᵢⱼ
-    𝟎 = zero(c₁₁)
     return StiffnessMatrix(
-        [
-            c₁₁ c₁₂ c₁₃ c₁₄ 𝟎 c₁₆
-            c₁₂ c₂₂ c₂₃ 𝟎 𝟎 c₂₆
-            c₁₃ c₂₃ c₃₃ 𝟎 𝟎 c₃₆
-            𝟎 𝟎 𝟎 c₄₄ c₄₅ 𝟎
-            𝟎 𝟎 𝟎 𝟎 c₅₅ 𝟎
-            𝟎 𝟎 𝟎 𝟎 𝟎 c₆₆
-        ],
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        c₁₄,
+        c₁₅,
+        c₁₆,
+        c₂₂,
+        c₂₃,
+        c₂₄,
+        c₂₅,
+        c₂₆,
+        c₃₃,
+        c₃₄,
+        c₃₅,
+        c₃₆,
+        c₄₄,
+        c₄₅,
+        c₄₆,
+        c₅₅,
+        c₅₆,
+        c₆₆,
     )
 end
 
