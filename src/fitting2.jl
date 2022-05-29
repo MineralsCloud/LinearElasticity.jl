@@ -287,3 +287,8 @@ function fit_elastic_constant(
     cᵢⱼ = ε \ σ  # Length N vector
     return reorder_cᵢⱼ(system, cᵢⱼ)
 end
+fit_elastic_constant(
+    system::CrystalSystem,
+    strains::AbstractVector{<:TensorStrain},
+    stresses::AbstractVector{<:TensorStress},
+) = fit_elastic_constant(system, EngineeringStrain.(strains), EngineeringStress.(stresses))
