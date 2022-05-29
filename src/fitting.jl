@@ -1,174 +1,294 @@
-using Crystallography: CrystalSystem, Cubic, Hexagonal, Tetragonal, Orthorhombic
+using Crystallography:
+    CrystalSystem,
+    Cubic,
+    Hexagonal,
+    Trigonal,
+    Tetragonal,
+    Orthorhombic,
+    Monoclinic,
+    Triclinic
 using LinearAlgebra: Symmetric, dot
 
-export ElasticConstantFitter
+export fit_elastic_constant
 
-struct ElasticConstantFitter{T<:CrystalSystem}
-    system::T
+function form_matrix(::Cubic, strain::EngineeringStrain)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+    return [  # 6×3 matrix
+        ϵ₁ ϵ₂+ϵ₃ 0
+        ϵ₂ ϵ₁+ϵ₃ 0
+        ϵ₃ ϵ₁+ϵ₂ 0
+        0 0 ϵ₄
+        0 0 ϵ₅
+        0 0 ϵ₆
+    ]
 end
+function form_matrix(::Tetragonal, strain::EngineeringStrain)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+    return [  # 6×6 matrix
+        ϵ₁ 0 ϵ₂ ϵ₃ 0 0
+        ϵ₂ 0 ϵ₁ ϵ₃ 0 0
+        0 ϵ₃ 0 ϵ₁+ϵ₂ 0 0
+        0 0 0 0 0 ϵ₆
+        0 0 0 0 ϵ₅ 0
+        0 0 0 0 ϵ₄ 0
+    ]
+end
+function form_matrix(::Orthorhombic, strain::EngineeringStrain)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+    return [  # 6×9 matrix
+        ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0
+        0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0
+        0 0 ϵ₃ 0 ϵ₁ ϵ₂ 0 0 0
+        0 0 0 0 0 0 ϵ₄ 0 0
+        0 0 0 0 0 0 0 ϵ₅ 0
+        0 0 0 0 0 0 0 0 ϵ₆
+    ]
+end
+function form_matrix(::Hexagonal, strain::EngineeringStrain)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+    return [  # 6×5 matrix
+        ϵ₁ 0 ϵ₂ ϵ₃ 0
+        ϵ₂ 0 ϵ₁ ϵ₃ 0
+        0 ϵ₃ 0 ϵ₁+ϵ₂ 0
+        0 0 0 0 ϵ₄
+        0 0 0 0 ϵ₅
+        ϵ₆ 0 -ϵ₆ 0 0
+    ]
+end
+function form_matrix(::Trigonal, strain::EngineeringStrain)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+    return [  # 6×6 matrix
+        ϵ₁ 0 ϵ₂ ϵ₃ 0 ϵ₅
+        ϵ₂ 0 ϵ₁ ϵ₃ 0 -ϵ₅
+        0 ϵ₃ 0 ϵ₁+ϵ₂ 0 0
+        0 0 0 0 ϵ₄ -2ϵ₆
+        0 0 0 0 ϵ₅ 2(ϵ₁-ϵ₂)
+        ϵ₆ 0 -ϵ₆ 0 0 -2ϵ₄
+    ]
+end
+function form_matrix(::Monoclinic, strain::EngineeringStrain)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+    γ = ϵ₆ / 2
+    return [  # 6×13 matrix
+        ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 γ 0 0 0
+        0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0 0 γ 0 0
+        0 0 ϵ₃ 0 ϵ₁ ϵ₂ 0 0 0 0 0 γ 0
+        0 0 0 0 0 0 ϵ₄ 0 0 0 0 0 ϵ₅/2
+        0 0 0 0 0 0 0 ϵ₅ 0 0 0 0 ϵ₄/2
+        0 0 0 0 0 0 0 0 ϵ₆ ϵ₁ ϵ₂ ϵ₃ 0
+    ]
+end
+function form_matrix(::Triclinic, strain::EngineeringStrain)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+    α, β, γ = ϵ₄ / 2, ϵ₅ / 2, ϵ₆ / 2
+    return [  # 6×21 matrix
+        ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 γ 0 0 0 0 α β 0 0
+        0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0 0 γ 0 0 0 0 0 β 0
+        0 0 ϵ₃ 0 ϵ₁ ϵ₂ 0 0 0 0 0 γ 0 0 0 0 0 0
+        0 0 0 0 0 0 ϵ₄ 0 0 0 0 0 γ 0 ϵ₁ 0 0 β
+        0 0 0 0 0 0 0 ϵ₅ 0 0 0 0 0 γ 0 ϵ₁ ϵ₂ α
+        0 0 0 0 0 0 0 0 ϵ₆ ϵ₁ ϵ₂ ϵ₃ α β 0 0 0 0
+    ]
+end
+form_matrix(system::CrystalSystem, strains::AbstractVector{<:EngineeringStrain}) =
+    vcat(form_matrix(system, strain) for strain in strains)
 
-function (::ElasticConstantFitter{Tetragonal})(
-    ϵs::AbstractVector{<:EngineeringStrain},
-    σs::AbstractVector{<:EngineeringStress},
-)
-    @assert length(ϵs) == length(σs) >= 2
-    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵs[1]
-    ϵ₁′, ϵ₂′, ϵ₃′, ϵ₄′, ϵ₅′, ϵ₆′ = ϵs[2]
-    mat = _tetragonal1(ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆, ϵ₁′, ϵ₂′, ϵ₃′, ϵ₄′, ϵ₅′, ϵ₆′, σs)
-    return StiffnessMatrix(mat)
-end
-function _tetragonal1(ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆, ϵ₁′, ϵ₂′, ϵ₃′, ϵ₄′, ϵ₅′, ϵ₆′, σs)
-    m0 = [
-        ϵ₁ ϵ₂ ϵ₃ 0 ϵ₆ 0 0
-        ϵ₂ ϵ₁ ϵ₃ 0 -ϵ₆ 0 0
-        0 0 ϵ₁+ϵ₂ ϵ₃ 0 0 0
-        0 0 0 0 0 ϵ₄ 0
-        0 0 0 0 ϵ₁ ϵ₅ 0
-        0 0 0 0 -ϵ₁ 0 ϵ₆
-    ]
-    m1 = [
-        ϵ₁′ ϵ₂′ ϵ₃′ 0 ϵ₆′ 0 0
-        ϵ₂′ ϵ₁′ ϵ₃′ 0 -ϵ₆′ 0 0
-        0 0 ϵ₁′+ϵ₂′ ϵ₃′ 0 0 0
-        0 0 0 0 0 ϵ₄′ 0
-        0 0 0 0 ϵ₁′ ϵ₅′ 0
-        0 0 0 0 -ϵ₁′ 0 ϵ₆′
-    ]
-    m = vcat(m0, m1)
-    c₁₁, c₁₂, c₁₃, c₃₃, c₁₆, c₄₄, c₆₆ = m \ vcat(σs...)
-    𝟎 = zero(c₁₁)
-    return [
-        c₁₁ c₁₂ c₁₃ 𝟎 𝟎 c₁₆
-        c₁₂ c₁₁ c₁₃ 𝟎 𝟎 -c₁₆
-        c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
-        𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
-        𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
-        c₁₆ -c₁₆ 𝟎 𝟎 𝟎 c₆₆
-    ]
-end
-function (::ElasticConstantFitter{Orthorhombic})(
-    ϵs::AbstractVector{<:EngineeringStrain},
-    σs::AbstractVector{<:EngineeringStress},
-)
-    @assert length(ϵs) == length(σs) >= 3
-    ϵ, σ = hcat(ϵs...), hcat(σs...)
-    c = transpose(ϵ[1:3, :]) \ transpose(σ[1:3, :]) |> Symmetric
-    Bᵀ = transpose(ϵ[4:6, :])
-    c₄₄ = (Bᵀ\σ[4, :])[1]
-    c₅₅ = (Bᵀ\σ[5, :])[2]
-    c₆₆ = (Bᵀ\σ[6, :])[3]
-    𝟎 = zero(c[1, 1])
-    mat = vcat(
-        hcat(c, fill(𝟎, 3, 3)),
-        [
-            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
-            𝟎 𝟎 𝟎 𝟎 c₅₅ 𝟎
-            𝟎 𝟎 𝟎 𝟎 𝟎 c₆₆
-        ],
-    )
-    return StiffnessMatrix(mat)
-end
-function (::ElasticConstantFitter{Hexagonal})(
-    ϵs::AbstractVector{<:EngineeringStrain},
-    σs::AbstractVector{<:EngineeringStress},
-)
-    @assert length(ϵs) == length(σs) >= 2
-    ϵ₁, ϵ₂, ϵ₃ = ϵs[1][1:3]
-    ϵ₁′, ϵ₂′, ϵ₃′ = ϵs[2][1:3]
-    Aᵀ = [
-        ϵ₁ ϵ₂ 0 ϵ₁′ ϵ₂′ 0
-        ϵ₂ ϵ₁ 0 ϵ₂′ ϵ₁′ 0
-        ϵ₃ ϵ₃ ϵ₁+ϵ₂ ϵ₃′ ϵ₃′ ϵ₁′+ϵ₂′
-        0 0 ϵ₃ 0 0 ϵ₃′
-    ]
-    c₁₁, c₁₂, c₁₃, c₃₃ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * append!(σs[1][1:3], σs[2][1:3])
-    c₄₄ = σs[1][4] / ϵs[1][4]
-    c₆₆ = σs[1][6] / ϵs[1][6]
+function reorder_cᵢⱼ(::Cubic, cᵢⱼ)
+    c₁₁, c₁₂, c₄₄ = cᵢⱼ
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
-        [
-            c₁₁ c₁₂ c₁₃ 𝟎 𝟎 𝟎
-            c₁₂ c₁₁ c₁₃ 𝟎 𝟎 𝟎
-            c₁₃ c₁₃ c₃₃ 𝟎 𝟎 𝟎
-            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
-            𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
-            𝟎 𝟎 𝟎 𝟎 𝟎 c₆₆
-        ],
+        c₁₁,
+        c₁₂,
+        c₁₂,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₁₁,
+        c₁₂,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₁₁,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        c₄₄,
     )
 end
-function (::ElasticConstantFitter{Cubic})(
+function reorder_cᵢⱼ(::Tetragonal, cᵢⱼ)
+    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄ = cᵢⱼ
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix([])
+end
+function reorder_cᵢⱼ(::Orthorhombic, cᵢⱼ)
+    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = cᵢⱼ
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix(
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₂₂,
+        c₂₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₃₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        𝟎,
+        c₅₅,
+        𝟎,
+        c₆₆,
+    )
+end
+function reorder_cᵢⱼ(::Hexagonal, cᵢⱼ)
+    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄ = cᵢⱼ
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix(
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₁₁,
+        c₁₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₃₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        (c₁₁ - c₁₂) / 2,
+    )
+end
+function reorder_cᵢⱼ(::Trigonal, cᵢⱼ)
+    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄ = cᵢⱼ
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix(
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        c₁₄,
+        𝟎,
+        𝟎,
+        c₁₁,
+        c₁₃,
+        -c₁₄,
+        𝟎,
+        𝟎,
+        c₃₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        𝟎,
+        c₄₄,
+        c₁₄,
+        (c₁₁ - c₁₂) / 2,
+    )
+end
+function reorder_cᵢⱼ(::Monoclinic, cᵢⱼ)
+    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₆, c₂₆, c₃₆, c₄₅ = cᵢⱼ
+    𝟎 = zero(c₁₁)
+    return StiffnessMatrix(
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        𝟎,
+        𝟎,
+        c₁₆,
+        c₂₂,
+        c₂₃,
+        𝟎,
+        𝟎,
+        c₂₆,
+        c₃₃,
+        𝟎,
+        𝟎,
+        c₃₆,
+        c₄₄,
+        c₄₅,
+        𝟎,
+        c₅₅,
+        𝟎,
+        c₆₆,
+    )
+end
+function reorder_cᵢⱼ(::Triclinic, cᵢⱼ)
+    c₁₁,
+    c₂₂,
+    c₃₃,
+    c₁₂,
+    c₁₃,
+    c₂₃,
+    c₄₄,
+    c₅₅,
+    c₆₆,
+    c₁₆,
+    c₂₆,
+    c₃₆,
+    c₄₆,
+    c₅₆,
+    c₁₄,
+    c₁₅,
+    c₂₅,
+    c₄₅ = cᵢⱼ
+    return StiffnessMatrix(
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        c₁₄,
+        c₁₅,
+        c₁₆,
+        c₂₂,
+        c₂₃,
+        c₂₄,
+        c₂₅,
+        c₂₆,
+        c₃₃,
+        c₃₄,
+        c₃₅,
+        c₃₆,
+        c₄₄,
+        c₄₅,
+        c₄₆,
+        c₅₅,
+        c₅₆,
+        c₆₆,
+    )
+end
+
+function fit_elastic_constant(
+    system::CrystalSystem,
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
 )
-    ϵ, σ = first(strains), first(stresses)
-    ϵ₁, ϵ₂, ϵ₃ = ϵ[1:3]
-    Aᵀ = [
-        ϵ₁ ϵ₂ ϵ₃
-        ϵ₂+ϵ₃ ϵ₁+ϵ₃ ϵ₂+ϵ₁
-    ]
-    c₁₁, c₁₂ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * σ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
-    c₄₄ = dot(ϵ[4:6], σ[4:6]) / sum(abs2, ϵ[4:6])  # B = ϵ[4:6], c₄₄ = inv(Bᵀ * B) * Bᵀ * σ[4:6]
-    𝟎 = zero(c₁₁)
-    return StiffnessMatrix(
-        [
-            c₁₁ c₁₂ c₁₂ 𝟎 𝟎 𝟎
-            c₁₂ c₁₁ c₁₂ 𝟎 𝟎 𝟎
-            c₁₂ c₁₂ c₁₁ 𝟎 𝟎 𝟎
-            𝟎 𝟎 𝟎 c₄₄ 𝟎 𝟎
-            𝟎 𝟎 𝟎 𝟎 c₄₄ 𝟎
-            𝟎 𝟎 𝟎 𝟎 𝟎 c₄₄
-        ],
-    )
+    σ = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
+    ε = form_matrix(system, strains)  # Size 6n×N matrix, N = # independent coefficients
+    cᵢⱼ = ε \ σ  # Length N vector
+    return reorder_cᵢⱼ(system, cᵢⱼ)
 end
-function (::ElasticConstantFitter{Cubic})(
-    stresses::AbstractVector{<:EngineeringStress},
-    strains::AbstractVector{<:EngineeringStrain},
-)
-    σ, ϵ = first(stresses), first(strains)
-    σ₁, σ₂, σ₃ = σ[1:3]
-    Aᵀ = [
-        σ₁ σ₂ σ₃
-        σ₂+σ₃ σ₁+σ₃ σ₂+σ₁
-    ]
-    s₁₁, s₁₂ = inv(Aᵀ * transpose(Aᵀ)) * Aᵀ * ϵ[1:3]  # If 𝐴 is well-conditioned, using the normal equations is around as accurate as other methods and is also the fastest. https://math.stackexchange.com/a/3252377/115512
-    s₄₄ = dot(σ[4:6], ϵ[4:6]) / sum(abs2, σ[4:6])  # B = σ[4:6], s₄₄ = inv(Bᵀ * B) * Bᵀ * σ[4:6]
-    𝟎 = zero(s₁₁)
-    return ComplianceMatrix(
-        [
-            s₁₁ s₁₂ s₁₂ 𝟎 𝟎 𝟎
-            s₁₂ s₁₁ s₁₂ 𝟎 𝟎 𝟎
-            s₁₂ s₁₂ s₁₁ 𝟎 𝟎 𝟎
-            𝟎 𝟎 𝟎 s₄₄ 𝟎 𝟎
-            𝟎 𝟎 𝟎 𝟎 s₄₄ 𝟎
-            𝟎 𝟎 𝟎 𝟎 𝟎 s₄₄
-        ],
-    )
-end
-function (x::ElasticConstantFitter)(
+fit_elastic_constant(
+    system::CrystalSystem,
     strains::AbstractVector{<:TensorStrain},
     stresses::AbstractVector{<:TensorStress},
-)
-    c = x(EngineeringStrain.(strains), EngineeringStress.(stresses))
-    return StiffnessTensor(c)
-end
-function (x::ElasticConstantFitter)(
-    stresses::AbstractVector{<:TensorStress},
-    strains::AbstractVector{<:TensorStrain},
-)
-    s = x(EngineeringStress.(stresses), EngineeringStrain.(strains))
-    return ComplianceTensor(s)
-end
-for (X, Y) in ((:EngineeringStrain, :EngineeringStress), (:TensorStrain, :TensorStress))
-    @eval begin
-        (x::ElasticConstantFitter)(
-            strains::AbstractVector{<:$X},
-            stresses::AbstractVector{<:$Y},
-            σ₀::$Y,
-        ) = x(strains, map(Base.Fix2(-, σ₀), stresses))  # Subtract a common initial value σ₀
-        (x::ElasticConstantFitter)(
-            stresses::AbstractVector{<:$Y},
-            strains::AbstractVector{<:$X},
-            ϵ₀::$X,
-        ) = x(stresses, map(Base.Fix2(-, ϵ₀), strains))
-    end
-end
+) = fit_elastic_constant(system, EngineeringStrain.(strains), EngineeringStress.(stresses))
