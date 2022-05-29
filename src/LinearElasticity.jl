@@ -104,6 +104,5 @@ include("SymmetryCriteria.jl")
 include("Isotropic.jl")
 include("distort.jl")
 include("solve.jl")
-include("calc.jl")
 
 end
