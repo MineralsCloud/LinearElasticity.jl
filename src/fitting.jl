@@ -278,6 +278,50 @@ function reconstruct_cᵢⱼ(::Triclinic, cᵢⱼ)
     )
 end
 
+function construct_stress_matrix(::Cubic, stress::EngineeringStress)
+    σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = stress
+    return [  # 6×3 matrix
+        σ₁ σ₂+σ₃ 0
+        σ₂ σ₁+σ₃ 0
+        σ₃ σ₁+σ₂ 0
+        0 0 σ₄
+        0 0 σ₅
+        0 0 σ₆
+    ]
+end
+construct_stress_matrix(
+    system::CrystalSystem,
+    stresses::AbstractVector{<:EngineeringStrain},
+) = vcat(construct_stress_matrix(system, stress) for stress in stresses)
+
+function reconstruct_sᵢⱼ(::Cubic, sᵢⱼ)
+    s₁₁, s₁₂, s₄₄ = sᵢⱼ
+    𝟎 = zero(s₁₁)
+    return StiffnessMatrix(
+        s₁₁,
+        s₁₂,
+        s₁₂,
+        𝟎,
+        𝟎,
+        𝟎,
+        s₁₁,
+        s₁₂,
+        𝟎,
+        𝟎,
+        𝟎,
+        s₁₁,
+        𝟎,
+        𝟎,
+        𝟎,
+        s₄₄,
+        𝟎,
+        𝟎,
+        s₄₄,
+        𝟎,
+        s₄₄,
+    )
+end
+
 function solve_elastic_matrix(
     system::CrystalSystem,
     strains::AbstractVector{<:EngineeringStrain},
@@ -288,8 +332,23 @@ function solve_elastic_matrix(
     cᵢⱼ = ε \ σ  # Length N vector
     return reconstruct_cᵢⱼ(system, cᵢⱼ)
 end
+function solve_elastic_matrix(
+    system::CrystalSystem,
+    stresses::AbstractVector{<:EngineeringStress},
+    strains::AbstractVector{<:EngineeringStrain},
+)
+    ε = vcat(strains...)
+    σ = construct_stress_matrix(system, stresses)
+    sᵢⱼ = σ \ ε
+    return reconstruct_sᵢⱼ(system, sᵢⱼ)
+end
 solve_elastic_matrix(
     system::CrystalSystem,
     strains::AbstractVector{<:TensorStrain},
     stresses::AbstractVector{<:TensorStress},
 ) = solve_elastic_matrix(system, EngineeringStrain.(strains), EngineeringStress.(stresses))
+solve_elastic_matrix(
+    system::CrystalSystem,
+    stresses::AbstractVector{<:TensorStress},
+    strains::AbstractVector{<:TensorStrain},
+) = solve_elastic_matrix(system, EngineeringStress.(stresses), EngineeringStrain.(strains))
