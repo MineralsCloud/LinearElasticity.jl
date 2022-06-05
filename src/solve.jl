@@ -90,7 +90,7 @@ end
 construct_strain_matrix(
     system::CrystalSystem,
     strains::AbstractVector{<:EngineeringStrain},
-) = vcat(construct_strain_matrix(system, strain) for strain in strains)
+) = vcat((construct_strain_matrix(system, strain) for strain in strains)...)
 
 function reconstruct_cᵢⱼ(::Cubic, cᵢⱼ)
     c₁₁, c₁₂, c₄₄ = cᵢⱼ
