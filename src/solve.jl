@@ -344,3 +344,5 @@ solve_elastic_matrix(
     stresses::AbstractVector{<:TensorStress},
     strains::AbstractVector{<:TensorStrain},
 ) = solve_elastic_matrix(system, EngineeringStress.(stresses), EngineeringStrain.(strains))
+solve_elastic_matrix(strains_or_stresses, stresses_or_strains) =
+    solve_elastic_matrix(Triclinic(), strains_or_stresses, stresses_or_strains)
