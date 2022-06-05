@@ -27,9 +27,9 @@ function construct_strain_matrix(::Tetragonal, strain::EngineeringStrain)
         ϵ₁ 0 ϵ₂ ϵ₃ 0 0
         ϵ₂ 0 ϵ₁ ϵ₃ 0 0
         0 ϵ₃ 0 ϵ₁+ϵ₂ 0 0
-        0 0 0 0 0 ϵ₆
-        0 0 0 0 ϵ₅ 0
         0 0 0 0 ϵ₄ 0
+        0 0 0 0 ϵ₅ 0
+        0 0 0 0 0 ϵ₆
     ]
 end
 function construct_strain_matrix(::Orthorhombic, strain::EngineeringStrain)
@@ -121,9 +121,31 @@ function reconstruct_cᵢⱼ(::Cubic, cᵢⱼ)
     )
 end
 function reconstruct_cᵢⱼ(::Tetragonal, cᵢⱼ)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄ = cᵢⱼ
+    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₆₆ = cᵢⱼ
     𝟎 = zero(c₁₁)
-    return StiffnessMatrix([])
+    return StiffnessMatrix(
+        c₁₁,
+        c₁₂,
+        c₁₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₁₁,
+        c₁₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₃₃,
+        𝟎,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        𝟎,
+        c₄₄,
+        𝟎,
+        c₆₆,
+    )
 end
 function reconstruct_cᵢⱼ(::Orthorhombic, cᵢⱼ)
     c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = cᵢⱼ
