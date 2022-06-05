@@ -19,47 +19,47 @@ abstract type Compliance{T,N} <: AbstractArray{T,N} end
 struct TensorStress{T} <: Stress{T,2}
     data::SymmetricSecondOrderTensor{3,T,6}
 end
-TensorStress(x::EngineeringStress) = convert(TensorStress{eltype(x)}, x)
 TensorStress(m::AbstractMatrix) = TensorStress(SymmetricSecondOrderTensor{3}(m))
 TensorStress(data...) = TensorStress(SymmetricSecondOrderTensor{3}(data...))
 struct TensorStrain{T} <: Strain{T,2}
     data::SymmetricSecondOrderTensor{3,T,6}
 end
-TensorStrain(x::EngineeringStrain) = convert(TensorStrain{eltype(x)}, x)
 TensorStrain(m::AbstractMatrix) = TensorStrain(SymmetricSecondOrderTensor{3}(m))
 TensorStrain(data...) = TensorStrain(SymmetricSecondOrderTensor{3}(data...))
 struct StiffnessTensor{T} <: Stiffness{T,4}
     data::SymmetricFourthOrderTensor{3,T}
 end
-StiffnessTensor(x::StiffnessMatrix) = convert(StiffnessTensor{eltype(x)}, x)
 struct ComplianceTensor{T} <: Compliance{T,4}
     data::SymmetricFourthOrderTensor{3,T}
 end
-ComplianceTensor(x::ComplianceMatrix) = convert(ComplianceTensor{eltype(x)}, x)
 struct EngineeringStress{T} <: Stress{T,1}
     data::Vec{6,T}
 end
 EngineeringStress(x::TensorStress) = convert(EngineeringStress{eltype(x)}, x)
 EngineeringStress(v::AbstractVector) = EngineeringStress(Vec{6}(v))
 EngineeringStress(data...) = EngineeringStress(Vec{6}(data...))
+TensorStress(x::EngineeringStress) = convert(TensorStress{eltype(x)}, x)
 struct EngineeringStrain{T} <: Strain{T,1}
     data::Vec{6,T}
 end
 EngineeringStrain(x::TensorStrain) = convert(EngineeringStrain{eltype(x)}, x)
 EngineeringStrain(v::AbstractVector) = EngineeringStrain(Vec{6}(v))
 EngineeringStrain(data...) = EngineeringStrain(Vec{6}(data...))
+TensorStrain(x::EngineeringStrain) = convert(TensorStrain{eltype(x)}, x)
 struct StiffnessMatrix{T} <: Stiffness{T,2}
     data::SymmetricSecondOrderTensor{6,T,21}
 end
 StiffnessMatrix(x::StiffnessTensor) = convert(StiffnessMatrix{eltype(x)}, x)
 StiffnessMatrix(m::AbstractMatrix) = StiffnessMatrix(SymmetricSecondOrderTensor{6}(m))
 StiffnessMatrix(data...) = StiffnessMatrix(SymmetricSecondOrderTensor{6}(data...))
+StiffnessTensor(x::StiffnessMatrix) = convert(StiffnessTensor{eltype(x)}, x)
 struct ComplianceMatrix{T} <: Compliance{T,2}
     data::SymmetricSecondOrderTensor{6,T,21}
 end
 ComplianceMatrix(x::ComplianceTensor) = convert(ComplianceMatrix{eltype(x)}, x)
 ComplianceMatrix(m::AbstractMatrix) = ComplianceMatrix(SymmetricSecondOrderTensor{6}(m))
 ComplianceMatrix(data...) = ComplianceMatrix(SymmetricSecondOrderTensor{6}(data...))
+ComplianceTensor(x::ComplianceMatrix) = convert(ComplianceTensor{eltype(x)}, x)
 
 Base.size(::Union{TensorStress,TensorStrain}) = (3, 3)
 Base.size(::Union{StiffnessTensor,ComplianceTensor}) = (3, 3, 3, 3)
