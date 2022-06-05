@@ -305,6 +305,13 @@ function solve_elastic_matrix(
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
 )
+    if length(strains) != length(stresses)
+        throw(
+            DimensionMismatch(
+                "the number of strains and the number of stresses must match!",
+            ),
+        )
+    end
     σ = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
     ε = construct_strain_matrix(system, strains)  # Size 6n×N matrix, N = # independent coefficients
     cᵢⱼ = ε \ σ  # Length N vector
@@ -315,6 +322,13 @@ function solve_elastic_matrix(
     stresses::AbstractVector{<:EngineeringStress},
     strains::AbstractVector{<:EngineeringStrain},
 )
+    if length(stresses) != length(strains)
+        throw(
+            DimensionMismatch(
+                "the number of stresses and the number of strains must match!",
+            ),
+        )
+    end
     ε = vcat(strains...)
     σ = construct_stress_matrix(system, stresses)
     sᵢⱼ = σ \ ε
