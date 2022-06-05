@@ -67,13 +67,12 @@ function construct_strain_matrix(::Trigonal, strain::EngineeringStrain)
 end
 function construct_strain_matrix(::Monoclinic, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
-    γ = ϵ₆ / 2
     return [  # 6×13 matrix
-        ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 γ 0 0 0
-        0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0 0 γ 0 0
-        0 0 ϵ₃ 0 ϵ₁ ϵ₂ 0 0 0 0 0 γ 0
-        0 0 0 0 0 0 ϵ₄ 0 0 0 0 0 ϵ₅/2
-        0 0 0 0 0 0 0 ϵ₅ 0 0 0 0 ϵ₄/2
+        ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 ϵ₆ 0 0 0
+        0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0 0 ϵ₆ 0 0
+        0 0 ϵ₃ 0 ϵ₁ ϵ₂ 0 0 0 0 0 ϵ₆ 0
+        0 0 0 0 0 0 ϵ₄ 0 0 0 0 0 ϵ₅
+        0 0 0 0 0 0 0 ϵ₅ 0 0 0 0 ϵ₄
         0 0 0 0 0 0 0 0 ϵ₆ ϵ₁ ϵ₂ ϵ₃ 0
     ]
 end
