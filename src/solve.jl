@@ -78,14 +78,13 @@ function construct_strain_matrix(::Monoclinic, strain::EngineeringStrain)
 end
 function construct_strain_matrix(::Triclinic, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
-    α, β, γ = ϵ₄ / 2, ϵ₅ / 2, ϵ₆ / 2
     return [  # 6×21 matrix
-        ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 γ 0 0 0 0 α β 0 0
-        0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0 0 γ 0 0 0 0 0 β 0
-        0 0 ϵ₃ 0 ϵ₁ ϵ₂ 0 0 0 0 0 γ 0 0 0 0 0 0
-        0 0 0 0 0 0 ϵ₄ 0 0 0 0 0 γ 0 ϵ₁ 0 0 β
-        0 0 0 0 0 0 0 ϵ₅ 0 0 0 0 0 γ 0 ϵ₁ ϵ₂ α
-        0 0 0 0 0 0 0 0 ϵ₆ ϵ₁ ϵ₂ ϵ₃ α β 0 0 0 0
+        ϵ₁ ϵ₂ ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        0 ϵ₁ 0 0 0 0 ϵ₂ ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0 0 0 0 0
+        0 0 ϵ₁ 0 0 0 0 ϵ₂ 0 0 0 ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0
+        0 0 0 ϵ₁ 0 0 0 0 ϵ₂ 0 0 0 ϵ₃ 0 0 ϵ₄ ϵ₅ ϵ₆ 0 0 0
+        0 0 0 0 ϵ₁ 0 0 0 0 ϵ₂ 0 0 0 ϵ₃ 0 0 ϵ₄ 0 ϵ₅ ϵ₆ 0
+        0 0 0 0 0 ϵ₁ 0 0 0 0 ϵ₂ 0 0 0 ϵ₃ 0 0 ϵ₄ 0 ϵ₅ ϵ₆
     ]
 end
 construct_strain_matrix(
@@ -255,49 +254,7 @@ function reconstruct_cᵢⱼ(::Monoclinic, cᵢⱼ)
         c₆₆,
     )
 end
-function reconstruct_cᵢⱼ(::Triclinic, cᵢⱼ)
-    c₁₁,
-    c₂₂,
-    c₃₃,
-    c₁₂,
-    c₁₃,
-    c₂₃,
-    c₄₄,
-    c₅₅,
-    c₆₆,
-    c₁₆,
-    c₂₆,
-    c₃₆,
-    c₄₆,
-    c₅₆,
-    c₁₄,
-    c₁₅,
-    c₂₅,
-    c₄₅ = cᵢⱼ
-    return StiffnessMatrix(
-        c₁₁,
-        c₁₂,
-        c₁₃,
-        c₁₄,
-        c₁₅,
-        c₁₆,
-        c₂₂,
-        c₂₃,
-        c₂₄,
-        c₂₅,
-        c₂₆,
-        c₃₃,
-        c₃₄,
-        c₃₅,
-        c₃₆,
-        c₄₄,
-        c₄₅,
-        c₄₆,
-        c₅₅,
-        c₅₆,
-        c₆₆,
-    )
-end
+reconstruct_cᵢⱼ(::Triclinic, cᵢⱼ) = StiffnessMatrix(cᵢⱼ...)
 
 function construct_stress_matrix(::Cubic, stress::EngineeringStress)
     σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = stress
