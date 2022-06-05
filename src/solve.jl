@@ -312,6 +312,10 @@ function solve_elastic_matrix(
             ),
         )
     end
+    n = minimal_ulics(system)
+    if length(strains) < n
+        throw(ArgumentError("the number of strains/stresses must be at least $n."))
+    end
     σ = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
     ε = construct_strain_matrix(system, strains)  # Size 6n×N matrix, N = # independent coefficients
     cᵢⱼ = ε \ σ  # Length N vector
@@ -322,12 +326,16 @@ function solve_elastic_matrix(
     stresses::AbstractVector{<:EngineeringStress},
     strains::AbstractVector{<:EngineeringStrain},
 )
-    if length(stresses) != length(strains)
+    if length(strains) != length(stresses)
         throw(
             DimensionMismatch(
-                "the number of stresses and the number of strains must match!",
+                "the number of strains and the number of stresses must match!",
             ),
         )
+    end
+    n = minimal_ulics(system)
+    if length(strains) < n
+        throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
     ε = vcat(strains...)
     σ = construct_stress_matrix(system, stresses)
@@ -346,3 +354,11 @@ solve_elastic_matrix(
 ) = solve_elastic_matrix(system, EngineeringStress.(stresses), EngineeringStrain.(strains))
 solve_elastic_matrix(strains_or_stresses, stresses_or_strains) =
     solve_elastic_matrix(Triclinic(), strains_or_stresses, stresses_or_strains)
+
+minimal_ulics(::Cubic) = 1
+minimal_ulics(::Hexagonal) = 2
+minimal_ulics(::Trigonal) = 2
+minimal_ulics(::Tetragonal) = 2
+minimal_ulics(::Orthorhombic) = 3
+minimal_ulics(::Monoclinic) = 5
+minimal_ulics(::Triclinic) = 6
