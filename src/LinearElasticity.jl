@@ -103,6 +103,7 @@ include("SymmetryCriteria.jl")
 # include("StabilityCriteria.jl")
 include("Isotropic.jl")
 include("distort.jl")
+include("energy.jl")
 include("solve.jl")
 
 end
