@@ -23,13 +23,14 @@ function construct_strain_matrix(::Cubic, strain::EngineeringStrain)
 end
 function construct_strain_matrix(::Tetragonal, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
-    return [  # 6×6 matrix
-        ϵ₁ 0 ϵ₂ ϵ₃ 0 0
-        ϵ₂ 0 ϵ₁ ϵ₃ 0 0
-        0 ϵ₃ 0 ϵ₁+ϵ₂ 0 0
-        0 0 0 0 ϵ₄ 0
-        0 0 0 0 ϵ₅ 0
-        0 0 0 0 0 ϵ₆
+    # Tetragonal (I) class (c₁₆ = 0) is a special case of tetragonal (II) class
+    return [  # 6×7 matrix
+        ϵ₁ 0 ϵ₂ ϵ₃ ϵ₆ 0 0
+        ϵ₂ 0 ϵ₁ ϵ₃ -ϵ₆ 0 0
+        0 ϵ₃ 0 ϵ₁+ϵ₂ 0 0 0
+        0 0 0 0 0 ϵ₄ 0
+        0 0 0 0 0 ϵ₅ 0
+        0 0 0 0 ϵ₁-ϵ₂ 0 ϵ₆
     ]
 end
 function construct_strain_matrix(::Orthorhombic, strain::EngineeringStrain)
@@ -120,7 +121,7 @@ function reconstruct_cᵢⱼ(::Cubic, cᵢⱼ)
     )
 end
 function reconstruct_cᵢⱼ(::Tetragonal, cᵢⱼ)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₆₆ = cᵢⱼ
+    c₁₁, c₃₃, c₁₂, c₁₃, c₁₆, c₄₄, c₆₆ = cᵢⱼ
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
@@ -128,12 +129,12 @@ function reconstruct_cᵢⱼ(::Tetragonal, cᵢⱼ)
         c₁₃,
         𝟎,
         𝟎,
-        𝟎,
+        c₁₆,
         c₁₁,
         c₁₃,
         𝟎,
         𝟎,
-        𝟎,
+        -c₁₆,
         c₃₃,
         𝟎,
         𝟎,
