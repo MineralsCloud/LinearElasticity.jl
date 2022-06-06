@@ -8,7 +8,7 @@ using Crystallography:
     Monoclinic,
     Triclinic
 
-export solve_elastic_matrix
+export solve_elastic_constants
 
 function construct_strain_matrix(::Cubic, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
@@ -302,7 +302,7 @@ function reconstruct_sᵢⱼ(::Cubic, coefficients)
     )
 end
 
-function solve_elastic_matrix(
+function solve_elastic_constants(
     system::CrystalSystem,
     strains::AbstractVector{<:EngineeringStrain},
     stresses::AbstractVector{<:EngineeringStress},
@@ -323,7 +323,7 @@ function solve_elastic_matrix(
     coefficients = ε \ σ  # Length N vector
     return reconstruct_cᵢⱼ(system, coefficients)
 end
-function solve_elastic_matrix(
+function solve_elastic_constants(
     system::CrystalSystem,
     stresses::AbstractVector{<:EngineeringStress},
     strains::AbstractVector{<:EngineeringStrain},
@@ -344,32 +344,32 @@ function solve_elastic_matrix(
     coefficients = σ \ ε
     return reconstruct_sᵢⱼ(system, coefficients)
 end
-function solve_elastic_matrix(
+function solve_elastic_constants(
     system::CrystalSystem,
     strains::AbstractVector{<:TensorStrain},
     stresses::AbstractVector{<:TensorStress},
 )
-    cᵢⱼ = solve_elastic_matrix(
+    cᵢⱼ = solve_elastic_constants(
         system,
         EngineeringStrain.(strains),
         EngineeringStress.(stresses),
     )
     return StiffnessTensor(cᵢⱼ)
 end
-function solve_elastic_matrix(
+function solve_elastic_constants(
     system::CrystalSystem,
     stresses::AbstractVector{<:TensorStress},
     strains::AbstractVector{<:TensorStrain},
 )
-    sᵢⱼ = solve_elastic_matrix(
+    sᵢⱼ = solve_elastic_constants(
         system,
         EngineeringStrain.(strains),
         EngineeringStress.(stresses),
     )
     return ComplianceTensor(sᵢⱼ)
 end
-solve_elastic_matrix(strains_or_stresses, stresses_or_strains) =
-    solve_elastic_matrix(Triclinic(), strains_or_stresses, stresses_or_strains)
+solve_elastic_constants(strains_or_stresses, stresses_or_strains) =
+    solve_elastic_constants(Triclinic(), strains_or_stresses, stresses_or_strains)
 
 minimal_ulics(::Cubic) = 1
 minimal_ulics(::Hexagonal) = 2
