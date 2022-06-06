@@ -10,7 +10,7 @@ using Crystallography:
 
 export solve_elastic_constants, solve_stiffnesses, solve_compliances
 
-function construct_strain_matrix(::Cubic, strain::EngineeringStrain)
+function recombine_strains(::Cubic, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     return [  # 6×3 matrix
         ϵ₁ ϵ₂+ϵ₃ 0
@@ -21,7 +21,7 @@ function construct_strain_matrix(::Cubic, strain::EngineeringStrain)
         0 0 ϵ₆
     ]
 end
-function construct_strain_matrix(::Tetragonal, strain::EngineeringStrain)
+function recombine_strains(::Tetragonal, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     # Tetragonal (I) class (c₁₆ = 0) is a special case of tetragonal (II) class
     return [  # 6×7 matrix
@@ -33,7 +33,7 @@ function construct_strain_matrix(::Tetragonal, strain::EngineeringStrain)
         0 0 0 0 ϵ₁-ϵ₂ 0 ϵ₆
     ]
 end
-function construct_strain_matrix(::Orthorhombic, strain::EngineeringStrain)
+function recombine_strains(::Orthorhombic, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     return [  # 6×9 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0
@@ -44,7 +44,7 @@ function construct_strain_matrix(::Orthorhombic, strain::EngineeringStrain)
         0 0 0 0 0 0 0 0 ϵ₆
     ]
 end
-function construct_strain_matrix(::Hexagonal, strain::EngineeringStrain)
+function recombine_strains(::Hexagonal, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     return [  # 6×5 matrix
         ϵ₁ 0 ϵ₂ ϵ₃ 0
@@ -55,7 +55,7 @@ function construct_strain_matrix(::Hexagonal, strain::EngineeringStrain)
         ϵ₆/2 0 -ϵ₆/2 0 0
     ]
 end
-function construct_strain_matrix(::Trigonal, strain::EngineeringStrain)
+function recombine_strains(::Trigonal, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     # Rhombohedral (I) class (c₁₅ = 0) is a special case of rhombohedral (II) class
     return [  # 6×7 matrix
@@ -67,7 +67,7 @@ function construct_strain_matrix(::Trigonal, strain::EngineeringStrain)
         ϵ₆/2 0 -ϵ₆/2 0 0 ϵ₅ -ϵ₄
     ]
 end
-function construct_strain_matrix(::Monoclinic, strain::EngineeringStrain)  # Only standard orientation (diad ∥ x₂) is implemented
+function recombine_strains(::Monoclinic, strain::EngineeringStrain)  # Only standard orientation (diad ∥ x₂) is implemented
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     return [  # 6×13 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 ϵ₅ 0 0 0
@@ -78,7 +78,7 @@ function construct_strain_matrix(::Monoclinic, strain::EngineeringStrain)  # Onl
         0 0 0 0 0 0 0 0 ϵ₆ 0 0 0 ϵ₄
     ]
 end
-function construct_strain_matrix(::Triclinic, strain::EngineeringStrain)
+function recombine_strains(::Triclinic, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     return [  # 6×21 matrix
         ϵ₁ ϵ₂ ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -89,10 +89,8 @@ function construct_strain_matrix(::Triclinic, strain::EngineeringStrain)
         0 0 0 0 0 ϵ₁ 0 0 0 0 ϵ₂ 0 0 0 ϵ₃ 0 0 ϵ₄ 0 ϵ₅ ϵ₆
     ]
 end
-construct_strain_matrix(
-    system::CrystalSystem,
-    strains::AbstractVector{<:EngineeringStrain},
-) = vcat((construct_strain_matrix(system, strain) for strain in strains)...)
+recombine_strains(system::CrystalSystem, strains::AbstractVector{<:EngineeringStrain}) =
+    vcat((recombine_strains(system, strain) for strain in strains)...)
 
 function reconstruct_cᵢⱼ(::Cubic, coefficients)
     c₁₁, c₁₂, c₄₄ = coefficients
@@ -258,7 +256,7 @@ function reconstruct_cᵢⱼ(::Monoclinic, coefficients)
 end
 reconstruct_cᵢⱼ(::Triclinic, coefficients) = StiffnessMatrix(coefficients...)
 
-function construct_stress_matrix(::Cubic, stress::EngineeringStress)
+function recombine_stresses(::Cubic, stress::EngineeringStress)
     σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = stress
     return [  # 6×3 matrix
         σ₁ σ₂+σ₃ 0
@@ -269,10 +267,8 @@ function construct_stress_matrix(::Cubic, stress::EngineeringStress)
         0 0 σ₆
     ]
 end
-construct_stress_matrix(
-    system::CrystalSystem,
-    stresses::AbstractVector{<:EngineeringStress},
-) = vcat((construct_stress_matrix(system, stress) for stress in stresses)...)
+recombine_stresses(system::CrystalSystem, stresses::AbstractVector{<:EngineeringStress}) =
+    vcat((recombine_stresses(system, stress) for stress in stresses)...)
 
 function reconstruct_sᵢⱼ(::Cubic, coefficients)
     s₁₁, s₁₂, s₄₄ = coefficients
@@ -319,7 +315,7 @@ function solve_elastic_constants(
         throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
     σ = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
-    ε = construct_strain_matrix(system, strains)  # Size 6n×N matrix, N = # independent coefficients
+    ε = recombine_strains(system, strains)  # Size 6n×N matrix, N = # independent coefficients
     coefficients = ε \ σ  # Length N vector
     return reconstruct_cᵢⱼ(system, coefficients)
 end
@@ -340,7 +336,7 @@ function solve_elastic_constants(
         throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
     ε = vcat(strains...)
-    σ = construct_stress_matrix(system, stresses)
+    σ = recombine_stresses(system, stresses)
     coefficients = σ \ ε
     return reconstruct_sᵢⱼ(system, coefficients)
 end
