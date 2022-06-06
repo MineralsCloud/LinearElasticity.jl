@@ -310,7 +310,7 @@ function solve_elastic_constants(
             ),
         )
     end
-    n = minimal_ulics(system)
+    n = minimal_npairs(system)
     if length(strains) < n
         throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
@@ -331,7 +331,7 @@ function solve_elastic_constants(
             ),
         )
     end
-    n = minimal_ulics(system)
+    n = minimal_npairs(system)
     if length(strains) < n
         throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
@@ -391,10 +391,10 @@ solve_compliances(
 ) = solve_elastic_constants(system, stresses, strains)
 solve_compliances(stresses, strains) = solve_compliances(Triclinic(), stresses, strains)
 
-minimal_ulics(::Cubic) = 1
-minimal_ulics(::Hexagonal) = 2
-minimal_ulics(::Trigonal) = 2
-minimal_ulics(::Tetragonal) = 2
-minimal_ulics(::Orthorhombic) = 3
-minimal_ulics(::Monoclinic) = 5
-minimal_ulics(::Triclinic) = 6
+minimal_npairs(::Cubic) = 1
+minimal_npairs(::Hexagonal) = 2
+minimal_npairs(::Trigonal) = 2
+minimal_npairs(::Tetragonal) = 2
+minimal_npairs(::Orthorhombic) = 3
+minimal_npairs(::Monoclinic) = 5
+minimal_npairs(::Triclinic) = 6
