@@ -67,15 +67,15 @@ function construct_strain_matrix(::Trigonal, strain::EngineeringStrain)
         ϵ₆/2 0 -ϵ₆/2 0 0 ϵ₅ -ϵ₄
     ]
 end
-function construct_strain_matrix(::Monoclinic, strain::EngineeringStrain)
+function construct_strain_matrix(::Monoclinic, strain::EngineeringStrain)  # Only standard orientation (diad ∥ x₂) is implemented
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     return [  # 6×13 matrix
-        ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 ϵ₆ 0 0 0
-        0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0 0 ϵ₆ 0 0
-        0 0 ϵ₃ 0 ϵ₁ ϵ₂ 0 0 0 0 0 ϵ₆ 0
-        0 0 0 0 0 0 ϵ₄ 0 0 0 0 0 ϵ₅
-        0 0 0 0 0 0 0 ϵ₅ 0 0 0 0 ϵ₄
-        0 0 0 0 0 0 0 0 ϵ₆ ϵ₁ ϵ₂ ϵ₃ 0
+        ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 ϵ₅ 0 0 0
+        0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0 0 ϵ₅ 0 0
+        0 0 ϵ₃ 0 ϵ₁ ϵ₂ 0 0 0 0 0 ϵ₅ 0
+        0 0 0 0 0 0 ϵ₄ 0 0 0 0 0 ϵ₆
+        0 0 0 0 0 0 0 ϵ₅ 0 ϵ₁ ϵ₂ ϵ₃ 0
+        0 0 0 0 0 0 0 0 ϵ₆ 0 0 0 ϵ₄
     ]
 end
 function construct_strain_matrix(::Triclinic, strain::EngineeringStrain)
@@ -230,27 +230,27 @@ function reconstruct_cᵢⱼ(::Trigonal, cᵢⱼ)
     )
 end
 function reconstruct_cᵢⱼ(::Monoclinic, cᵢⱼ)
-    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₆, c₂₆, c₃₆, c₄₅ = cᵢⱼ
+    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₅, c₂₅, c₃₅, c₄₆ = cᵢⱼ
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
         c₁₂,
         c₁₃,
         𝟎,
+        c₁₅,
         𝟎,
-        c₁₆,
         c₂₂,
         c₂₃,
         𝟎,
+        c₂₅,
         𝟎,
-        c₂₆,
         c₃₃,
         𝟎,
+        c₃₅,
         𝟎,
-        c₃₆,
         c₄₄,
-        c₄₅,
         𝟎,
+        c₄₆,
         c₅₅,
         𝟎,
         c₆₆,
