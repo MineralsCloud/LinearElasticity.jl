@@ -57,13 +57,14 @@ function construct_strain_matrix(::Hexagonal, strain::EngineeringStrain)
 end
 function construct_strain_matrix(::Trigonal, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+    # Rhombohedral (I) class (c₁₅ = 0) is a special case of rhombohedral (II) class
     return [  # 6×6 matrix
-        ϵ₁ 0 ϵ₂ ϵ₃ 0 ϵ₅
-        ϵ₂ 0 ϵ₁ ϵ₃ 0 -ϵ₅
-        0 ϵ₃ 0 ϵ₁+ϵ₂ 0 0
-        0 0 0 0 ϵ₄ -2ϵ₆
-        0 0 0 0 ϵ₅ 2(ϵ₁-ϵ₂)
-        ϵ₆ 0 -ϵ₆ 0 0 -2ϵ₄
+        ϵ₁ 0 ϵ₂ ϵ₃ 0 ϵ₄ ϵ₅
+        ϵ₂ 0 ϵ₁ ϵ₃ 0 -ϵ₄ -ϵ₅
+        0 ϵ₃ 0 ϵ₁+ϵ₂ 0 0 0
+        0 0 0 0 ϵ₄ ϵ₁-ϵ₂ -ϵ₆
+        0 0 0 0 ϵ₅ ϵ₆ ϵ₁-ϵ₂
+        ϵ₆/2 0 -ϵ₆/2 0 0 ϵ₅ -ϵ₄
     ]
 end
 function construct_strain_matrix(::Monoclinic, strain::EngineeringStrain)
@@ -202,19 +203,19 @@ function reconstruct_cᵢⱼ(::Hexagonal, cᵢⱼ)
     )
 end
 function reconstruct_cᵢⱼ(::Trigonal, cᵢⱼ)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄ = cᵢⱼ
+    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄, c₁₅ = cᵢⱼ
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
         c₁₂,
         c₁₃,
         c₁₄,
-        𝟎,
+        c₁₅,
         𝟎,
         c₁₁,
         c₁₃,
         -c₁₄,
-        𝟎,
+        -c₁₅,
         𝟎,
         c₃₃,
         𝟎,
@@ -222,7 +223,7 @@ function reconstruct_cᵢⱼ(::Trigonal, cᵢⱼ)
         𝟎,
         c₄₄,
         𝟎,
-        𝟎,
+        -c₁₅,
         c₄₄,
         c₁₄,
         (c₁₁ - c₁₂) / 2,
