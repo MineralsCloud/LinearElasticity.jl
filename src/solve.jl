@@ -271,8 +271,8 @@ function construct_stress_matrix(::Cubic, stress::EngineeringStress)
 end
 construct_stress_matrix(
     system::CrystalSystem,
-    stresses::AbstractVector{<:EngineeringStrain},
-) = vcat(construct_stress_matrix(system, stress) for stress in stresses)
+    stresses::AbstractVector{<:EngineeringStress},
+) = vcat((construct_stress_matrix(system, stress) for stress in stresses)...)
 
 function reconstruct_sᵢⱼ(::Cubic, coefficients)
     s₁₁, s₁₂, s₄₄ = coefficients
