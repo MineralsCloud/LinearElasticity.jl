@@ -52,13 +52,13 @@ function construct_strain_matrix(::Hexagonal, strain::EngineeringStrain)
         0 ϵ₃ 0 ϵ₁+ϵ₂ 0
         0 0 0 0 ϵ₄
         0 0 0 0 ϵ₅
-        ϵ₆ 0 -ϵ₆ 0 0
+        ϵ₆/2 0 -ϵ₆/2 0 0
     ]
 end
 function construct_strain_matrix(::Trigonal, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
     # Rhombohedral (I) class (c₁₅ = 0) is a special case of rhombohedral (II) class
-    return [  # 6×6 matrix
+    return [  # 6×7 matrix
         ϵ₁ 0 ϵ₂ ϵ₃ 0 ϵ₄ ϵ₅
         ϵ₂ 0 ϵ₁ ϵ₃ 0 -ϵ₄ -ϵ₅
         0 ϵ₃ 0 ϵ₁+ϵ₂ 0 0 0
