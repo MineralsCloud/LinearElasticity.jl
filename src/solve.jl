@@ -94,8 +94,8 @@ construct_strain_matrix(
     strains::AbstractVector{<:EngineeringStrain},
 ) = vcat((construct_strain_matrix(system, strain) for strain in strains)...)
 
-function reconstruct_cᵢⱼ(::Cubic, cᵢⱼ)
-    c₁₁, c₁₂, c₄₄ = cᵢⱼ
+function reconstruct_cᵢⱼ(::Cubic, coefficients)
+    c₁₁, c₁₂, c₄₄ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
@@ -121,8 +121,8 @@ function reconstruct_cᵢⱼ(::Cubic, cᵢⱼ)
         c₄₄,
     )
 end
-function reconstruct_cᵢⱼ(::Tetragonal, cᵢⱼ)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₁₆, c₄₄, c₆₆ = cᵢⱼ
+function reconstruct_cᵢⱼ(::Tetragonal, coefficients)
+    c₁₁, c₃₃, c₁₂, c₁₃, c₁₆, c₄₄, c₆₆ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
@@ -148,8 +148,8 @@ function reconstruct_cᵢⱼ(::Tetragonal, cᵢⱼ)
         c₆₆,
     )
 end
-function reconstruct_cᵢⱼ(::Orthorhombic, cᵢⱼ)
-    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = cᵢⱼ
+function reconstruct_cᵢⱼ(::Orthorhombic, coefficients)
+    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
@@ -175,8 +175,8 @@ function reconstruct_cᵢⱼ(::Orthorhombic, cᵢⱼ)
         c₆₆,
     )
 end
-function reconstruct_cᵢⱼ(::Hexagonal, cᵢⱼ)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄ = cᵢⱼ
+function reconstruct_cᵢⱼ(::Hexagonal, coefficients)
+    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
@@ -202,8 +202,8 @@ function reconstruct_cᵢⱼ(::Hexagonal, cᵢⱼ)
         (c₁₁ - c₁₂) / 2,
     )
 end
-function reconstruct_cᵢⱼ(::Trigonal, cᵢⱼ)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄, c₁₅ = cᵢⱼ
+function reconstruct_cᵢⱼ(::Trigonal, coefficients)
+    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄, c₁₅ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
@@ -229,8 +229,8 @@ function reconstruct_cᵢⱼ(::Trigonal, cᵢⱼ)
         (c₁₁ - c₁₂) / 2,
     )
 end
-function reconstruct_cᵢⱼ(::Monoclinic, cᵢⱼ)
-    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₅, c₂₅, c₃₅, c₄₆ = cᵢⱼ
+function reconstruct_cᵢⱼ(::Monoclinic, coefficients)
+    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₅, c₂₅, c₃₅, c₄₆ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
         c₁₁,
@@ -256,7 +256,7 @@ function reconstruct_cᵢⱼ(::Monoclinic, cᵢⱼ)
         c₆₆,
     )
 end
-reconstruct_cᵢⱼ(::Triclinic, cᵢⱼ) = StiffnessMatrix(cᵢⱼ...)
+reconstruct_cᵢⱼ(::Triclinic, coefficients) = StiffnessMatrix(coefficients...)
 
 function construct_stress_matrix(::Cubic, stress::EngineeringStress)
     σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = stress
@@ -274,8 +274,8 @@ construct_stress_matrix(
     stresses::AbstractVector{<:EngineeringStrain},
 ) = vcat(construct_stress_matrix(system, stress) for stress in stresses)
 
-function reconstruct_sᵢⱼ(::Cubic, sᵢⱼ)
-    s₁₁, s₁₂, s₄₄ = sᵢⱼ
+function reconstruct_sᵢⱼ(::Cubic, coefficients)
+    s₁₁, s₁₂, s₄₄ = coefficients
     𝟎 = zero(s₁₁)
     return StiffnessMatrix(
         s₁₁,
@@ -320,8 +320,8 @@ function solve_elastic_matrix(
     end
     σ = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
     ε = construct_strain_matrix(system, strains)  # Size 6n×N matrix, N = # independent coefficients
-    cᵢⱼ = ε \ σ  # Length N vector
-    return reconstruct_cᵢⱼ(system, cᵢⱼ)
+    coefficients = ε \ σ  # Length N vector
+    return reconstruct_cᵢⱼ(system, coefficients)
 end
 function solve_elastic_matrix(
     system::CrystalSystem,
@@ -341,8 +341,8 @@ function solve_elastic_matrix(
     end
     ε = vcat(strains...)
     σ = construct_stress_matrix(system, stresses)
-    sᵢⱼ = σ \ ε
-    return reconstruct_sᵢⱼ(system, sᵢⱼ)
+    coefficients = σ \ ε
+    return reconstruct_sᵢⱼ(system, coefficients)
 end
 solve_elastic_matrix(
     system::CrystalSystem,
