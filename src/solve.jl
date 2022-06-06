@@ -344,16 +344,30 @@ function solve_elastic_matrix(
     coefficients = σ \ ε
     return reconstruct_sᵢⱼ(system, coefficients)
 end
-solve_elastic_matrix(
+function solve_elastic_matrix(
     system::CrystalSystem,
     strains::AbstractVector{<:TensorStrain},
     stresses::AbstractVector{<:TensorStress},
-) = solve_elastic_matrix(system, EngineeringStrain.(strains), EngineeringStress.(stresses))
-solve_elastic_matrix(
+)
+    cᵢⱼ = solve_elastic_matrix(
+        system,
+        EngineeringStrain.(strains),
+        EngineeringStress.(stresses),
+    )
+    return StiffnessTensor(cᵢⱼ)
+end
+function solve_elastic_matrix(
     system::CrystalSystem,
     stresses::AbstractVector{<:TensorStress},
     strains::AbstractVector{<:TensorStrain},
-) = solve_elastic_matrix(system, EngineeringStress.(stresses), EngineeringStrain.(strains))
+)
+    sᵢⱼ = solve_elastic_matrix(
+        system,
+        EngineeringStrain.(strains),
+        EngineeringStress.(stresses),
+    )
+    return ComplianceTensor(sᵢⱼ)
+end
 solve_elastic_matrix(strains_or_stresses, stresses_or_strains) =
     solve_elastic_matrix(Triclinic(), strains_or_stresses, stresses_or_strains)
 
