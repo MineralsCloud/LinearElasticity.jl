@@ -5,4 +5,5 @@ using Test
     include("tensors.jl")
     include("arithmetic.jl")
     include("invariants.jl")
+    include("solve.jl")
 end
