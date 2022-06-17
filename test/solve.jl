@@ -52,3 +52,26 @@ using LinearElasticity.SymmetryCriteria: ishexagonal
     ]
     @test ishexagonal(stiffness_matrix)
 end
+
+@testset "Test solving elastic constants on KNO₂ (Cm structure)" begin
+    positive_strains = map(1:6) do i
+        EngineeringStrain([j == i ? 0.005 : 0 for j in 1:6])
+    end
+    negative_strains = -positive_strains
+    strains = collect(Iterators.flatten(zip(positive_strains, negative_strains)))
+    stresses = [
+        EngineeringStress(-2.07e-6, 1.019e-5, 6.84e-6, 0, -6.3e-7, 0),
+        EngineeringStress(2.545e-5, 1.552e-5, 1.078e-5, 0, 2.4e-7, 0),
+        EngineeringStress(8.61e-6, 4.6e-7, 3.38e-6, 0, -1.1e-7, 0),
+        EngineeringStress(1.386e-5, 2.551e-5, 1.456e-5, 0, -3.0e-7, 0),
+        EngineeringStress(9.27e-6, 7.37e-6, 1.6e-6, 0, -9.0e-8, 0),
+        EngineeringStress(1.322e-5, 1.857e-5, 1.621e-5, 0, -3.5e-7, 0),
+        EngineeringStress(1.12e-5, 1.281e-5, 8.8e-6, -2.17e-6, -1.9e-7, -3.0e-8),
+        EngineeringStress(1.121e-5, 1.282e-5, 8.8e-6, 2.17e-6, -1.9e-7, 3.0e-8),
+        EngineeringStress(1.076e-5, 1.3e-5, 8.97e-6, 0, -6.1e-7, 0),
+        EngineeringStress(1.171e-5, 1.271e-5, 8.61e-6, 0, 2.3e-7, 0),
+        EngineeringStress(1.121e-5, 1.292e-5, 8.85e-6, 5.0e-8, -2.1e-7, -2.26e-6),
+        EngineeringStress(1.12e-5, 1.292e-5, 8.85e-6, -5.0e-8, -2.1e-7, 2.26e-6),
+    ]
+    # Reference values: https://materialsproject.org/materials/mp-34857?formula=KNO2#elastic_constants
+end
