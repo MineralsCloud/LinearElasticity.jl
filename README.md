@@ -8,3 +8,5 @@
 [![Coverage](https://codecov.io/gh/MineralsCloud/LinearElasticity.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MineralsCloud/LinearElasticity.jl)
 [![PkgEval](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/L/LinearElasticity.svg)](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/report.html)
 [![GitHub license](https://img.shields.io/github/license/MineralsCloud/LinearElasticity.jl)](https://github.com/MineralsCloud/LinearElasticity.jl/blob/master/LICENSE)
+
+Compute, convert linear elasticity values based on the Cauchy elasticity theory.
