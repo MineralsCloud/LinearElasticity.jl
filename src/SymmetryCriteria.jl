@@ -11,7 +11,7 @@ using Crystallography:
     Triclinic
 using ..LinearElasticity: StiffnessMatrix, ComplianceMatrix
 
-export issystem, whichsystem, isisotropic
+export issystem, whichsystem, isisotropic, ishexagonal
 
 function symmetry_criteria(::Cubic, x::Union{StiffnessMatrix,ComplianceMatrix})
     return (
@@ -131,6 +131,8 @@ symmetry_criteria(::Triclinic, x::Union{StiffnessMatrix,ComplianceMatrix}) =
 
 issystem(x::Union{StiffnessMatrix,ComplianceMatrix}, system::CrystalSystem) =
     all(symmetry_criteria(system, x))
+
+ishexagonal(x::Union{StiffnessMatrix,ComplianceMatrix}) = issystem(x, Hexagonal())
 
 function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
     for system in (
