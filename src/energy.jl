@@ -1,4 +1,4 @@
-using Compat.LinearAlgebra: dot
+using LinearAlgebra: dot
 
 export elastic_energy_density
 
