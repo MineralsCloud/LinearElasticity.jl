@@ -1,4 +1,4 @@
-using Crystallography: Lattice
+using CrystallographyBase: Lattice
 using LinearAlgebra: I
 
 export distortby, strainstate, isuniaxial, isbiaxial
