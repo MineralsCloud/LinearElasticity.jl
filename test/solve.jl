@@ -1,4 +1,7 @@
-using Crystallography: Hexagonal
+using Unitful: ustrip
+using UnitfulAtomic
+
+using LinearElasticity: Hexagonal
 using LinearElasticity.SymmetryCriteria: ishexagonal
 
 @testset "Test solving elastic constants on GaN (P6₃mc structure)" begin
