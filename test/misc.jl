@@ -39,7 +39,7 @@ end
         @test isbiaxial(EngineeringStrain(1e-5, 1e-5, 0, 0, 0, 0))
         @test isbiaxial(EngineeringStress(0, 1e-5, 2e-5, 0, 0, 0))
         @test !isbiaxial(EngineeringStress(0, 1e-5, 0, 0, 2e-6, 0))
-        @test !isbiaxial(EngineeringStress(1e-5, 0, 1e-5, 0, 2e-6, 0))
+        @test isbiaxial(EngineeringStress(1e-5, 0, 1e-5, 0, 2e-6, 0))
     end
     σ₂₂ = 200
     σ₁₂ = σ₂₃ = 141
