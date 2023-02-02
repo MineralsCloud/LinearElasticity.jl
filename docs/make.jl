@@ -6,12 +6,13 @@ DocMeta.setdocmeta!(LinearElasticity, :DocTestSetup, :(using LinearElasticity); 
 
 makedocs(;
     modules=[LinearElasticity],
-    authors="Qi Zhang <singularitti@outlook.com>",
+    authors="singularitti <singularitti@outlook.com> and contributors",
     repo="https://github.com/MineralsCloud/LinearElasticity.jl/blob/{commit}{path}#{line}",
     sitename="LinearElasticity.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://MineralsCloud.github.io/LinearElasticity.jl",
+        edit_link="main",
         assets=String[],
     ),
     pages=[
@@ -21,4 +22,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/MineralsCloud/LinearElasticity.jl",
+    devbranch="main",
 )
