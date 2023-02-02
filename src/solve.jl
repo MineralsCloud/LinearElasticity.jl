@@ -86,81 +86,21 @@ function reconstruct_cᵢⱼ(::Cubic, coefficients)
     c₁₁, c₁₂, c₄₄ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
-        c₁₁,
-        c₁₂,
-        c₁₂,
-        𝟎,
-        𝟎,
-        𝟎,
-        c₁₁,
-        c₁₂,
-        𝟎,
-        𝟎,
-        𝟎,
-        c₁₁,
-        𝟎,
-        𝟎,
-        𝟎,
-        c₄₄,
-        𝟎,
-        𝟎,
-        c₄₄,
-        𝟎,
-        c₄₄,
+        c₁₁, c₁₂, c₁₂, 𝟎, 𝟎, 𝟎, c₁₁, c₁₂, 𝟎, 𝟎, 𝟎, c₁₁, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₄₄, 𝟎, c₄₄
     )
 end
 function reconstruct_cᵢⱼ(::Tetragonal, coefficients)
     c₁₁, c₃₃, c₁₂, c₁₃, c₁₆, c₄₄, c₆₆ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
-        c₁₁,
-        c₁₂,
-        c₁₃,
-        𝟎,
-        𝟎,
-        c₁₆,
-        c₁₁,
-        c₁₃,
-        𝟎,
-        𝟎,
-        -c₁₆,
-        c₃₃,
-        𝟎,
-        𝟎,
-        𝟎,
-        c₄₄,
-        𝟎,
-        𝟎,
-        c₄₄,
-        𝟎,
-        c₆₆,
+        c₁₁, c₁₂, c₁₃, 𝟎, 𝟎, c₁₆, c₁₁, c₁₃, 𝟎, 𝟎, -c₁₆, c₃₃, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₄₄, 𝟎, c₆₆
     )
 end
 function reconstruct_cᵢⱼ(::Orthorhombic, coefficients)
     c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = coefficients
     𝟎 = zero(c₁₁)
     return StiffnessMatrix(
-        c₁₁,
-        c₁₂,
-        c₁₃,
-        𝟎,
-        𝟎,
-        𝟎,
-        c₂₂,
-        c₂₃,
-        𝟎,
-        𝟎,
-        𝟎,
-        c₃₃,
-        𝟎,
-        𝟎,
-        𝟎,
-        c₄₄,
-        𝟎,
-        𝟎,
-        c₅₅,
-        𝟎,
-        c₆₆,
+        c₁₁, c₁₂, c₁₃, 𝟎, 𝟎, 𝟎, c₂₂, c₂₃, 𝟎, 𝟎, 𝟎, c₃₃, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₅₅, 𝟎, c₆₆
     )
 end
 function reconstruct_cᵢⱼ(::Hexagonal, coefficients)
@@ -264,27 +204,7 @@ function reconstruct_sᵢⱼ(::Cubic, coefficients)
     s₁₁, s₁₂, s₄₄ = coefficients
     𝟎 = zero(s₁₁)
     return StiffnessMatrix(
-        s₁₁,
-        s₁₂,
-        s₁₂,
-        𝟎,
-        𝟎,
-        𝟎,
-        s₁₁,
-        s₁₂,
-        𝟎,
-        𝟎,
-        𝟎,
-        s₁₁,
-        𝟎,
-        𝟎,
-        𝟎,
-        s₄₄,
-        𝟎,
-        𝟎,
-        s₄₄,
-        𝟎,
-        s₄₄,
+        s₁₁, s₁₂, s₁₂, 𝟎, 𝟎, 𝟎, s₁₁, s₁₂, 𝟎, 𝟎, 𝟎, s₁₁, 𝟎, 𝟎, 𝟎, s₄₄, 𝟎, 𝟎, s₄₄, 𝟎, s₄₄
     )
 end
 
@@ -296,7 +216,7 @@ function solve_elastic_constants(
     if length(strains) != length(stresses)
         throw(
             DimensionMismatch(
-                "the number of strains and the number of stresses must match!",
+                "the number of strains and the number of stresses must match!"
             ),
         )
     end
@@ -317,7 +237,7 @@ function solve_elastic_constants(
     if length(strains) != length(stresses)
         throw(
             DimensionMismatch(
-                "the number of strains and the number of stresses must match!",
+                "the number of strains and the number of stresses must match!"
             ),
         )
     end
@@ -336,9 +256,7 @@ function solve_elastic_constants(
     stresses::AbstractVector{<:TensorStress},
 )
     cᵢⱼ = solve_elastic_constants(
-        system,
-        EngineeringStrain.(strains),
-        EngineeringStress.(stresses),
+        system, EngineeringStrain.(strains), EngineeringStress.(stresses)
     )
     return StiffnessTensor(cᵢⱼ)
 end
@@ -348,9 +266,7 @@ function solve_elastic_constants(
     strains::AbstractVector{<:TensorStrain},
 )
     sᵢⱼ = solve_elastic_constants(
-        system,
-        EngineeringStrain.(strains),
-        EngineeringStress.(stresses),
+        system, EngineeringStrain.(strains), EngineeringStress.(stresses)
     )
     return ComplianceTensor(sᵢⱼ)
 end

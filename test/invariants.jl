@@ -27,7 +27,7 @@ end
         0 0.115308 0
         0 0 0.655269
     ]) < 1e-6
-    @test isapprox(principal_values(E), [-0.370577, 0.115308, 0.655269]; atol = 1e-6)
+    @test isapprox(principal_values(E), [-0.370577, 0.115308, 0.655269]; atol=1e-6)
     @test tr(normal_strains) ≈ tr(E) ≈ 2 / 5
 end
 
@@ -66,10 +66,10 @@ end
             Int64(0)u"MPa" σ₁₂ Int64(0)u"MPa"
             σ₁₂ σ₂₂ σ₂₃
             Int64(0)u"MPa" σ₂₃ Int64(0)u"MPa"
-        ],
+        ]
     )
     @test minimum(principal_values(σ)) ≈ -123.07397876041034u"MPa"
-    @test isapprox(sort(principal_values(σ))[2], 0u"MPa"; atol = 1e-12u"MPa")
+    @test isapprox(sort(principal_values(σ))[2], 0u"MPa"; atol=1e-12u"MPa")
     @test maximum(principal_values(σ)) == 323.07397876041034u"MPa"
     @test norm(
         principal_axes(σ) - Float64[

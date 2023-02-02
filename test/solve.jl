@@ -36,7 +36,7 @@ using LinearElasticity.SymmetryCriteria: ishexagonal
         ],
     )
     # Reference values: https://materialsproject.org/materials/mp-804?formula=GaN#elastic_constants
-    @test stiffness_matrix * u"Ry/bohr^3" .|> u"GPa" |> ustrip == [
+    @test ustrip(u"GPa".(stiffness_matrix * u"Ry/bohr^3")) == [
         326.56812555486005 115.54883257234204 82.22070599119812 0 0 0
         115.54883257234204 326.56812555486005 82.22070599119812 0 0 0
         82.22070599119812 82.22070599119812 360.42215279158114 0 0 0
@@ -45,7 +45,7 @@ using LinearElasticity.SymmetryCriteria: ishexagonal
         0 0 0 0 0 105.509646491259
     ]
     # Reference values: https://materialsproject.org/materials/mp-804?formula=GaN#elastic_constants
-    @test inv(stiffness_matrix) * u"bohr^3/Ry" .|> u"TPa^(-1)" |> ustrip == [
+    @test ustrip(u"TPa^(-1)".(inv(stiffness_matrix) * u"bohr^3/Ry")) == [
         3.6052277063145053 -1.1336754805274927 -0.5638187534378214 0 0 0
         -1.1336754805274927 3.6052277063145053 -0.5638187534378214 0 0 0
         -0.5638187534378214 -0.5638187534378214 3.031764677764818 0 0 0

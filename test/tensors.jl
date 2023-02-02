@@ -20,7 +20,7 @@ using LinearElasticity.SymmetryCriteria: whichsystem, isisotropic
             0.0 1.15385 0.0
             0.0 0.0 1.15385
         ];
-        rtol = 1e-5,
+        rtol=1e-5,
     )
     @test isapprox(
         C[:, :, 2, 3],
@@ -29,7 +29,7 @@ using LinearElasticity.SymmetryCriteria: whichsystem, isisotropic
             0.0 0.0 0.769231
             0.0 0.769231 0.0
         ];
-        rtol = 1e-6,
+        rtol=1e-6,
     )
     c = StiffnessMatrix(C)
     @test isapprox(
@@ -42,7 +42,7 @@ using LinearElasticity.SymmetryCriteria: whichsystem, isisotropic
             0.0 0.0 0.0 0.0 0.769231 0.0
             0.0 0.0 0.0 0.0 0.0 0.769231
         ];
-        rtol = 1e-5,
+        rtol=1e-5,
     )  # This is an isotropic system
     @test StiffnessTensor(c) == C
     S = inv(C)

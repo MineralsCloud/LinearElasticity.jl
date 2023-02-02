@@ -72,13 +72,13 @@ function Base.convert(::Type{ComplianceTensor{T}}, s::ComplianceMatrix{T}) where
             if i == j && k == l
                 return s[i, k]
             elseif i != j && k != l  # 4 = 9 - (2+3), 5 = 9 - (1+3), 6 = 9 - (1+2)
-                return s[9-(i+j), 9-(k+l)] / 4
+                return s[9 - (i + j), 9 - (k + l)] / 4
             elseif i == j && k != l
-                return s[i, 9-(k+l)] / 2
+                return s[i, 9 - (k + l)] / 2
             else  # i != j && k == l
-                return s[9-(i+j), k] / 2
+                return s[9 - (i + j), k] / 2
             end
-        end),
+        end)
     )
 end
 
