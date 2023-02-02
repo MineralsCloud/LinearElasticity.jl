@@ -1,7 +1,7 @@
 using Crystallography: Lattice
 using LinearAlgebra: I
 
-export distortby, strainstate
+export distortby, strainstate, isuniaxial
 
 # See https://link.springer.com/content/pdf/10.1007%2F978-3-7091-0382-1_7.pdf and https://doi.org/10.2138/am-1997-1-207
 distortby(lattice::Lattice, strain::TensorStrain) =
@@ -10,3 +10,9 @@ distortby(lattice::Lattice, strain::EngineeringStrain) =
     distortby(lattice, TensorStrain(strain))
 
 strainstate(old::Lattice, new::Lattice) = TensorStrain(new.data / old.data - I)
+
+# No shear components, only one normal component is nonzero
+isuniaxial(x::Union{EngineeringStress,EngineeringStrain}) =
+    iszero(x[4:end]) && length(filter(iszero, x[1:3])) == 1
+isuniaxial(σ::TensorStress) = isuniaxial(EngineeringStress(σ))
+isuniaxial(ε::TensorStrain) = isuniaxial(EngineeringStrain(ε))
