@@ -2,10 +2,7 @@ module StabilityCriteria
 
 using LinearAlgebra: diag
 
-using Crystallography:
-    CrystalSystem, Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic
-
-using LinearElasticity: StiffnessMatrix, ComplianceMatrix
+using ..LinearElasticity: StiffnessMatrix, ComplianceMatrix
 
 export isstable
 

@@ -1,5 +1,6 @@
-using Crystallography: Cubic
 using Tensorial: SymmetricFourthOrderTensor
+
+using LinearElasticity: Cubic
 using LinearElasticity.SymmetryCriteria: whichsystem, isisotropic
 
 # Compared with https://ferrite-fem.github.io/Tensors.jl/stable/demos/

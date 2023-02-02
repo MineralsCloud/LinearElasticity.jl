@@ -1,13 +1,3 @@
-using Crystallography:
-    CrystalSystem,
-    Cubic,
-    Hexagonal,
-    Trigonal,
-    Tetragonal,
-    Orthorhombic,
-    Monoclinic,
-    Triclinic
-
 export solve_elastic_constants, solve_stiffnesses, solve_compliances
 
 function recombine_strains(::Cubic, strain::EngineeringStrain)

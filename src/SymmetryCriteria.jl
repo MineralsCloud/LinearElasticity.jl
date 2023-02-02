@@ -1,6 +1,8 @@
 module SymmetryCriteria
 
-using Crystallography:
+using ..LinearElasticity:
+    StiffnessMatrix,
+    ComplianceMatrix,
     CrystalSystem,
     Cubic,
     Hexagonal,
@@ -9,7 +11,6 @@ using Crystallography:
     Orthorhombic,
     Monoclinic,
     Triclinic
-using ..LinearElasticity: StiffnessMatrix, ComplianceMatrix
 
 export issystem, whichsystem, isisotropic, ishexagonal
 

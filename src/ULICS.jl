@@ -1,7 +1,6 @@
 module ULICS
 
-using Crystallography: CrystalSystem
-using ..LinearElasticity: EngineeringStrain, minimal_npairs
+using ..LinearElasticity: CrystalSystem, EngineeringStrain, minimal_npairs
 using Random: shuffle
 
 export ulics
