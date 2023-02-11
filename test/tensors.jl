@@ -1,4 +1,4 @@
-using Tensorial: SymmetricFourthOrderTensor
+using LinearElasticityBase: SymmetricFourthOrderTensor
 
 using LinearElasticity: Cubic
 using LinearElasticity.SymmetryCriteria: whichsystem, isisotropic
