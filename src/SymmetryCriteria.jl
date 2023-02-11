@@ -1,8 +1,8 @@
 module SymmetryCriteria
 
+using LinearElasticityBase: StiffnessMatrix, ComplianceMatrix
+
 using ..LinearElasticity:
-    StiffnessMatrix,
-    ComplianceMatrix,
     CrystalSystem,
     Cubic,
     Hexagonal,

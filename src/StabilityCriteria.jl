@@ -1,8 +1,7 @@
 module StabilityCriteria
 
 using LinearAlgebra: diag
-
-using ..LinearElasticity: StiffnessMatrix, ComplianceMatrix
+using LinearElasticityBase: StiffnessMatrix, ComplianceMatrix
 
 export isstable
 
