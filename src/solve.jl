@@ -209,11 +209,7 @@ function solve_elastic_constants(
     stresses::AbstractVector{<:EngineeringStress},
 )
     if length(strains) != length(stresses)
-        throw(
-            DimensionMismatch(
-                "the number of strains and the number of stresses must match!"
-            ),
-        )
+        throw(DimensionMismatch("the lengths of strains and stresses must match!"))
     end
     n = minimal_npairs(system)
     if length(strains) < n
@@ -230,11 +226,7 @@ function solve_elastic_constants(
     strains::AbstractVector{<:EngineeringStrain},
 )
     if length(strains) != length(stresses)
-        throw(
-            DimensionMismatch(
-                "the number of strains and the number of stresses must match!"
-            ),
-        )
+        throw(DimensionMismatch("the lengths of strains and stresses must match!"))
     end
     n = minimal_npairs(system)
     if length(strains) < n
