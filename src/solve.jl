@@ -83,29 +83,25 @@ combine_strains(system::CrystalSystem, strains::AbstractVector{<:EngineeringStra
     vcat((combine_strains(system, strain) for strain in strains)...)
 
 function construct_cᵢⱼ(::Cubic, coefficients)
-    c₁₁, c₁₂, c₄₄ = coefficients
-    𝟎 = zero(c₁₁)
+    𝟎, c₁₁, c₁₂, c₄₄ = _promote_with_zero(coefficients)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₂, 𝟎, 𝟎, 𝟎, c₁₁, c₁₂, 𝟎, 𝟎, 𝟎, c₁₁, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₄₄, 𝟎, c₄₄
     )
 end
 function construct_cᵢⱼ(::Tetragonal, coefficients)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₁₆, c₄₄, c₆₆ = coefficients
-    𝟎 = zero(c₁₁)
+    𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₁₆, c₄₄, c₆₆ = _promote_with_zero(coefficients)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₃, 𝟎, 𝟎, c₁₆, c₁₁, c₁₃, 𝟎, 𝟎, -c₁₆, c₃₃, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₄₄, 𝟎, c₆₆
     )
 end
 function construct_cᵢⱼ(::Orthorhombic, coefficients)
-    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = coefficients
-    𝟎 = zero(c₁₁)
+    𝟎, c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = _promote_with_zero(coefficients)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₃, 𝟎, 𝟎, 𝟎, c₂₂, c₂₃, 𝟎, 𝟎, 𝟎, c₃₃, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₅₅, 𝟎, c₆₆
     )
 end
 function construct_cᵢⱼ(::Hexagonal, coefficients)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄ = coefficients
-    𝟎 = zero(c₁₁)
+    𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₄₄ = _promote_with_zero(coefficients)
     return StiffnessMatrix(
         c₁₁,
         c₁₂,
@@ -131,8 +127,7 @@ function construct_cᵢⱼ(::Hexagonal, coefficients)
     )
 end
 function construct_cᵢⱼ(::Trigonal, coefficients)
-    c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄, c₁₅ = coefficients
-    𝟎 = zero(c₁₁)
+    𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄, c₁₅ = _promote_with_zero(coefficients)
     return StiffnessMatrix(
         c₁₁,
         c₁₂,
@@ -158,8 +153,9 @@ function construct_cᵢⱼ(::Trigonal, coefficients)
     )
 end
 function construct_cᵢⱼ(::Monoclinic, coefficients)
-    c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₅, c₂₅, c₃₅, c₄₆ = coefficients
-    𝟎 = zero(c₁₁)
+    𝟎, c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₅, c₂₅, c₃₅, c₄₆ = _promote_with_zero(
+        coefficients
+    )
     return StiffnessMatrix(
         c₁₁,
         c₁₂,
@@ -201,8 +197,7 @@ combine_stresses(system::CrystalSystem, stresses::AbstractVector{<:EngineeringSt
     vcat((combine_stresses(system, stress) for stress in stresses)...)
 
 function construct_sᵢⱼ(::Cubic, coefficients)
-    s₁₁, s₁₂, s₄₄ = coefficients
-    𝟎 = zero(s₁₁)
+    𝟎, s₁₁, s₁₂, s₄₄ = _promote_with_zero(coefficients)
     return StiffnessMatrix(
         s₁₁, s₁₂, s₁₂, 𝟎, 𝟎, 𝟎, s₁₁, s₁₂, 𝟎, 𝟎, 𝟎, s₁₁, 𝟎, 𝟎, 𝟎, s₄₄, 𝟎, 𝟎, s₄₄, 𝟎, s₄₄
     )
@@ -304,3 +299,9 @@ minimal_npairs(::Tetragonal) = 2
 minimal_npairs(::Orthorhombic) = 3
 minimal_npairs(::Monoclinic) = 5
 minimal_npairs(::Triclinic) = 6
+
+function _promote_with_zero(xs)
+    T = Base.promote_typeof(xs...)
+    𝟎 = zero(T)
+    return 𝟎, (convert(T, x) for x in xs)...
+end
