@@ -1,3 +1,5 @@
+# module Solve
+
 export solve_elastic_constants, solve_stiffnesses, solve_compliances
 
 function combine_strains(::Cubic, strain::EngineeringStrain)
@@ -297,3 +299,5 @@ function _promote_with_zero(xs)
     𝟎 = zero(T)
     return 𝟎, (convert(T, x) for x in xs)...
 end
+
+# end

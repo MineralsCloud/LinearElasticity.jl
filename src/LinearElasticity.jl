@@ -107,7 +107,7 @@ include("SymmetryCriteria.jl")
 # include("StabilityCriteria.jl")
 include("Isotropic.jl")
 include("misc.jl")
-include("solve.jl")
+include("Solve.jl")
 include("ULICS.jl")
 
 end
