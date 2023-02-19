@@ -19,28 +19,22 @@ Problem(
     𝐱::AbstractVector{X}, 𝐲::AbstractVector{Y}, cons::C=TriclinicConstraint()
 ) where {X,Y,C} = Problem{X,Y,C}(𝐱, 𝐲, cons)
 
-function solve(problem::Problem{<:EngineeringStress,<:EngineeringStrain})
-    strains, stresses, constraint = problem.x, problem.y, problem.cons
-    𝛔 = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
-    ε = construct_linear(strains, constraint)  # Size 6n×N matrix, N = # independent coefficients
-    𝐜 = ε \ 𝛔  # Length N vector
-    return construct_cᵢⱼ(𝐜, constraint)
+function solve(problem::Problem)
+    x, y, constraint = problem.x, problem.y, problem.cons
+    𝐛 = vcat(y...)  # Length 6n vector, n = length(strains) = length(stresses)
+    A = construct_linear(x, constraint)  # Size 6n×N matrix, N = # independent coefficients
+    𝐱 = A \ 𝐛  # Length N vector
+    return construct(eltype(x), eltype(y))(𝐱, constraint)
 end
-function solve(problem::Problem{<:EngineeringStrain,<:EngineeringStress})
-    stresses, strains, constraint = problem.x, problem.y, problem.cons
-    𝛜 = vcat(strains...)
-    σ = construct_linear(stresses, constraint)
-    𝐬 = σ \ 𝛜
-    return construct_sᵢⱼ(𝐬, constraint)
+function solve(problem::Problem)
+    constants = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
+    return construct(eltype(problem.x), eltype(problem.y))(constants)
 end
-function solve(problem::Problem{<:TensorStrain,<:TensorStress})
-    cᵢⱼ = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
-    return StiffnessTensor(cᵢⱼ)
-end
-function solve(problem::Problem{<:TensorStress,<:TensorStrain})
-    sᵢⱼ = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
-    return ComplianceTensor(sᵢⱼ)
-end
+
+construct(::Type{<:EngineeringStrain}, ::Type{<:EngineeringStress}) = construct_cᵢⱼ
+construct(::Type{<:EngineeringStress}, ::Type{<:EngineeringStrain}) = construct_sᵢⱼ
+construct(::Type{<:TensorStrain}, ::Type{<:TensorStress}) = StiffnessTensor
+construct(::Type{<:TensorStress}, ::Type{<:TensorStrain}) = ComplianceTensor
 
 solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint()) = solve(Problem(𝐱, 𝐲, cons))
 
