@@ -1,113 +1,31 @@
 module LinearElasticity
 
-using LinearElasticityBase:
-    Stress,
-    Strain,
-    Stiffness,
-    Compliance,
-    TensorStress,
-    TensorStrain,
-    StiffnessTensor,
-    ComplianceTensor,
-    EngineeringStress,
-    EngineeringStrain,
-    ComplianceMatrix,
-    StiffnessMatrix,
-    energydensity,
-    principal_values,
-    principal_axes,
-    principal_invariants,
-    main_invariants,
-    hydrostatic,
-    deviatoric,
-    contraction,
-    double_contraction,
-    rotate_axes,
-    rotate,
-    to_tensor,
-    to_voigt,
-    isequivalent,
-    isbiaxial,
-    isuniaxial,
-    ⊡,
-    ⩵
+using Reexport: @reexport
 
-export Stress,
-    Stress,
-    Strain,
-    Stiffness,
-    Compliance,
-    TensorStress,
-    TensorStrain,
-    StiffnessTensor,
-    ComplianceTensor,
-    EngineeringStress,
-    EngineeringStrain,
-    ComplianceMatrix,
-    StiffnessMatrix,
-    energydensity,
-    principal_values,
-    principal_axes,
-    principal_invariants,
-    main_invariants,
-    hydrostatic,
-    deviatoric,
-    contraction,
-    double_contraction,
-    rotate_axes,
-    rotate,
-    to_tensor,
-    to_voigt,
-    isequivalent,
-    isbiaxial,
-    isuniaxial,
-    ⊡,
-    ⩵
-export Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic, Triclinic
+@reexport using LinearElasticityBase
 
-"Represent one of the seven crystal systems."
-abstract type CrystalSystem end
-"""
-    Triclinic()
-Represent the triclinic system.
-"""
-struct Triclinic <: CrystalSystem end
-"""
-    Monoclinic()
-Represent the monoclinic system.
-"""
-struct Monoclinic <: CrystalSystem end
-"""
-    Orthorhombic()
-Represent the orthorhombic system.
-"""
-struct Orthorhombic <: CrystalSystem end
-"""
-    Tetragonal()
-Represent the tetragonal system.
-"""
-struct Tetragonal <: CrystalSystem end
-"""
-    Cubic()
-Represent the cubic system.
-"""
-struct Cubic <: CrystalSystem end
-"""
-    Trigonal()
-Represent the trigonal system.
-"""
-struct Trigonal <: CrystalSystem end
-"""
-    Hexagonal()
-Represent the hexagonal system.
-"""
-struct Hexagonal <: CrystalSystem end
+export CubicConstraint,
+    HexagonalConstraint,
+    TetragonalConstraint,
+    TrigonalConstraint,
+    OrthorhombicConstraint,
+    MonoclinicConstraint,
+    TriclinicConstraint
+
+abstract type SymmetryConstraint end
+struct TriclinicConstraint <: SymmetryConstraint end
+struct MonoclinicConstraint <: SymmetryConstraint end
+struct OrthorhombicConstraint <: SymmetryConstraint end
+struct TetragonalConstraint <: SymmetryConstraint end
+struct CubicConstraint <: SymmetryConstraint end
+struct TrigonalConstraint <: SymmetryConstraint end
+struct HexagonalConstraint <: SymmetryConstraint end
 
 include("SymmetryCriteria.jl")
 # include("StabilityCriteria.jl")
 include("Isotropic.jl")
 include("misc.jl")
-include("Solve.jl")
+include("Solve/Solve.jl")
 include("ULICS.jl")
 
 end

@@ -1,6 +1,6 @@
 module ULICS
 
-using ..LinearElasticity: CrystalSystem, EngineeringStrain, minimal_npairs
+using ..LinearElasticity: SymmetryConstraint, EngineeringStrain, minimal_npairs
 using Random: shuffle
 
 export ulics
@@ -14,6 +14,6 @@ const U₅ = EngineeringStrain(5, 4, 6, -2, -1, -3) * 1e-3
 const U₆ = EngineeringStrain(-6, 3, -2, 5, -4, 1) * 1e-3
 const U = [U₁, U₂, U₃, U₄, U₅, U₆]
 
-ulics(system::CrystalSystem) = shuffle(U)[1:minimal_npairs(system)]
+ulics(sym::SymmetryConstraint) = shuffle(U)[1:minimal_npairs(sym)]
 
 end
