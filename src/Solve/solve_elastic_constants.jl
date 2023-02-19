@@ -1,4 +1,4 @@
-export Problem, solve
+export Problem, solve, solve_elastic_constants
 
 struct Problem{X,Y,C<:SymmetryConstraint}
     x::Vector{X}
@@ -43,6 +43,8 @@ function solve(problem::Problem{<:TensorStress,<:TensorStrain})
     sᵢⱼ = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
     return ComplianceTensor(sᵢⱼ)
 end
+
+solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint()) = solve(Problem(𝐱, 𝐲, cons))
 
 minimal_npairs(::CubicConstraint) = 1
 minimal_npairs(::HexagonalConstraint) = 2
