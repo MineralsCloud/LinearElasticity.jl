@@ -1,6 +1,6 @@
 # module Solve
 
-export solve_elastic_constants, solve_stiffnesses, solve_compliances
+export solve_elastic_constants
 
 function combine_strains(::Cubic, strain::EngineeringStrain)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
@@ -261,30 +261,6 @@ function solve_elastic_constants(
 end
 solve_elastic_constants(strains_or_stresses, stresses_or_strains) =
     solve_elastic_constants(Triclinic(), strains_or_stresses, stresses_or_strains)
-
-solve_stiffnesses(
-    system::CrystalSystem,
-    strains::AbstractVector{<:EngineeringStrain},
-    stresses::AbstractVector{<:EngineeringStress},
-) = solve_elastic_constants(system, strains, stresses)
-solve_stiffnesses(
-    system::CrystalSystem,
-    strains::AbstractVector{<:TensorStrain},
-    stresses::AbstractVector{<:TensorStress},
-) = solve_elastic_constants(system, strains, stresses)
-solve_stiffnesses(strains, stresses) = solve_stiffnesses(Triclinic(), strains, stresses)
-
-solve_compliances(
-    system::CrystalSystem,
-    stresses::AbstractVector{<:EngineeringStress},
-    strains::AbstractVector{<:EngineeringStrain},
-) = solve_elastic_constants(system, stresses, strains)
-solve_compliances(
-    system::CrystalSystem,
-    stresses::AbstractVector{<:TensorStress},
-    strains::AbstractVector{<:TensorStrain},
-) = solve_elastic_constants(system, stresses, strains)
-solve_compliances(stresses, strains) = solve_compliances(Triclinic(), stresses, strains)
 
 minimal_npairs(::Cubic) = 1
 minimal_npairs(::Hexagonal) = 2
