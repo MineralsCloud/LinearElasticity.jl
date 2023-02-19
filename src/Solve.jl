@@ -84,25 +84,25 @@ end
 combine_strains(𝛜::AbstractVector{<:EngineeringStrain}, constraint::SymmetryConstraint) =
     vcat((combine_strains(constraint, ϵ) for ϵ in 𝛜)...)
 
-function construct_cᵢⱼ(::CubicConstraint, 𝐜)
+function construct_cᵢⱼ(𝐜, ::CubicConstraint)
     𝟎, c₁₁, c₁₂, c₄₄ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₂, 𝟎, 𝟎, 𝟎, c₁₁, c₁₂, 𝟎, 𝟎, 𝟎, c₁₁, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₄₄, 𝟎, c₄₄
     )
 end
-function construct_cᵢⱼ(::TetragonalConstraint, 𝐜)
+function construct_cᵢⱼ(𝐜, ::TetragonalConstraint)
     𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₁₆, c₄₄, c₆₆ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₃, 𝟎, 𝟎, c₁₆, c₁₁, c₁₃, 𝟎, 𝟎, -c₁₆, c₃₃, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₄₄, 𝟎, c₆₆
     )
 end
-function construct_cᵢⱼ(::OrthorhombicConstraint, 𝐜)
+function construct_cᵢⱼ(𝐜, ::OrthorhombicConstraint)
     𝟎, c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₃, 𝟎, 𝟎, 𝟎, c₂₂, c₂₃, 𝟎, 𝟎, 𝟎, c₃₃, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₅₅, 𝟎, c₆₆
     )
 end
-function construct_cᵢⱼ(::HexagonalConstraint, 𝐜)
+function construct_cᵢⱼ(𝐜, ::HexagonalConstraint)
     𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₄₄ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁,
@@ -128,7 +128,7 @@ function construct_cᵢⱼ(::HexagonalConstraint, 𝐜)
         (c₁₁ - c₁₂) / 2,
     )
 end
-function construct_cᵢⱼ(::TrigonalConstraint, 𝐜)
+function construct_cᵢⱼ(𝐜, ::TrigonalConstraint)
     𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄, c₁₅ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁,
@@ -154,7 +154,7 @@ function construct_cᵢⱼ(::TrigonalConstraint, 𝐜)
         (c₁₁ - c₁₂) / 2,
     )
 end
-function construct_cᵢⱼ(::MonoclinicConstraint, 𝐜)
+function construct_cᵢⱼ(𝐜, ::MonoclinicConstraint)
     𝟎, c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₅, c₂₅, c₃₅, c₄₆ = _promote_with_zero(
         𝐜
     )
@@ -182,7 +182,7 @@ function construct_cᵢⱼ(::MonoclinicConstraint, 𝐜)
         c₆₆,
     )
 end
-construct_cᵢⱼ(::TriclinicConstraint, coefficients) = StiffnessMatrix(coefficients...)
+construct_cᵢⱼ(𝐜, ::TriclinicConstraint) = StiffnessMatrix(𝐜...)
 
 function combine_stresses(::CubicConstraint, stress::EngineeringStress)
     σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = stress
