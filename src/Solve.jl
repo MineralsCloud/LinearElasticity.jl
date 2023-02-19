@@ -2,8 +2,8 @@
 
 export solve_elastic_constants
 
-function combine_strains(::CubicConstraint, strain::EngineeringStrain)
-    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+function combine_strains(ϵ::EngineeringStrain, ::CubicConstraint)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×3 matrix
         ϵ₁ ϵ₂+ϵ₃ 0
         ϵ₂ ϵ₁+ϵ₃ 0
@@ -13,8 +13,8 @@ function combine_strains(::CubicConstraint, strain::EngineeringStrain)
         0 0 ϵ₆
     ]
 end
-function combine_strains(::TetragonalConstraint, strain::EngineeringStrain)
-    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+function combine_strains(ϵ::EngineeringStrain, ::TetragonalConstraint)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     # Tetragonal (I) class (c₁₆ = 0) is a special case of tetragonal (II) class
     return [  # 6×7 matrix
         ϵ₁ 0 ϵ₂ ϵ₃ ϵ₆ 0 0
@@ -25,8 +25,8 @@ function combine_strains(::TetragonalConstraint, strain::EngineeringStrain)
         0 0 0 0 ϵ₁-ϵ₂ 0 ϵ₆
     ]
 end
-function combine_strains(::OrthorhombicConstraint, strain::EngineeringStrain)
-    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+function combine_strains(ϵ::EngineeringStrain, ::OrthorhombicConstraint)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×9 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0
         0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0
@@ -36,8 +36,8 @@ function combine_strains(::OrthorhombicConstraint, strain::EngineeringStrain)
         0 0 0 0 0 0 0 0 ϵ₆
     ]
 end
-function combine_strains(::HexagonalConstraint, strain::EngineeringStrain)
-    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+function combine_strains(ϵ::EngineeringStrain, ::HexagonalConstraint)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×5 matrix
         ϵ₁ 0 ϵ₂ ϵ₃ 0
         ϵ₂ 0 ϵ₁ ϵ₃ 0
@@ -47,8 +47,8 @@ function combine_strains(::HexagonalConstraint, strain::EngineeringStrain)
         ϵ₆/2 0 -ϵ₆/2 0 0
     ]
 end
-function combine_strains(::TrigonalConstraint, strain::EngineeringStrain)
-    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+function combine_strains(ϵ::EngineeringStrain, ::TrigonalConstraint)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     # Rhombohedral (I) class (c₁₅ = 0) is a special case of rhombohedral (II) class
     return [  # 6×7 matrix
         ϵ₁ 0 ϵ₂ ϵ₃ 0 ϵ₄ ϵ₅
@@ -59,8 +59,8 @@ function combine_strains(::TrigonalConstraint, strain::EngineeringStrain)
         ϵ₆/2 0 -ϵ₆/2 0 0 ϵ₅ -ϵ₄
     ]
 end
-function combine_strains(::MonoclinicConstraint, strain::EngineeringStrain)  # Only standard orientation (diad ∥ x₂) is implemented
-    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+function combine_strains(ϵ::EngineeringStrain, ::MonoclinicConstraint)  # Only standard orientation (diad ∥ x₂) is implemented
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×13 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 ϵ₅ 0 0 0
         0 ϵ₂ 0 ϵ₁ 0 ϵ₃ 0 0 0 0 ϵ₅ 0 0
@@ -70,8 +70,8 @@ function combine_strains(::MonoclinicConstraint, strain::EngineeringStrain)  # O
         0 0 0 0 0 0 0 0 ϵ₆ 0 0 0 ϵ₄
     ]
 end
-function combine_strains(::TriclinicConstraint, strain::EngineeringStrain)
-    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = strain
+function combine_strains(ϵ::EngineeringStrain, ::TriclinicConstraint)
+    ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×21 matrix
         ϵ₁ ϵ₂ ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
         0 ϵ₁ 0 0 0 0 ϵ₂ ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0 0 0 0 0
@@ -81,8 +81,8 @@ function combine_strains(::TriclinicConstraint, strain::EngineeringStrain)
         0 0 0 0 0 ϵ₁ 0 0 0 0 ϵ₂ 0 0 0 ϵ₃ 0 0 ϵ₄ 0 ϵ₅ ϵ₆
     ]
 end
-combine_strains(system::CrystalSystem, strains::AbstractVector{<:EngineeringStrain}) =
-    vcat((combine_strains(system, strain) for strain in strains)...)
+combine_strains(𝛜::AbstractVector{<:EngineeringStrain}, constraint::SymmetryConstraint) =
+    vcat((combine_strains(constraint, ϵ) for ϵ in 𝛜)...)
 
 function construct_cᵢⱼ(::CubicConstraint, 𝐜)
     𝟎, c₁₁, c₁₂, c₄₄ = _promote_with_zero(𝐜)
