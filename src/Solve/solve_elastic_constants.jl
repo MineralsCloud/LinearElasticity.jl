@@ -22,7 +22,7 @@ Problem(
 function solve(problem::Problem)
     x, y, constraint = problem.x, problem.y, problem.cons
     𝐛 = vcat(y...)  # Length 6n vector, n = length(strains) = length(stresses)
-    A = construct_linear(x, constraint)  # Size 6n×N matrix, N = # independent coefficients
+    A = construct_linear_operator(x, constraint)  # Size 6n×N matrix, N = # independent coefficients
     𝐱 = A \ 𝐛  # Length N vector
     return construct(eltype(x), eltype(y))(𝐱, constraint)
 end
