@@ -1,10 +1,13 @@
-export Problem, solve, solve_elastic_constants
+using LinearElasticityBase: ElasticConstants
+using LinearSolve: LinearProblem, solve
 
-struct Problem{X,Y,C<:SymmetryConstraint}
+export LinearSystemMaker, solve_elastic_constants
+
+struct LinearSystemMaker{X,Y,C<:SymmetryConstraint}
     x::Vector{X}
     y::Vector{Y}
     cons::C
-    function Problem{X,Y,C}(𝐱, 𝐲, cons) where {X,Y,C}
+    function LinearSystemMaker{X,Y,C}(𝐱, 𝐲, cons) where {X,Y,C}
         if length(𝐱) != length(𝐲)
             throw(DimensionMismatch("the lengths of strains and stresses must match!"))
         end
@@ -15,28 +18,31 @@ struct Problem{X,Y,C<:SymmetryConstraint}
         return new(𝐱, 𝐲, cons)
     end
 end
-Problem(
+LinearSystemMaker(
     𝐱::AbstractVector{X}, 𝐲::AbstractVector{Y}, cons::C=TriclinicConstraint()
-) where {X,Y,C} = Problem{X,Y,C}(𝐱, 𝐲, cons)
+) where {X,Y,C} = LinearSystemMaker{X,Y,C}(𝐱, 𝐲, cons)
 
-function solve(problem::Problem)
-    x, y, constraint = problem.x, problem.y, problem.cons
+function make(maker::LinearSystemMaker{<:EngineeringStrain,<:EngineeringStress})
+    x, y, constraint = maker.x, maker.y, maker.cons
     𝐛 = vcat(y...)  # Length 6n vector, n = length(strains) = length(stresses)
-    A = construct_linear_operator(x, constraint)  # Size 6n×N matrix, N = # independent coefficients
-    𝐱 = A \ 𝐛  # Length N vector
-    return construct(eltype(x), eltype(y))(𝐱, constraint)
+    A = make_linear_operator(x, constraint)  # Size 6n×N matrix, N = # independent coefficients
+    return LinearProblem(A, 𝐛)
 end
-function solve(problem::Problem)
-    constants = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
-    return construct(eltype(problem.x), eltype(problem.y))(constants)
-end
+make(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
+    make(LinearSystemMaker(to_voigt.(maker.x), to_voigt.(maker.y), maker.cons))
+make(maker::LinearSystemMaker) = make(LinearSystemMaker(maker.y, maker.x, maker.cons))
 
 construct(::Type{<:EngineeringStrain}, ::Type{<:EngineeringStress}) = construct_cᵢⱼ
 construct(::Type{<:EngineeringStress}, ::Type{<:EngineeringStrain}) = construct_sᵢⱼ
 construct(::Type{<:TensorStrain}, ::Type{<:TensorStress}) = StiffnessTensor
 construct(::Type{<:TensorStress}, ::Type{<:TensorStrain}) = ComplianceTensor
 
-solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint()) = solve(Problem(𝐱, 𝐲, cons))
+function solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint())
+    maker = LinearSystemMaker(𝐱, 𝐲, cons)
+    problem = make(maker)
+    solution = solve(problem)
+    return construct(eltype(maker.x), eltype(maker.y))(solution)
+end
 
 minimal_npairs(::CubicConstraint) = 1
 minimal_npairs(::HexagonalConstraint) = 2
