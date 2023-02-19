@@ -1,61 +1,48 @@
-export solve_elastic_constants
+export Problem, solve
 
-function solve_elastic_constants(
-    system::CrystalSystem,
-    strains::AbstractVector{<:EngineeringStrain},
-    stresses::AbstractVector{<:EngineeringStress},
-)
+struct Problem{X,Y,C<:SymmetryConstraint}
+    x::Vector{X}
+    y::Vector{Y}
+    cons::C
+end
+Problem(𝐱, 𝐲, cons=TriclinicConstraint()) = Problem(𝐱, 𝐲, cons)
+
+function solve(problem::Problem{<:EngineeringStress,<:EngineeringStrain})
+    strains, stresses, constraint = problem.x, problem.y, problem.cons
     if length(strains) != length(stresses)
         throw(DimensionMismatch("the lengths of strains and stresses must match!"))
     end
-    n = minimal_npairs(system)
+    n = minimal_npairs(constraint)
     if length(strains) < n
         throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
     σ = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
-    ε = combine_strains(system, strains)  # Size 6n×N matrix, N = # independent coefficients
+    ε = combine_strains(strains, constraint)  # Size 6n×N matrix, N = # independent coefficients
     𝐜 = ε \ σ  # Length N vector
-    return construct_cᵢⱼ(system, 𝐜)
+    return construct_cᵢⱼ(𝐜, constraint)
 end
-function solve_elastic_constants(
-    system::CrystalSystem,
-    stresses::AbstractVector{<:EngineeringStress},
-    strains::AbstractVector{<:EngineeringStrain},
-)
+function solve(problem::Problem{<:EngineeringStrain,<:EngineeringStress})
+    stresses, strains, constraint = problem.x, problem.y, problem.cons
     if length(strains) != length(stresses)
         throw(DimensionMismatch("the lengths of strains and stresses must match!"))
     end
-    n = minimal_npairs(system)
+    n = minimal_npairs(constraint)
     if length(strains) < n
         throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
     ε = vcat(strains...)
-    σ = combine_stresses(system, stresses)
+    σ = combine_stresses(stresses, constraint)
     𝐬 = σ \ ε
-    return construct_sᵢⱼ(system, 𝐬)
+    return construct_sᵢⱼ(𝐬, constraint)
 end
-function solve_elastic_constants(
-    system::CrystalSystem,
-    strains::AbstractVector{<:TensorStrain},
-    stresses::AbstractVector{<:TensorStress},
-)
-    cᵢⱼ = solve_elastic_constants(
-        system, EngineeringStrain.(strains), EngineeringStress.(stresses)
-    )
+function solve(problem::Problem{<:TensorStrain,<:TensorStress})
+    cᵢⱼ = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
     return StiffnessTensor(cᵢⱼ)
 end
-function solve_elastic_constants(
-    system::CrystalSystem,
-    stresses::AbstractVector{<:TensorStress},
-    strains::AbstractVector{<:TensorStrain},
-)
-    sᵢⱼ = solve_elastic_constants(
-        system, EngineeringStrain.(strains), EngineeringStress.(stresses)
-    )
+function solve(problem::Problem{<:TensorStress,<:TensorStrain})
+    sᵢⱼ = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
     return ComplianceTensor(sᵢⱼ)
 end
-solve_elastic_constants(strains_or_stresses, stresses_or_strains) =
-    solve_elastic_constants(TriclinicConstraint(), strains_or_stresses, stresses_or_strains)
 
 minimal_npairs(::CubicConstraint) = 1
 minimal_npairs(::HexagonalConstraint) = 2
