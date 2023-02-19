@@ -32,16 +32,20 @@ make(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
     make(LinearSystemMaker(to_voigt.(maker.x), to_voigt.(maker.y), maker.cons))
 make(maker::LinearSystemMaker) = make(LinearSystemMaker(maker.y, maker.x, maker.cons))
 
-construct(::Type{<:EngineeringStrain}, ::Type{<:EngineeringStress}) = construct_cᵢⱼ
-construct(::Type{<:EngineeringStress}, ::Type{<:EngineeringStrain}) = construct_sᵢⱼ
-construct(::Type{<:TensorStrain}, ::Type{<:TensorStress}) = StiffnessTensor
-construct(::Type{<:TensorStress}, ::Type{<:TensorStrain}) = ComplianceTensor
+target(maker::LinearSystemMaker{<:EngineeringStrain,<:EngineeringStress}) =
+    Base.Fix2(construct_cᵢⱼ, maker.cons)
+target(maker::LinearSystemMaker{<:EngineeringStress,<:EngineeringStrain}) =
+    Base.Fix2(construct_sᵢⱼ, maker.cons)
+target(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
+    StiffnessTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cons)
+target(maker::LinearSystemMaker{<:TensorStress,<:TensorStrain}) =
+    ComplianceTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cons)
 
 function solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint())
     maker = LinearSystemMaker(𝐱, 𝐲, cons)
     problem = make(maker)
     solution = solve(problem)
-    return construct(eltype(maker.x), eltype(maker.y))(solution)
+    return target(maker)(solution)
 end
 
 minimal_npairs(::CubicConstraint) = 1
