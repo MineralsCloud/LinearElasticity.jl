@@ -1,7 +1,7 @@
 using LinearElasticityBase: ElasticConstants
 using LinearSolve: LinearProblem, solve
 
-export LinearSystemMaker, solve_elastic_constants
+export LinearSystemMaker, make, solve_elastic_constants
 
 struct LinearSystemMaker{X,Y,C<:SymmetryConstraint}
     x::Vector{X}
