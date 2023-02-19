@@ -1,4 +1,4 @@
-function combine_strains(ϵ::EngineeringStrain, ::CubicConstraint)
+function construct_linear(ϵ::EngineeringStrain, ::CubicConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×3 matrix
         ϵ₁ ϵ₂+ϵ₃ 0
@@ -9,7 +9,7 @@ function combine_strains(ϵ::EngineeringStrain, ::CubicConstraint)
         0 0 ϵ₆
     ]
 end
-function combine_strains(ϵ::EngineeringStrain, ::TetragonalConstraint)
+function construct_linear(ϵ::EngineeringStrain, ::TetragonalConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     # Tetragonal (I) class (c₁₆ = 0) is a special case of tetragonal (II) class
     return [  # 6×7 matrix
@@ -21,7 +21,7 @@ function combine_strains(ϵ::EngineeringStrain, ::TetragonalConstraint)
         0 0 0 0 ϵ₁-ϵ₂ 0 ϵ₆
     ]
 end
-function combine_strains(ϵ::EngineeringStrain, ::OrthorhombicConstraint)
+function construct_linear(ϵ::EngineeringStrain, ::OrthorhombicConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×9 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0
@@ -32,7 +32,7 @@ function combine_strains(ϵ::EngineeringStrain, ::OrthorhombicConstraint)
         0 0 0 0 0 0 0 0 ϵ₆
     ]
 end
-function combine_strains(ϵ::EngineeringStrain, ::HexagonalConstraint)
+function construct_linear(ϵ::EngineeringStrain, ::HexagonalConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×5 matrix
         ϵ₁ 0 ϵ₂ ϵ₃ 0
@@ -43,7 +43,7 @@ function combine_strains(ϵ::EngineeringStrain, ::HexagonalConstraint)
         ϵ₆/2 0 -ϵ₆/2 0 0
     ]
 end
-function combine_strains(ϵ::EngineeringStrain, ::TrigonalConstraint)
+function construct_linear(ϵ::EngineeringStrain, ::TrigonalConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     # Rhombohedral (I) class (c₁₅ = 0) is a special case of rhombohedral (II) class
     return [  # 6×7 matrix
@@ -55,7 +55,7 @@ function combine_strains(ϵ::EngineeringStrain, ::TrigonalConstraint)
         ϵ₆/2 0 -ϵ₆/2 0 0 ϵ₅ -ϵ₄
     ]
 end
-function combine_strains(ϵ::EngineeringStrain, ::MonoclinicConstraint)  # Only standard orientation (diad ∥ x₂) is implemented
+function construct_linear(ϵ::EngineeringStrain, ::MonoclinicConstraint)  # Only standard orientation (diad ∥ x₂) is implemented
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×13 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 ϵ₅ 0 0 0
@@ -66,7 +66,7 @@ function combine_strains(ϵ::EngineeringStrain, ::MonoclinicConstraint)  # Only 
         0 0 0 0 0 0 0 0 ϵ₆ 0 0 0 ϵ₄
     ]
 end
-function combine_strains(ϵ::EngineeringStrain, ::TriclinicConstraint)
+function construct_linear(ϵ::EngineeringStrain, ::TriclinicConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×21 matrix
         ϵ₁ ϵ₂ ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -77,8 +77,21 @@ function combine_strains(ϵ::EngineeringStrain, ::TriclinicConstraint)
         0 0 0 0 0 ϵ₁ 0 0 0 0 ϵ₂ 0 0 0 ϵ₃ 0 0 ϵ₄ 0 ϵ₅ ϵ₆
     ]
 end
-combine_strains(𝛜::AbstractVector{<:EngineeringStrain}, constraint::SymmetryConstraint) =
-    vcat((combine_strains(constraint, ϵ) for ϵ in 𝛜)...)
+construct_linear(𝛜::AbstractVector{<:EngineeringStrain}, constraint::SymmetryConstraint) =
+    vcat((construct_linear(constraint, ϵ) for ϵ in 𝛜)...)
+function construct_linear(σ::EngineeringStress, ::CubicConstraint)
+    σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = σ
+    return [  # 6×3 matrix
+        σ₁ σ₂+σ₃ 0
+        σ₂ σ₁+σ₃ 0
+        σ₃ σ₁+σ₂ 0
+        0 0 σ₄
+        0 0 σ₅
+        0 0 σ₆
+    ]
+end
+construct_linear(𝛔::AbstractVector{<:EngineeringStress}, constraint::SymmetryConstraint) =
+    vcat((construct_linear(σ, constraint) for σ in 𝛔)...)
 
 function construct_cᵢⱼ(𝐜, ::CubicConstraint)
     𝟎, c₁₁, c₁₂, c₄₄ = _promote_with_zero(𝐜)
@@ -179,20 +192,6 @@ function construct_cᵢⱼ(𝐜, ::MonoclinicConstraint)
     )
 end
 construct_cᵢⱼ(𝐜, ::TriclinicConstraint) = StiffnessMatrix(𝐜...)
-
-function combine_stresses(::CubicConstraint, stress::EngineeringStress)
-    σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = stress
-    return [  # 6×3 matrix
-        σ₁ σ₂+σ₃ 0
-        σ₂ σ₁+σ₃ 0
-        σ₃ σ₁+σ₂ 0
-        0 0 σ₄
-        0 0 σ₅
-        0 0 σ₆
-    ]
-end
-combine_stresses(system::CrystalSystem, stresses::AbstractVector{<:EngineeringStress}) =
-    vcat((combine_stresses(system, stress) for stress in stresses)...)
 
 function construct_sᵢⱼ(::CubicConstraint, 𝐬)
     𝟎, s₁₁, s₁₂, s₄₄ = _promote_with_zero(𝐬)

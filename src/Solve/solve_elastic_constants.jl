@@ -17,7 +17,7 @@ function solve(problem::Problem{<:EngineeringStress,<:EngineeringStrain})
         throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
     𝛔 = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
-    ε = combine_strains(strains, constraint)  # Size 6n×N matrix, N = # independent coefficients
+    ε = construct_linear(strains, constraint)  # Size 6n×N matrix, N = # independent coefficients
     𝐜 = ε \ 𝛔  # Length N vector
     return construct_cᵢⱼ(𝐜, constraint)
 end
@@ -31,7 +31,7 @@ function solve(problem::Problem{<:EngineeringStrain,<:EngineeringStress})
         throw(ArgumentError("the number of strains/stresses must be at least $n."))
     end
     𝛜 = vcat(strains...)
-    σ = combine_stresses(stresses, constraint)
+    σ = construct_linear(stresses, constraint)
     𝐬 = σ \ 𝛜
     return construct_sᵢⱼ(𝐬, constraint)
 end
