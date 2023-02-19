@@ -1,4 +1,4 @@
-function construct_linear_operator(ϵ::EngineeringStrain, ::CubicConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::CubicConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×3 matrix
         ϵ₁ ϵ₂+ϵ₃ 0
@@ -9,7 +9,7 @@ function construct_linear_operator(ϵ::EngineeringStrain, ::CubicConstraint)
         0 0 ϵ₆
     ]
 end
-function construct_linear_operator(ϵ::EngineeringStrain, ::TetragonalConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::TetragonalConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     # Tetragonal (I) class (c₁₆ = 0) is a special case of tetragonal (II) class
     return [  # 6×7 matrix
@@ -21,7 +21,7 @@ function construct_linear_operator(ϵ::EngineeringStrain, ::TetragonalConstraint
         0 0 0 0 ϵ₁-ϵ₂ 0 ϵ₆
     ]
 end
-function construct_linear_operator(ϵ::EngineeringStrain, ::OrthorhombicConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::OrthorhombicConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×9 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0
@@ -32,7 +32,7 @@ function construct_linear_operator(ϵ::EngineeringStrain, ::OrthorhombicConstrai
         0 0 0 0 0 0 0 0 ϵ₆
     ]
 end
-function construct_linear_operator(ϵ::EngineeringStrain, ::HexagonalConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::HexagonalConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×5 matrix
         ϵ₁ 0 ϵ₂ ϵ₃ 0
@@ -43,7 +43,7 @@ function construct_linear_operator(ϵ::EngineeringStrain, ::HexagonalConstraint)
         ϵ₆/2 0 -ϵ₆/2 0 0
     ]
 end
-function construct_linear_operator(ϵ::EngineeringStrain, ::TrigonalConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::TrigonalConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     # Rhombohedral (I) class (c₁₅ = 0) is a special case of rhombohedral (II) class
     return [  # 6×7 matrix
@@ -55,7 +55,7 @@ function construct_linear_operator(ϵ::EngineeringStrain, ::TrigonalConstraint)
         ϵ₆/2 0 -ϵ₆/2 0 0 ϵ₅ -ϵ₄
     ]
 end
-function construct_linear_operator(ϵ::EngineeringStrain, ::MonoclinicConstraint)  # Only standard orientation (diad ∥ x₂) is implemented
+function make_linear_operator(ϵ::EngineeringStrain, ::MonoclinicConstraint)  # Only standard orientation (diad ∥ x₂) is implemented
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×13 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 ϵ₅ 0 0 0
@@ -66,7 +66,7 @@ function construct_linear_operator(ϵ::EngineeringStrain, ::MonoclinicConstraint
         0 0 0 0 0 0 0 0 ϵ₆ 0 0 0 ϵ₄
     ]
 end
-function construct_linear_operator(ϵ::EngineeringStrain, ::TriclinicConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::TriclinicConstraint)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×21 matrix
         ϵ₁ ϵ₂ ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -77,10 +77,10 @@ function construct_linear_operator(ϵ::EngineeringStrain, ::TriclinicConstraint)
         0 0 0 0 0 ϵ₁ 0 0 0 0 ϵ₂ 0 0 0 ϵ₃ 0 0 ϵ₄ 0 ϵ₅ ϵ₆
     ]
 end
-construct_linear_operator(
+make_linear_operator(
     𝛜::AbstractVector{<:EngineeringStrain}, constraint::SymmetryConstraint
-) = vcat((construct_linear_operator(constraint, ϵ) for ϵ in 𝛜)...)
-function construct_linear_operator(σ::EngineeringStress, ::CubicConstraint)
+) = vcat((make_linear_operator(constraint, ϵ) for ϵ in 𝛜)...)
+function make_linear_operator(σ::EngineeringStress, ::CubicConstraint)
     σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = σ
     return [  # 6×3 matrix
         σ₁ σ₂+σ₃ 0
@@ -91,9 +91,9 @@ function construct_linear_operator(σ::EngineeringStress, ::CubicConstraint)
         0 0 σ₆
     ]
 end
-construct_linear_operator(
+make_linear_operator(
     𝛔::AbstractVector{<:EngineeringStress}, constraint::SymmetryConstraint
-) = vcat((construct_linear_operator(σ, constraint) for σ in 𝛔)...)
+) = vcat((make_linear_operator(σ, constraint) for σ in 𝛔)...)
 
 function construct_cᵢⱼ(𝐜, ::CubicConstraint)
     𝟎, c₁₁, c₁₂, c₄₄ = _promote_with_zero(𝐜)
