@@ -193,9 +193,9 @@ function construct_cᵢⱼ(𝐜, ::MonoclinicConstraint)
 end
 construct_cᵢⱼ(𝐜, ::TriclinicConstraint) = StiffnessMatrix(𝐜...)
 
-function construct_sᵢⱼ(::CubicConstraint, 𝐬)
+function construct_sᵢⱼ(𝐬, ::CubicConstraint)
     𝟎, s₁₁, s₁₂, s₄₄ = _promote_with_zero(𝐬)
-    return StiffnessMatrix(
+    return ComplianceMatrix(
         s₁₁, s₁₂, s₁₂, 𝟎, 𝟎, 𝟎, s₁₁, s₁₂, 𝟎, 𝟎, 𝟎, s₁₁, 𝟎, 𝟎, 𝟎, s₄₄, 𝟎, 𝟎, s₄₄, 𝟎, s₄₄
     )
 end
