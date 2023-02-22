@@ -5,7 +5,7 @@ using Reexport: @reexport
 @reexport using LinearElasticityBase
 
 include("Symmetry.jl")
-# include("StabilityCriteria.jl")
+# include("Stability.jl")
 include("Isotropic.jl")
 include("misc.jl")
 include("Solve/Solve.jl")

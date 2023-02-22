@@ -1,4 +1,4 @@
-module StabilityCriteria
+module Stability
 
 using LinearAlgebra: diag
 using LinearElasticityBase: StiffnessMatrix, ComplianceMatrix
