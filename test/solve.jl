@@ -1,7 +1,7 @@
 using Unitful: ustrip
 using UnitfulAtomic
 
-using LinearElasticity: HexagonalConstraint
+using LinearElasticity: Hexagonal
 using LinearElasticity.SymmetryCriteria: hassymmetry
 
 @testset "Test solving elastic constants on GaN (P6₃mc structure)" begin
@@ -24,7 +24,7 @@ using LinearElasticity.SymmetryCriteria: hassymmetry
         EngineeringStress(3.514e-5, 3.862e-5, 3.773e-5, 0, 0, -3.313e-5),
         EngineeringStress(3.51e-5, 3.865e-5, 3.765e-5, 0, 0, 3.858e-5),
     ]
-    stiffness_matrix = -solve_elastic_constants(strains, stresses, HexagonalConstraint())
+    stiffness_matrix = -solve_elastic_constants(strains, stresses, Hexagonal())
     @test stiffness_matrix ≈ StiffnessMatrix(
         [
             0.022199649999999998 0.00785485 0.005589249999999999 0 0 0
@@ -53,7 +53,7 @@ using LinearElasticity.SymmetryCriteria: hassymmetry
         0 0 0 0 11.180693821482086 0
         0 0 0 0 0 9.477806373683997
     ]
-    @test hassymmetry(stiffness_matrix, HexagonalConstraint())
+    @test hassymmetry(stiffness_matrix, Hexagonal())
 end
 
 @testset "Test solving elastic constants on KNO₂ (Cm structure)" begin

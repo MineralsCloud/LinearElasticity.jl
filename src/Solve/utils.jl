@@ -1,4 +1,4 @@
-function make_linear_operator(ϵ::EngineeringStrain, ::CubicConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::Cubic)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×3 matrix
         ϵ₁ ϵ₂+ϵ₃ 0
@@ -9,7 +9,7 @@ function make_linear_operator(ϵ::EngineeringStrain, ::CubicConstraint)
         0 0 ϵ₆
     ]
 end
-function make_linear_operator(ϵ::EngineeringStrain, ::TetragonalConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::Tetragonal)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     # Tetragonal (I) class (c₁₆ = 0) is a special case of tetragonal (II) class
     return [  # 6×7 matrix
@@ -21,7 +21,7 @@ function make_linear_operator(ϵ::EngineeringStrain, ::TetragonalConstraint)
         0 0 0 0 ϵ₁-ϵ₂ 0 ϵ₆
     ]
 end
-function make_linear_operator(ϵ::EngineeringStrain, ::OrthorhombicConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::Orthorhombic)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×9 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0
@@ -32,7 +32,7 @@ function make_linear_operator(ϵ::EngineeringStrain, ::OrthorhombicConstraint)
         0 0 0 0 0 0 0 0 ϵ₆
     ]
 end
-function make_linear_operator(ϵ::EngineeringStrain, ::HexagonalConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::Hexagonal)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×5 matrix
         ϵ₁ 0 ϵ₂ ϵ₃ 0
@@ -43,7 +43,7 @@ function make_linear_operator(ϵ::EngineeringStrain, ::HexagonalConstraint)
         ϵ₆/2 0 -ϵ₆/2 0 0
     ]
 end
-function make_linear_operator(ϵ::EngineeringStrain, ::TrigonalConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::Trigonal)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     # Rhombohedral (I) class (c₁₅ = 0) is a special case of rhombohedral (II) class
     return [  # 6×7 matrix
@@ -55,7 +55,7 @@ function make_linear_operator(ϵ::EngineeringStrain, ::TrigonalConstraint)
         ϵ₆/2 0 -ϵ₆/2 0 0 ϵ₅ -ϵ₄
     ]
 end
-function make_linear_operator(ϵ::EngineeringStrain, ::MonoclinicConstraint)  # Only standard orientation (diad ∥ x₂) is implemented
+function make_linear_operator(ϵ::EngineeringStrain, ::Monoclinic)  # Only standard orientation (diad ∥ x₂) is implemented
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×13 matrix
         ϵ₁ 0 0 ϵ₂ ϵ₃ 0 0 0 0 ϵ₅ 0 0 0
@@ -66,7 +66,7 @@ function make_linear_operator(ϵ::EngineeringStrain, ::MonoclinicConstraint)  # 
         0 0 0 0 0 0 0 0 ϵ₆ 0 0 0 ϵ₄
     ]
 end
-function make_linear_operator(ϵ::EngineeringStrain, ::TriclinicConstraint)
+function make_linear_operator(ϵ::EngineeringStrain, ::Triclinic)
     ϵ₁, ϵ₂, ϵ₃, ϵ₄, ϵ₅, ϵ₆ = ϵ
     return [  # 6×21 matrix
         ϵ₁ ϵ₂ ϵ₃ ϵ₄ ϵ₅ ϵ₆ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -80,7 +80,7 @@ end
 make_linear_operator(
     𝛜::AbstractVector{<:EngineeringStrain}, constraint::SymmetryConstraint
 ) = vcat((make_linear_operator(ϵ, constraint) for ϵ in 𝛜)...)
-function make_linear_operator(σ::EngineeringStress, ::CubicConstraint)
+function make_linear_operator(σ::EngineeringStress, ::Cubic)
     σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = σ
     return [  # 6×3 matrix
         σ₁ σ₂+σ₃ 0
@@ -95,25 +95,25 @@ make_linear_operator(
     𝛔::AbstractVector{<:EngineeringStress}, constraint::SymmetryConstraint
 ) = vcat((make_linear_operator(σ, constraint) for σ in 𝛔)...)
 
-function construct_cᵢⱼ(𝐜, ::CubicConstraint)
+function construct_cᵢⱼ(𝐜, ::Cubic)
     𝟎, c₁₁, c₁₂, c₄₄ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₂, 𝟎, 𝟎, 𝟎, c₁₁, c₁₂, 𝟎, 𝟎, 𝟎, c₁₁, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₄₄, 𝟎, c₄₄
     )
 end
-function construct_cᵢⱼ(𝐜, ::TetragonalConstraint)
+function construct_cᵢⱼ(𝐜, ::Tetragonal)
     𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₁₆, c₄₄, c₆₆ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₃, 𝟎, 𝟎, c₁₆, c₁₁, c₁₃, 𝟎, 𝟎, -c₁₆, c₃₃, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₄₄, 𝟎, c₆₆
     )
 end
-function construct_cᵢⱼ(𝐜, ::OrthorhombicConstraint)
+function construct_cᵢⱼ(𝐜, ::Orthorhombic)
     𝟎, c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁, c₁₂, c₁₃, 𝟎, 𝟎, 𝟎, c₂₂, c₂₃, 𝟎, 𝟎, 𝟎, c₃₃, 𝟎, 𝟎, 𝟎, c₄₄, 𝟎, 𝟎, c₅₅, 𝟎, c₆₆
     )
 end
-function construct_cᵢⱼ(𝐜, ::HexagonalConstraint)
+function construct_cᵢⱼ(𝐜, ::Hexagonal)
     𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₄₄ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁,
@@ -139,7 +139,7 @@ function construct_cᵢⱼ(𝐜, ::HexagonalConstraint)
         (c₁₁ - c₁₂) / 2,
     )
 end
-function construct_cᵢⱼ(𝐜, ::TrigonalConstraint)
+function construct_cᵢⱼ(𝐜, ::Trigonal)
     𝟎, c₁₁, c₃₃, c₁₂, c₁₃, c₄₄, c₁₄, c₁₅ = _promote_with_zero(𝐜)
     return StiffnessMatrix(
         c₁₁,
@@ -165,7 +165,7 @@ function construct_cᵢⱼ(𝐜, ::TrigonalConstraint)
         (c₁₁ - c₁₂) / 2,
     )
 end
-function construct_cᵢⱼ(𝐜, ::MonoclinicConstraint)
+function construct_cᵢⱼ(𝐜, ::Monoclinic)
     𝟎, c₁₁, c₂₂, c₃₃, c₁₂, c₁₃, c₂₃, c₄₄, c₅₅, c₆₆, c₁₅, c₂₅, c₃₅, c₄₆ = _promote_with_zero(
         𝐜
     )
@@ -193,9 +193,9 @@ function construct_cᵢⱼ(𝐜, ::MonoclinicConstraint)
         c₆₆,
     )
 end
-construct_cᵢⱼ(𝐜, ::TriclinicConstraint) = StiffnessMatrix(𝐜...)
+construct_cᵢⱼ(𝐜, ::Triclinic) = StiffnessMatrix(𝐜...)
 
-function construct_sᵢⱼ(𝐬, ::CubicConstraint)
+function construct_sᵢⱼ(𝐬, ::Cubic)
     𝟎, s₁₁, s₁₂, s₄₄ = _promote_with_zero(𝐬)
     return ComplianceMatrix(
         s₁₁, s₁₂, s₁₂, 𝟎, 𝟎, 𝟎, s₁₁, s₁₂, 𝟎, 𝟎, 𝟎, s₁₁, 𝟎, 𝟎, 𝟎, s₄₄, 𝟎, 𝟎, s₄₄, 𝟎, s₄₄
