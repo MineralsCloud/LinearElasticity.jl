@@ -8,9 +8,9 @@ using ..LinearElasticity:
     Hexagonal,
     Tetragonal,
     Trigonal,
-    OrthorhombicConstraint,
+    Orthorhombic,
     Monoclinic,
-    TriclinicConstraint
+    Triclinic
 
 export hassymmetry, whichsystem, isisotropic
 
@@ -105,9 +105,7 @@ function symmetry_criteria(s::ComplianceMatrix, ::Trigonal)
         end,
     )
 end
-function symmetry_criteria(
-    x::Union{StiffnessMatrix,ComplianceMatrix}, ::OrthorhombicConstraint
-)
+function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Orthorhombic)
     return (
         all(iszero, x[1:3, 4:6]),
         all(iszero, x[4, 5:6]),
@@ -129,7 +127,7 @@ function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Monocli
         end,
     )
 end
-symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::TriclinicConstraint) =
+symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Triclinic) =
     all(!iszero, x.data.data)
 
 hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, constraint::SymmetryConstraint) =
@@ -141,9 +139,9 @@ function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
         Hexagonal(),
         Tetragonal(),
         Trigonal(),
-        OrthorhombicConstraint(),
+        Orthorhombic(),
         Monoclinic(),
-        TriclinicConstraint(),
+        Triclinic(),
     )
         if hassymmetry(x, system)
             return system
