@@ -1,7 +1,17 @@
-using LinearElasticityBase: ElasticConstants
+using LinearElasticityBase:
+    ElasticConstants,
+    EngineeringStrain,
+    EngineeringStress,
+    TensorStrain,
+    TensorStress,
+    StiffnessMatrix,
+    ComplianceMatrix,
+    StiffnessTensor,
+    ComplianceTensor,
+    to_voigt
 using LinearSolve: LinearProblem, solve
 
-using .Symmetry:
+using ..Symmetry:
     SymmetryConstraint,
     Cubic,
     Hexagonal,
