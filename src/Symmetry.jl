@@ -1,20 +1,20 @@
-module SymmetryCriteria
+module Symmetry
 
 using LinearElasticityBase: StiffnessMatrix, ComplianceMatrix
 
-using ..LinearElasticity:
-    SymmetryConstraint,
-    Cubic,
-    Hexagonal,
-    Tetragonal,
-    Trigonal,
-    Orthorhombic,
-    Monoclinic,
-    Triclinic
-
+export Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic, Triclinic
 export hassymmetry, whichsystem, isisotropic
 
-function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Cubic)
+abstract type SymmetryConstraint end
+struct Triclinic <: SymmetryConstraint end
+struct Monoclinic <: SymmetryConstraint end
+struct Orthorhombic <: SymmetryConstraint end
+struct Tetragonal <: SymmetryConstraint end
+struct Cubic <: SymmetryConstraint end
+struct Trigonal <: SymmetryConstraint end
+struct Hexagonal <: SymmetryConstraint end
+
+function meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Cubic)
     return (
         all(iszero, x[1:3, 4:6]),
         all(iszero, x[4, 5:6]),
@@ -25,7 +25,7 @@ function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Cubic)
         x[1, 2] == x[1, 3] == x[2, 3],
     )
 end
-function symmetry_criteria(c::StiffnessMatrix, ::Hexagonal)
+function meetcriteria(c::StiffnessMatrix, ::Hexagonal)
     return (
         all(iszero, c[1:3, 4:6]),
         all(iszero, c[4, 5:6]),
@@ -37,7 +37,7 @@ function symmetry_criteria(c::StiffnessMatrix, ::Hexagonal)
         2c[6, 6] == c[1, 1] - c[1, 2],
     )
 end
-function symmetry_criteria(s::ComplianceMatrix, ::Hexagonal)
+function meetcriteria(s::ComplianceMatrix, ::Hexagonal)
     return (
         all(iszero, s[1:3, 4:6]),
         all(iszero, s[4, 5:6]),
@@ -49,7 +49,7 @@ function symmetry_criteria(s::ComplianceMatrix, ::Hexagonal)
         s[6, 6] == 2(s[1, 1] - s[1, 2]),
     )
 end
-function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Tetragonal)
+function meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Tetragonal)
     return (
         all(iszero, x[1:3, 4:5]),
         all(iszero, x[4, 5:6]),
@@ -65,7 +65,7 @@ function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Tetrago
         end,
     )
 end
-function symmetry_criteria(c::StiffnessMatrix, ::Trigonal)
+function meetcriteria(c::StiffnessMatrix, ::Trigonal)
     return (
         all(iszero, c[1:3, 6]),
         all(iszero, c[3, 4:5]),
@@ -85,7 +85,7 @@ function symmetry_criteria(c::StiffnessMatrix, ::Trigonal)
         end,
     )
 end
-function symmetry_criteria(s::ComplianceMatrix, ::Trigonal)
+function meetcriteria(s::ComplianceMatrix, ::Trigonal)
     return (
         all(iszero, s[1:3, 6]),
         all(iszero, s[3, 4:5]),
@@ -105,7 +105,7 @@ function symmetry_criteria(s::ComplianceMatrix, ::Trigonal)
         end,
     )
 end
-function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Orthorhombic)
+function meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Orthorhombic)
     return (
         all(iszero, x[1:3, 4:6]),
         all(iszero, x[4, 5:6]),
@@ -114,7 +114,7 @@ function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Orthorh
         all(!iszero, (x[3, 3], x[4, 4], x[5, 5], x[6, 6])),
     )
 end
-function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Monoclinic)
+function meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Monoclinic)
     return (
         all(iszero, x[1:3, 4]),
         iszero(x[5, 6]),
@@ -127,11 +127,11 @@ function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Monocli
         end,
     )
 end
-symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Triclinic) =
+meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Triclinic) =
     all(!iszero, x.data.data)
 
-hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, constraint::SymmetryConstraint) =
-    all(symmetry_criteria(constraint, x))
+hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, cstr::SymmetryConstraint) =
+    all(meetcriteria(cstr, x))
 
 function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
     for system in (
