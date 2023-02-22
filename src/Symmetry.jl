@@ -130,8 +130,8 @@ end
 meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Triclinic) =
     all(!iszero, x.data.data)
 
-hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, constraint::SymmetryConstraint) =
-    all(meetcriteria(constraint, x))
+hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, cstr::SymmetryConstraint) =
+    all(meetcriteria(cstr, x))
 
 function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
     for system in (
