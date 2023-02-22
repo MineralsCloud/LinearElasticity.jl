@@ -6,7 +6,7 @@ using LinearElasticity.Solve: solve_elastic_constants
 
 @testset "Test solving elastic constants on GaN (P6₃mc structure)" begin
     positive_strains = map(1:6) do i
-        EngineeringStrain(Float64[j == i ? 0.005 : 0 for j in 1:6])
+        EngineeringStrain([j == i ? 0.005 : 0 for j in 1:6])
     end
     negative_strains = -positive_strains
     strains = collect(Iterators.flatten(zip(positive_strains, negative_strains)))  # Combine two vectors with alternating strains
@@ -58,7 +58,7 @@ end
 
 @testset "Test solving elastic constants on KNO₂ (Cm structure)" begin
     positive_strains = map(1:6) do i
-        EngineeringStrain(Float64[j == i ? 0.005 : 0 for j in 1:6])
+        EngineeringStrain([j == i ? 0.005 : 0 for j in 1:6])
     end
     negative_strains = -positive_strains
     strains = collect(Iterators.flatten(zip(positive_strains, negative_strains)))
