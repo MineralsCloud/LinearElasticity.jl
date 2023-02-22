@@ -21,48 +21,48 @@ using ..Symmetry:
     Monoclinic,
     Triclinic
 
-export LinearSystemMaker, make, solve_elastic_constants
+export ProblemMaker, make, solve_elastic_constants
 
-struct LinearSystemMaker{X,Y,C<:SymmetryConstraint}
+struct ProblemMaker{X,Y,C<:SymmetryConstraint}
     x::Vector{X}
     y::Vector{Y}
     cstr::C
-    function LinearSystemMaker{X,Y,C}(𝐱, 𝐲, cstr) where {X,Y,C}
+    function ProblemMaker{X,Y,C}(𝐱, 𝐲, cstr) where {X,Y,C}
         if length(𝐱) != length(𝐲)
             throw(DimensionMismatch("the lengths of strains and stresses must match!"))
         end
-        N = minimal_npairs(cstr)
-        if length(𝐱) < N
-            throw(ArgumentError("the number of strains/stresses must be at least $N."))
+        n = minimal_npairs(cstr)
+        if length(𝐱) < n
+            throw(ArgumentError("the number of strains/stresses must be at least $n."))
         end
         return new(𝐱, 𝐲, cstr)
     end
 end
-LinearSystemMaker(
+ProblemMaker(
     𝐱::AbstractVector{X}, 𝐲::AbstractVector{Y}, cstr::C=Triclinic()
-) where {X,Y,C} = LinearSystemMaker{X,Y,C}(𝐱, 𝐲, cstr)
+) where {X,Y,C} = ProblemMaker{X,Y,C}(𝐱, 𝐲, cstr)
 
-function make(maker::LinearSystemMaker{<:EngineeringStrain,<:EngineeringStress})
-    x, y, cstr = maker.x, maker.y, maker.cstr
-    𝐛 = mapreduce(collect, vcat, y)  # Length 6n vector, n = length(strains) = length(stresses)
-    A = make_linear_operator(x, cstr)  # Size 6n×N matrix, N = # independent coefficients
-    return LinearProblem(A, 𝐛)
+function make(maker::ProblemMaker{<:EngineeringStrain,<:EngineeringStress})
+    𝐱, 𝐲, cstr = maker.x, maker.y, maker.cstr
+    𝐛 = mapreduce(collect, vcat, 𝐲)  # Length 6n vector, n = length(strains) = length(stresses)
+    A = make_linear_operator(𝐱, cstr)  # Size 6n×N matrix, N = # independent coefficients
+    return LinearProblem(A, 𝐛)  # Linear system A 𝐮 = 𝐛
 end
-make(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
-    make(LinearSystemMaker(to_voigt.(maker.x), to_voigt.(maker.y), maker.cstr))
-make(maker::LinearSystemMaker) = make(LinearSystemMaker(maker.y, maker.x, maker.cstr))
+make(maker::ProblemMaker{<:TensorStrain,<:TensorStress}) =
+    make(ProblemMaker(to_voigt.(maker.x), to_voigt.(maker.y), maker.cstr))
+make(maker::ProblemMaker) = make(ProblemMaker(maker.y, maker.x, maker.cstr))
 
-target(maker::LinearSystemMaker{<:EngineeringStrain,<:EngineeringStress}) =
+target(maker::ProblemMaker{<:EngineeringStrain,<:EngineeringStress}) =
     Base.Fix2(construct_cᵢⱼ, maker.cstr)
-target(maker::LinearSystemMaker{<:EngineeringStress,<:EngineeringStrain}) =
+target(maker::ProblemMaker{<:EngineeringStress,<:EngineeringStrain}) =
     Base.Fix2(construct_sᵢⱼ, maker.cstr)
-target(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
+target(maker::ProblemMaker{<:TensorStrain,<:TensorStress}) =
     StiffnessTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cstr)
-target(maker::LinearSystemMaker{<:TensorStress,<:TensorStrain}) =
+target(maker::ProblemMaker{<:TensorStress,<:TensorStrain}) =
     ComplianceTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cstr)
 
 function solve_elastic_constants(𝐱, 𝐲, cons=Triclinic(), args...; kwargs...)
-    maker = LinearSystemMaker(𝐱, 𝐲, cons)
+    maker = ProblemMaker(𝐱, 𝐲, cons)
     problem = make(maker)
     solution = solve(problem, args...; kwargs...)
     return target(maker)(solution)
