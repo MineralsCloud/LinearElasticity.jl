@@ -131,7 +131,7 @@ meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Triclinic) =
     all(!iszero, x.data.data)
 
 hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, cstr::SymmetryConstraint) =
-    all(meetcriteria(cstr, x))
+    all(meetcriteria(x, cstr))
 
 function guesssymmetry(x::Union{StiffnessMatrix,ComplianceMatrix})
     for symmetry in (
