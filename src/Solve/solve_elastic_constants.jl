@@ -41,10 +41,10 @@ target(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
 target(maker::LinearSystemMaker{<:TensorStress,<:TensorStrain}) =
     ComplianceTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cons)
 
-function solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint())
+function solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint(), args...; kwargs...)
     maker = LinearSystemMaker(𝐱, 𝐲, cons)
     problem = make(maker)
-    solution = solve(problem)
+    solution = solve(problem, args...; kwargs...)
     return target(maker)(solution)
 end
 
