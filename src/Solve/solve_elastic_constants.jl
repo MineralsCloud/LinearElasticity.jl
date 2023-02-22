@@ -61,8 +61,8 @@ target(maker::ProblemMaker{<:TensorStrain,<:TensorStress}) =
 target(maker::ProblemMaker{<:TensorStress,<:TensorStrain}) =
     ComplianceTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cstr)
 
-function solve_elastic_constants(𝐱, 𝐲, cons=Triclinic(), args...; kwargs...)
-    maker = ProblemMaker(𝐱, 𝐲, cons)
+function solve_elastic_constants(𝐱, 𝐲, cstr=Triclinic(), args...; kwargs...)
+    maker = ProblemMaker(𝐱, 𝐲, cstr)
     problem = make(maker)
     solution = solve(problem, args...; kwargs...)
     return target(maker)(solution)
