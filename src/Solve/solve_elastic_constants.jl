@@ -52,6 +52,13 @@ make(maker::ProblemMaker{<:TensorStrain,<:TensorStress}) =
     make(ProblemMaker(to_voigt.(maker.x), to_voigt.(maker.y), maker.cstr))
 make(maker::ProblemMaker) = make(ProblemMaker(maker.y, maker.x, maker.cstr))
 
+function solve_elastic_constants(𝐱, 𝐲, cstr=Triclinic(), args...; kwargs...)
+    maker = ProblemMaker(𝐱, 𝐲, cstr)
+    problem = make(maker)
+    solution = solve(problem, args...; kwargs...)
+    return target(maker)(solution)
+end
+
 target(maker::ProblemMaker{<:EngineeringStrain,<:EngineeringStress}) =
     Base.Fix2(construct_cᵢⱼ, maker.cstr)
 target(maker::ProblemMaker{<:EngineeringStress,<:EngineeringStrain}) =
@@ -60,13 +67,6 @@ target(maker::ProblemMaker{<:TensorStrain,<:TensorStress}) =
     StiffnessTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cstr)
 target(maker::ProblemMaker{<:TensorStress,<:TensorStrain}) =
     ComplianceTensor ∘ Base.Fix2(construct_sᵢⱼ, maker.cstr)
-
-function solve_elastic_constants(𝐱, 𝐲, cstr=Triclinic(), args...; kwargs...)
-    maker = ProblemMaker(𝐱, 𝐲, cstr)
-    problem = make(maker)
-    solution = solve(problem, args...; kwargs...)
-    return target(maker)(solution)
-end
 
 minimal_npairs(::Cubic) = 1
 minimal_npairs(::Hexagonal) = 2
