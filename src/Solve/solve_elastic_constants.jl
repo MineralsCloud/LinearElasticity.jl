@@ -19,7 +19,7 @@ struct LinearSystemMaker{X,Y,C<:SymmetryConstraint}
     end
 end
 LinearSystemMaker(
-    𝐱::AbstractVector{X}, 𝐲::AbstractVector{Y}, cons::C=TriclinicConstraint()
+    𝐱::AbstractVector{X}, 𝐲::AbstractVector{Y}, cons::C=Triclinic()
 ) where {X,Y,C} = LinearSystemMaker{X,Y,C}(𝐱, 𝐲, cons)
 
 function make(maker::LinearSystemMaker{<:EngineeringStrain,<:EngineeringStress})
@@ -41,17 +41,17 @@ target(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
 target(maker::LinearSystemMaker{<:TensorStress,<:TensorStrain}) =
     ComplianceTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cons)
 
-function solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint(), args...; kwargs...)
+function solve_elastic_constants(𝐱, 𝐲, cons=Triclinic(), args...; kwargs...)
     maker = LinearSystemMaker(𝐱, 𝐲, cons)
     problem = make(maker)
     solution = solve(problem, args...; kwargs...)
     return target(maker)(solution)
 end
 
-minimal_npairs(::CubicConstraint) = 1
-minimal_npairs(::HexagonalConstraint) = 2
-minimal_npairs(::TrigonalConstraint) = 2
-minimal_npairs(::TetragonalConstraint) = 2
-minimal_npairs(::OrthorhombicConstraint) = 3
-minimal_npairs(::MonoclinicConstraint) = 5
-minimal_npairs(::TriclinicConstraint) = 6
+minimal_npairs(::Cubic) = 1
+minimal_npairs(::Hexagonal) = 2
+minimal_npairs(::Trigonal) = 2
+minimal_npairs(::Tetragonal) = 2
+minimal_npairs(::Orthorhombic) = 3
+minimal_npairs(::Monoclinic) = 5
+minimal_npairs(::Triclinic) = 6
