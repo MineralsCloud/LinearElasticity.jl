@@ -79,7 +79,7 @@ function make_linear_operator(ϵ::EngineeringStrain, ::TriclinicConstraint)
 end
 make_linear_operator(
     𝛜::AbstractVector{<:EngineeringStrain}, constraint::SymmetryConstraint
-) = vcat((make_linear_operator(constraint, ϵ) for ϵ in 𝛜)...)
+) = vcat((make_linear_operator(ϵ, constraint) for ϵ in 𝛜)...)
 function make_linear_operator(σ::EngineeringStress, ::CubicConstraint)
     σ₁, σ₂, σ₃, σ₄, σ₅, σ₆ = σ
     return [  # 6×3 matrix
