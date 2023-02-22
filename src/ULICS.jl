@@ -1,8 +1,9 @@
 module ULICS
 
+using LinearElasticityBase: EngineeringStrain
 using Random: shuffle
 
-using ..LinearElasticity: EngineeringStrain, minimal_npairs
+using ..Solve: minimal_npairs
 using ..Symmetry: SymmetryConstraint
 
 export ulics
