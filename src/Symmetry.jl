@@ -2,17 +2,17 @@ module Symmetry
 
 using LinearElasticityBase: StiffnessMatrix, ComplianceMatrix
 
-using ..LinearElasticity:
-    SymmetryConstraint,
-    Cubic,
-    Hexagonal,
-    Tetragonal,
-    Trigonal,
-    Orthorhombic,
-    Monoclinic,
-    Triclinic
-
+export Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic, Triclinic
 export hassymmetry, whichsystem, isisotropic
+
+abstract type SymmetryConstraint end
+struct Triclinic <: SymmetryConstraint end
+struct Monoclinic <: SymmetryConstraint end
+struct Orthorhombic <: SymmetryConstraint end
+struct Tetragonal <: SymmetryConstraint end
+struct Cubic <: SymmetryConstraint end
+struct Trigonal <: SymmetryConstraint end
+struct Hexagonal <: SymmetryConstraint end
 
 function meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Cubic)
     return (

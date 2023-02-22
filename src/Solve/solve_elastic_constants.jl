@@ -1,6 +1,16 @@
 using LinearElasticityBase: ElasticConstants
 using LinearSolve: LinearProblem, solve
 
+using .Symmetry:
+    SymmetryConstraint,
+    Cubic,
+    Hexagonal,
+    Tetragonal,
+    Trigonal,
+    Orthorhombic,
+    Monoclinic,
+    Triclinic
+
 export LinearSystemMaker, make, solve_elastic_constants
 
 struct LinearSystemMaker{X,Y,C<:SymmetryConstraint}
