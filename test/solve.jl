@@ -1,12 +1,12 @@
 using Unitful: ustrip
 using UnitfulAtomic
 
-using LinearElasticity: Hexagonal
-using LinearElasticity.SymmetryCriteria: ishexagonal
+using LinearElasticity: HexagonalConstraint
+using LinearElasticity.SymmetryCriteria: hassymmetry
 
 @testset "Test solving elastic constants on GaN (P6₃mc structure)" begin
     positive_strains = map(1:6) do i
-        EngineeringStrain([j == i ? 0.005 : 0 for j in 1:6])
+        EngineeringStrain(Float64[j == i ? 0.005 : 0 for j in 1:6])
     end
     negative_strains = -positive_strains
     strains = collect(Iterators.flatten(zip(positive_strains, negative_strains)))  # Combine two vectors with alternating strains
@@ -24,8 +24,8 @@ using LinearElasticity.SymmetryCriteria: ishexagonal
         EngineeringStress(3.514e-5, 3.862e-5, 3.773e-5, 0, 0, -3.313e-5),
         EngineeringStress(3.51e-5, 3.865e-5, 3.765e-5, 0, 0, 3.858e-5),
     ]
-    stiffness_matrix = -solve_elastic_constants(Hexagonal(), strains, stresses)
-    @test stiffness_matrix == StiffnessMatrix(
+    stiffness_matrix = -solve_elastic_constants(strains, stresses, HexagonalConstraint())
+    @test stiffness_matrix ≈ StiffnessMatrix(
         [
             0.022199649999999998 0.00785485 0.005589249999999999 0 0 0
             0.00785485 0.022199649999999998 0.005589249999999999 0 0 0
@@ -36,7 +36,7 @@ using LinearElasticity.SymmetryCriteria: ishexagonal
         ],
     )
     # Reference values: https://materialsproject.org/materials/mp-804?formula=GaN#elastic_constants
-    @test ustrip(u"GPa".(stiffness_matrix * u"Ry/bohr^3")) == [
+    @test ustrip(u"GPa".(stiffness_matrix * u"Ry/bohr^3")) ≈ [
         326.56812555486005 115.54883257234204 82.22070599119812 0 0 0
         115.54883257234204 326.56812555486005 82.22070599119812 0 0 0
         82.22070599119812 82.22070599119812 360.42215279158114 0 0 0
@@ -45,7 +45,7 @@ using LinearElasticity.SymmetryCriteria: ishexagonal
         0 0 0 0 0 105.509646491259
     ]
     # Reference values: https://materialsproject.org/materials/mp-804?formula=GaN#elastic_constants
-    @test ustrip(u"TPa^(-1)".(inv(stiffness_matrix) * u"bohr^3/Ry")) == [
+    @test ustrip(u"TPa^(-1)".(inv(stiffness_matrix) * u"bohr^3/Ry")) ≈ [
         3.6052277063145053 -1.1336754805274927 -0.5638187534378214 0 0 0
         -1.1336754805274927 3.6052277063145053 -0.5638187534378214 0 0 0
         -0.5638187534378214 -0.5638187534378214 3.031764677764818 0 0 0
@@ -53,12 +53,12 @@ using LinearElasticity.SymmetryCriteria: ishexagonal
         0 0 0 0 11.180693821482086 0
         0 0 0 0 0 9.477806373683997
     ]
-    @test ishexagonal(stiffness_matrix)
+    @test hassymmetry(stiffness_matrix, HexagonalConstraint())
 end
 
 @testset "Test solving elastic constants on KNO₂ (Cm structure)" begin
     positive_strains = map(1:6) do i
-        EngineeringStrain([j == i ? 0.005 : 0 for j in 1:6])
+        EngineeringStrain(Float64[j == i ? 0.005 : 0 for j in 1:6])
     end
     negative_strains = -positive_strains
     strains = collect(Iterators.flatten(zip(positive_strains, negative_strains)))
