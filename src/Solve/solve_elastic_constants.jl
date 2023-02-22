@@ -59,7 +59,7 @@ target(maker::ProblemMaker{<:EngineeringStress,<:EngineeringStrain}) =
 target(maker::ProblemMaker{<:TensorStrain,<:TensorStress}) =
     StiffnessTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cstr)
 target(maker::ProblemMaker{<:TensorStress,<:TensorStrain}) =
-    ComplianceTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cstr)
+    ComplianceTensor ∘ Base.Fix2(construct_sᵢⱼ, maker.cstr)
 
 function solve_elastic_constants(𝐱, 𝐲, cstr=Triclinic(), args...; kwargs...)
     maker = ProblemMaker(𝐱, 𝐲, cstr)
