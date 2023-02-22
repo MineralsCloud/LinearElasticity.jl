@@ -24,7 +24,7 @@ LinearSystemMaker(
 
 function make(maker::LinearSystemMaker{<:EngineeringStrain,<:EngineeringStress})
     x, y, constraint = maker.x, maker.y, maker.cons
-    𝐛 = vcat(y...)  # Length 6n vector, n = length(strains) = length(stresses)
+    𝐛 = mapreduce(collect, vcat, y)  # Length 6n vector, n = length(strains) = length(stresses)
     A = make_linear_operator(x, constraint)  # Size 6n×N matrix, N = # independent coefficients
     return LinearProblem(A, 𝐛)
 end
