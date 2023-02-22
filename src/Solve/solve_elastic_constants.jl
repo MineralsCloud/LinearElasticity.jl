@@ -1,50 +1,52 @@
-export Problem, solve, solve_elastic_constants
+using LinearElasticityBase: ElasticConstants
+using LinearSolve: LinearProblem, solve
 
-struct Problem{X,Y,C<:SymmetryConstraint}
+export LinearSystemMaker, make, solve_elastic_constants
+
+struct LinearSystemMaker{X,Y,C<:SymmetryConstraint}
     x::Vector{X}
     y::Vector{Y}
     cons::C
+    function LinearSystemMaker{X,Y,C}(𝐱, 𝐲, cons) where {X,Y,C}
+        if length(𝐱) != length(𝐲)
+            throw(DimensionMismatch("the lengths of strains and stresses must match!"))
+        end
+        N = minimal_npairs(cons)
+        if length(𝐱) < N
+            throw(ArgumentError("the number of strains/stresses must be at least $N."))
+        end
+        return new(𝐱, 𝐲, cons)
+    end
 end
-Problem(𝐱, 𝐲, cons=TriclinicConstraint()) = Problem(𝐱, 𝐲, cons)
+LinearSystemMaker(
+    𝐱::AbstractVector{X}, 𝐲::AbstractVector{Y}, cons::C=TriclinicConstraint()
+) where {X,Y,C} = LinearSystemMaker{X,Y,C}(𝐱, 𝐲, cons)
 
-function solve(problem::Problem{<:EngineeringStress,<:EngineeringStrain})
-    strains, stresses, constraint = problem.x, problem.y, problem.cons
-    if length(strains) != length(stresses)
-        throw(DimensionMismatch("the lengths of strains and stresses must match!"))
-    end
-    n = minimal_npairs(constraint)
-    if length(strains) < n
-        throw(ArgumentError("the number of strains/stresses must be at least $n."))
-    end
-    𝛔 = vcat(stresses...)  # Length 6n vector, n = length(strains) = length(stresses)
-    ε = combine_strains(strains, constraint)  # Size 6n×N matrix, N = # independent coefficients
-    𝐜 = ε \ 𝛔  # Length N vector
-    return construct_cᵢⱼ(𝐜, constraint)
+function make(maker::LinearSystemMaker{<:EngineeringStrain,<:EngineeringStress})
+    x, y, constraint = maker.x, maker.y, maker.cons
+    𝐛 = mapreduce(collect, vcat, y)  # Length 6n vector, n = length(strains) = length(stresses)
+    A = make_linear_operator(x, constraint)  # Size 6n×N matrix, N = # independent coefficients
+    return LinearProblem(A, 𝐛)
 end
-function solve(problem::Problem{<:EngineeringStrain,<:EngineeringStress})
-    stresses, strains, constraint = problem.x, problem.y, problem.cons
-    if length(strains) != length(stresses)
-        throw(DimensionMismatch("the lengths of strains and stresses must match!"))
-    end
-    n = minimal_npairs(constraint)
-    if length(strains) < n
-        throw(ArgumentError("the number of strains/stresses must be at least $n."))
-    end
-    𝛜 = vcat(strains...)
-    σ = combine_stresses(stresses, constraint)
-    𝐬 = σ \ 𝛜
-    return construct_sᵢⱼ(𝐬, constraint)
-end
-function solve(problem::Problem{<:TensorStrain,<:TensorStress})
-    cᵢⱼ = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
-    return StiffnessTensor(cᵢⱼ)
-end
-function solve(problem::Problem{<:TensorStress,<:TensorStrain})
-    sᵢⱼ = solve(Problem(to_voigt.(problem.x), to_voigt.(problem.y), problem.cons))
-    return ComplianceTensor(sᵢⱼ)
-end
+make(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
+    make(LinearSystemMaker(to_voigt.(maker.x), to_voigt.(maker.y), maker.cons))
+make(maker::LinearSystemMaker) = make(LinearSystemMaker(maker.y, maker.x, maker.cons))
 
-solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint()) = solve(Problem(𝐱, 𝐲, cons))
+target(maker::LinearSystemMaker{<:EngineeringStrain,<:EngineeringStress}) =
+    Base.Fix2(construct_cᵢⱼ, maker.cons)
+target(maker::LinearSystemMaker{<:EngineeringStress,<:EngineeringStrain}) =
+    Base.Fix2(construct_sᵢⱼ, maker.cons)
+target(maker::LinearSystemMaker{<:TensorStrain,<:TensorStress}) =
+    StiffnessTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cons)
+target(maker::LinearSystemMaker{<:TensorStress,<:TensorStrain}) =
+    ComplianceTensor ∘ Base.Fix2(construct_cᵢⱼ, maker.cons)
+
+function solve_elastic_constants(𝐱, 𝐲, cons=TriclinicConstraint(), args...; kwargs...)
+    maker = LinearSystemMaker(𝐱, 𝐲, cons)
+    problem = make(maker)
+    solution = solve(problem, args...; kwargs...)
+    return target(maker)(solution)
+end
 
 minimal_npairs(::CubicConstraint) = 1
 minimal_npairs(::HexagonalConstraint) = 2
