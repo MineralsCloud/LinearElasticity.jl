@@ -14,7 +14,7 @@ using ..LinearElasticity:
 
 export hassymmetry, whichsystem, isisotropic, ishexagonal
 
-function symmetry_criteria(::CubicConstraint, x::Union{StiffnessMatrix,ComplianceMatrix})
+function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::CubicConstraint)
     return (
         all(iszero, x[1:3, 4:6]),
         all(iszero, x[4, 5:6]),
@@ -25,7 +25,7 @@ function symmetry_criteria(::CubicConstraint, x::Union{StiffnessMatrix,Complianc
         x[1, 2] == x[1, 3] == x[2, 3],
     )
 end
-function symmetry_criteria(::HexagonalConstraint, c::StiffnessMatrix)
+function symmetry_criteria(c::StiffnessMatrix, ::HexagonalConstraint)
     return (
         all(iszero, c[1:3, 4:6]),
         all(iszero, c[4, 5:6]),
@@ -37,7 +37,7 @@ function symmetry_criteria(::HexagonalConstraint, c::StiffnessMatrix)
         2c[6, 6] == c[1, 1] - c[1, 2],
     )
 end
-function symmetry_criteria(::HexagonalConstraint, s::ComplianceMatrix)
+function symmetry_criteria(s::ComplianceMatrix, ::HexagonalConstraint)
     return (
         all(iszero, s[1:3, 4:6]),
         all(iszero, s[4, 5:6]),
@@ -50,7 +50,7 @@ function symmetry_criteria(::HexagonalConstraint, s::ComplianceMatrix)
     )
 end
 function symmetry_criteria(
-    ::TetragonalConstraint, x::Union{StiffnessMatrix,ComplianceMatrix}
+    x::Union{StiffnessMatrix,ComplianceMatrix}, ::TetragonalConstraint
 )
     return (
         all(iszero, x[1:3, 4:5]),
@@ -67,7 +67,7 @@ function symmetry_criteria(
         end,
     )
 end
-function symmetry_criteria(::TrigonalConstraint, c::StiffnessMatrix)
+function symmetry_criteria(c::StiffnessMatrix, ::TrigonalConstraint)
     return (
         all(iszero, c[1:3, 6]),
         all(iszero, c[3, 4:5]),
@@ -87,7 +87,7 @@ function symmetry_criteria(::TrigonalConstraint, c::StiffnessMatrix)
         end,
     )
 end
-function symmetry_criteria(::TrigonalConstraint, s::ComplianceMatrix)
+function symmetry_criteria(s::ComplianceMatrix, ::TrigonalConstraint)
     return (
         all(iszero, s[1:3, 6]),
         all(iszero, s[3, 4:5]),
@@ -108,7 +108,7 @@ function symmetry_criteria(::TrigonalConstraint, s::ComplianceMatrix)
     )
 end
 function symmetry_criteria(
-    ::OrthorhombicConstraint, x::Union{StiffnessMatrix,ComplianceMatrix}
+    x::Union{StiffnessMatrix,ComplianceMatrix}, ::OrthorhombicConstraint
 )
     return (
         all(iszero, x[1:3, 4:6]),
@@ -119,7 +119,7 @@ function symmetry_criteria(
     )
 end
 function symmetry_criteria(
-    ::MonoclinicConstraint, x::Union{StiffnessMatrix,ComplianceMatrix}
+    x::Union{StiffnessMatrix,ComplianceMatrix}, ::MonoclinicConstraint
 )
     return (
         all(iszero, x[1:3, 4]),
@@ -133,7 +133,7 @@ function symmetry_criteria(
         end,
     )
 end
-symmetry_criteria(::TriclinicConstraint, x::Union{StiffnessMatrix,ComplianceMatrix}) =
+symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::TriclinicConstraint) =
     all(!iszero, x.data.data)
 
 hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, system::SymmetryConstraint) =
