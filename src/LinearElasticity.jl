@@ -15,7 +15,7 @@ struct Cubic <: SymmetryConstraint end
 struct Trigonal <: SymmetryConstraint end
 struct Hexagonal <: SymmetryConstraint end
 
-include("SymmetryCriteria.jl")
+include("Symmetry.jl")
 # include("StabilityCriteria.jl")
 include("Isotropic.jl")
 include("misc.jl")

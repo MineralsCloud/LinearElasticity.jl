@@ -1,4 +1,4 @@
-module SymmetryCriteria
+module Symmetry
 
 using LinearElasticityBase: StiffnessMatrix, ComplianceMatrix
 
