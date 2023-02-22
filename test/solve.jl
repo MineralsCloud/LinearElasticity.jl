@@ -1,7 +1,7 @@
 using Unitful: ustrip, @u_str
 using UnitfulAtomic
 
-using LinearElasticity.Symmetry: Hexagonal, hassymmetry
+using LinearElasticity.Symmetry: Hexagonal, Monoclinic, hassymmetry
 using LinearElasticity.Solve: solve_elastic_constants
 
 @testset "Test solving elastic constants on GaN (P6₃mc structure)" begin
@@ -76,5 +76,15 @@ end
         EngineeringStress(1.121e-5, 1.292e-5, 8.85e-6, 5.0e-8, -2.1e-7, -2.26e-6),
         EngineeringStress(1.12e-5, 1.292e-5, 8.85e-6, -5.0e-8, -2.1e-7, 2.26e-6),
     ]
+    stiffness_matrix = -solve_elastic_constants(strains, stresses, Monoclinic())
     # Reference values: https://materialsproject.org/materials/mp-34857?formula=KNO2#elastic_constants
+    @test ustrip(u"GPa".(stiffness_matrix * u"Ry/bohr^3")) ≈ [
+        40.483317598564604 7.7818586517589665 5.803295346160516 0 1.3386562141967226 -0.0
+        7.7818586517589665 36.84982216003065 16.46105828226519 0 -0.35305218835957425 -0.0
+        5.803295346160516 16.46105828226519 21.492051966389127 0 -0.45602574329778384 -0.0
+        0 0 0 6.38436040616898 0 -0.02942101569663098
+        1.3386562141967226 -0.35305218835957425 -0.45602574329778384 0 1.2356826592585122 -0.0
+        0 0 0 -0.02942101569663098 0 6.649149547438664
+    ]
+    @test hassymmetry(stiffness_matrix, Monoclinic())
 end
