@@ -104,7 +104,7 @@ function meetcriteria(c::StiffnessMatrix, ::Monoclinic)
 end
 meetcriteria(s::ComplianceMatrix, cstr::SymmetryConstraint) = meetcriteria(inv(s), cstr)
 
-isstable(C::CrystalSystem, x::Union{StiffnessMatrix,ComplianceMatrix}) =
-    all(stability_criteria(C, x))
+isstable(x::Union{StiffnessMatrix,ComplianceMatrix}, cstr::SymmetryConstraint) =
+    all(meetcriteria(x, cstr))
 
 end
