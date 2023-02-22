@@ -12,7 +12,7 @@ using ..LinearElasticity:
     MonoclinicConstraint,
     TriclinicConstraint
 
-export hassymmetry, whichsystem, isisotropic, ishexagonal
+export hassymmetry, whichsystem, isisotropic
 
 function symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::CubicConstraint)
     return (
@@ -136,11 +136,8 @@ end
 symmetry_criteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::TriclinicConstraint) =
     all(!iszero, x.data.data)
 
-hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, system::SymmetryConstraint) =
-    all(symmetry_criteria(system, x))
-
-ishexagonal(x::Union{StiffnessMatrix,ComplianceMatrix}) =
-    hassymmetry(x, HexagonalConstraint())
+hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, constraint::SymmetryConstraint) =
+    all(symmetry_criteria(constraint, x))
 
 function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
     for system in (
