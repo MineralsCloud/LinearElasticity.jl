@@ -348,7 +348,7 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[deps.LinearElasticity]]
 deps = ["CrystallographyBase", "LinearAlgebra", "LinearElasticityBase", "LinearSolve", "Random", "Reexport"]
-git-tree-sha1 = "501a63889ed60f28ab5a1858a5856c3313c95967"
+git-tree-sha1 = "e5fe8b824b77c5add59a215956c93673789baeb3"
 repo-rev = "main"
 repo-url = "https://github.com/MineralsCloud/LinearElasticity.jl"
 uuid = "8b390c8a-e41e-419b-b3a5-595c9a4d2b26"
