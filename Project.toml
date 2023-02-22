@@ -7,6 +7,7 @@ version = "0.7.0"
 CrystallographyBase = "93b1d1cd-a8ea-4aa5-adb1-b2407ea0ba8d"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 LinearElasticityBase = "c9ccf908-6911-46c3-b424-436f6a0ac525"
+LinearSolve = "7ed4a6bd-45f5-4d41-b270-4a48e9bafcae"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
