@@ -3,7 +3,7 @@ module Symmetry
 using LinearElasticityBase: StiffnessMatrix, ComplianceMatrix
 
 export Cubic, Hexagonal, Tetragonal, Trigonal, Orthorhombic, Monoclinic, Triclinic
-export hassymmetry, whichsystem, isisotropic
+export hassymmetry, guesssymmetry, isisotropic
 
 abstract type SymmetryConstraint end
 struct Triclinic <: SymmetryConstraint end
@@ -133,8 +133,8 @@ meetcriteria(x::Union{StiffnessMatrix,ComplianceMatrix}, ::Triclinic) =
 hassymmetry(x::Union{StiffnessMatrix,ComplianceMatrix}, cstr::SymmetryConstraint) =
     all(meetcriteria(cstr, x))
 
-function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
-    for system in (
+function guesssymmetry(x::Union{StiffnessMatrix,ComplianceMatrix})
+    for symmetry in (
         Cubic(),
         Hexagonal(),
         Tetragonal(),
@@ -143,8 +143,8 @@ function whichsystem(x::Union{StiffnessMatrix,ComplianceMatrix})
         Monoclinic(),
         Triclinic(),
     )
-        if hassymmetry(x, system)
-            return system
+        if hassymmetry(x, symmetry)
+            return symmetry
         end
     end
 end
