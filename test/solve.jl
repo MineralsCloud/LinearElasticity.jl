@@ -1,8 +1,8 @@
-using Unitful: ustrip
+using Unitful: ustrip, @u_str
 using UnitfulAtomic
 
-using LinearElasticity: Hexagonal
-using LinearElasticity.SymmetryCriteria: hassymmetry
+using LinearElasticity.Symmetry: Hexagonal, hassymmetry
+using LinearElasticity.Solve: solve_elastic_constants
 
 @testset "Test solving elastic constants on GaN (P6₃mc structure)" begin
     positive_strains = map(1:6) do i
