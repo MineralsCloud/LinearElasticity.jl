@@ -5,13 +5,13 @@ using CrystallographyBase,
     QuantumESPRESSOBase.PWscf,
     QuantumESPRESSOParser.PWscf,
     QuantumESPRESSOFormatter.PWscf
-using LinearElasticity.Symmetry: Triclinic
+using LinearElasticity.Symmetry: Triclinic, Monoclinic
 using LinearElasticity.ULICS
 using LinearElasticity.Solve
 using Mustache
 
 lattice = Lattice(cell)
-strains = ulics(Triclinic())
+strains = ulics(Monoclinic())
 lattices = map(strains) do strain
     distortby(lattice, strain)
 end
