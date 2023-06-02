@@ -14,7 +14,7 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 [compat]
 CrystallographyBase = "0.10"
 LinearElasticityBase = "0.3"
-LinearSolve = "1"
+LinearSolve = "1, 2"
 Reexport = "1"
 julia = "1"
 
