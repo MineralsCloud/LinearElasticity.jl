@@ -1,5 +1,7 @@
 module EffectiveModuli
 
+using ..LinearElasticity: StiffnessMatrix, ComplianceMatrix
+
 import ..Isotropic: bulk_modulus, shear_modulus
 
 export Voigt, Reuss, VoigtReussHill, bulk_modulus, shear_modulus
