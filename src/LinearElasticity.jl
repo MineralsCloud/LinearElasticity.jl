@@ -7,6 +7,7 @@ using Reexport: @reexport
 include("Symmetry.jl")
 # include("Stability.jl")
 include("Isotropic.jl")
+include("EffectiveModuli.jl")
 include("misc.jl")
 include("Solve/Solve.jl")
 include("ULICS.jl")
