@@ -1,6 +1,6 @@
 module EffectiveModuli
 
-using ..LinearElasticity: StiffnessMatrix, ComplianceMatrix
+using LinearElasticityBase: StiffnessMatrix, ComplianceMatrix
 
 import ..Isotropic: bulk_modulus, shear_modulus
 
