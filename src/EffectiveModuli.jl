@@ -1,5 +1,9 @@
 module EffectiveModuli
 
+import ..Isotropic: bulk_modulus, shear_modulus
+
+export Voigt, Reuss, VoigtReussHill, bulk_modulus, shear_modulus
+
 abstract type Model end
 struct Voigt <: Model end
 struct Reuss <: Model end
