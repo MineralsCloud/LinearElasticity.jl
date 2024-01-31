@@ -1,46 +1,32 @@
 # LinearElasticity
 
-|                                 **Documentation**                                  |                                                                                                 **Build Status**                                                                                                 |                                        **Others**                                         |
-| :--------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------: |
-| [![Stable][docs-stable-img]][docs-stable-url] [![Dev][docs-dev-img]][docs-dev-url] | [![Build Status][gha-img]][gha-url] [![Build Status][appveyor-img]][appveyor-url] [![Build Status][cirrus-img]][cirrus-url] [![pipeline status][gitlab-img]][gitlab-url] [![Coverage][codecov-img]][codecov-url] | [![GitHub license][license-img]][license-url] [![Code Style: Blue][style-img]][style-url] |
+| **Documentation** | [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MineralsCloud.github.io/LinearElasticity.jl/stable/) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MineralsCloud.github.io/LinearElasticity.jl/dev/)                                                                                                                                                                                                                                                                                                 |
+| :---------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Build Status**  | [![Build Status](https://github.com/MineralsCloud/LinearElasticity.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/MineralsCloud/LinearElasticity.jl/actions/workflows/CI.yml?query=branch%3Amain) [![Build Status](https://ci.appveyor.com/api/projects/status/github/MineralsCloud/LinearElasticity.jl?svg=true)](https://ci.appveyor.com/project/MineralsCloud/LinearElasticity-jl)[![Build Status](https://api.cirrus-ci.com/github/MineralsCloud/LinearElasticity.jl.svg)](https://cirrus-ci.com/github/MineralsCloud/LinearElasticity.jl) |
+|   **Coverage**    | [![Coverage](https://github.com/MineralsCloud/LinearElasticity.jl/badges/main/coverage.svg)](https://github.com/MineralsCloud/LinearElasticity.jl/commits/main) [![Coverage](https://codecov.io/gh/MineralsCloud/LinearElasticity.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/MineralsCloud/LinearElasticity.jl)                                                                                                                                                                                                                |
+|    **Others**     | [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle) [![License](https://img.shields.io/github/license/MineralsCloud/LinearElasticity.jl)](https://github.com/MineralsCloud/LinearElasticity.jl/blob/main/LICENSE)                                                                                                                                                                                                                                                   |
 
-[docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[docs-stable-url]: https://MineralsCloud.github.io/LinearElasticity.jl/stable
-[docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
-[docs-dev-url]: https://MineralsCloud.github.io/LinearElasticity.jl/dev
-[gha-img]: https://github.com/MineralsCloud/LinearElasticity.jl/workflows/CI/badge.svg
-[gha-url]: https://github.com/MineralsCloud/LinearElasticity.jl/actions
-[appveyor-img]: https://ci.appveyor.com/api/projects/status/github/MineralsCloud/LinearElasticity.jl?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/singularitti/LinearElasticity-jl
-[cirrus-img]: https://api.cirrus-ci.com/github/MineralsCloud/LinearElasticity.jl.svg
-[cirrus-url]: https://cirrus-ci.com/github/MineralsCloud/LinearElasticity.jl
-[gitlab-img]: https://gitlab.com/singularitti/LinearElasticity.jl/badges/main/pipeline.svg
-[gitlab-url]: https://gitlab.com/singularitti/LinearElasticity.jl/-/pipelines
-[codecov-img]: https://codecov.io/gh/MineralsCloud/LinearElasticity.jl/branch/main/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/MineralsCloud/LinearElasticity.jl
-[license-img]: https://img.shields.io/github/license/MineralsCloud/LinearElasticity.jl
-[license-url]: https://github.com/MineralsCloud/LinearElasticity.jl/blob/main/LICENSE
-[style-img]: https://img.shields.io/badge/code%20style-blue-4495d1.svg
-[style-url]: https://github.com/invenia/BlueStyle
+The code, which is [hosted on GitHub](https://github.com/MineralsCloud/LinearElasticity.jl), is tested
+using various continuous integration services for its validity.
+
+This repository is created and maintained by
+[@singularitti](https://github.com/singularitti), and contributions are highly welcome.
+
+## Package features
 
 Compute and convert linear elasticity values based on the Cauchy elasticity theory.
-
-The code is [hosted on GitHub](https://github.com/MineralsCloud/LinearElasticity.jl),
-with some continuous integration services to test its validity.
-
-This repository is created and maintained by [@singularitti](https://github.com/singularitti).
-You are very welcome to contribute.
 
 ## Installation
 
 The package can be installed with the Julia package manager.
-From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
+From [the Julia REPL](https://docs.julialang.org/en/v1/stdlib/REPL/), type `]` to enter
+the [Pkg mode](https://docs.julialang.org/en/v1/stdlib/REPL/#Pkg-mode) and run:
 
-```
+```julia-repl
 pkg> add LinearElasticity
 ```
 
-Or, equivalently, via the [`Pkg` API](https://pkgdocs.julialang.org/v1/getting-started/):
+Or, equivalently, via [`Pkg.jl`](https://pkgdocs.julialang.org/v1/):
 
 ```julia
 julia> import Pkg; Pkg.add("LinearElasticity")
@@ -48,21 +34,20 @@ julia> import Pkg; Pkg.add("LinearElasticity")
 
 ## Documentation
 
-- [**STABLE**][docs-stable-url] — **documentation of the most recently tagged version.**
-- [**DEV**][docs-dev-url] — _documentation of the in-development version._
+- [**STABLE**](https://MineralsCloud.github.io/LinearElasticity.jl/stable/) — **documentation of the most recently tagged version.**
+- [**DEV**](https://MineralsCloud.github.io/LinearElasticity.jl/dev/) — _documentation of the in-development version._
 
 ## Project status
 
-The package is tested against, and being developed for, Julia `1.6` and above on Linux,
-macOS, and Windows.
+The package is developed for and tested against Julia `v1.6` and above on Linux, macOS, and
+Windows.
 
 ## Questions and contributions
 
-You are welcome to post usage questions on [our discussion page][discussions-url].
+You can post usage questions on
+[our discussion page](https://github.com/MineralsCloud/LinearElasticity.jl/discussions).
 
-Contributions are very welcome, as are feature requests and suggestions. Please open an
-[issue][issues-url] if you encounter any problems. The [Contributing](@ref) page has
-guidelines that should be followed when opening pull requests and contributing code.
-
-[discussions-url]: https://github.com/MineralsCloud/LinearElasticity.jl/discussions
-[issues-url]: https://github.com/MineralsCloud/LinearElasticity.jl/issues
+We welcome contributions, feature requests, and suggestions. If you encounter any problems,
+please open an [issue](https://github.com/MineralsCloud/LinearElasticity.jl/issues).
+The [Contributing](@ref) page has
+a few guidelines that should be followed when opening pull requests and contributing code.
